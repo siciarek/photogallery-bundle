@@ -1,9 +1,14 @@
 .idea
+/phpunit.xml
+*~
+composer.phar
+composer.lock
+
 # Bootstrap
 app/bootstrap*
 
 # Symfony directories
-vendor
+/vendor
 */logs/*
 */cache/*
 web/uploads/*
