@@ -25,6 +25,6 @@
     "autoload": {
         "psr-0": { "Siciarek\\PhotoGalleryBundle": "" }
     },
-    "minimum-stability": "dev-master",
+    "minimum-stability": "dev",
     "target-dir": "Siciarek/PhotoGalleryBundle"
 }
