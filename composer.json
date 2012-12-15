@@ -1,0 +1,30 @@
+{
+    "name": "siciarek/photogallery-bundle",
+    "type": "symfony-bundle",
+    "description": "Photo Gallery Bundle for use with Symfony2",
+    "keywords": [
+        "photo",
+        "gallery",
+        "images",
+        "bundle"
+    ],
+    "homepage": "http://github.com/siciarek/photogallery-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jacek Siciarek",
+            "email": "siciarek@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": ">=2.1,<2.2-dev"
+    },
+    "autoload": {
+        "psr-0": { "NewbridgeGreen\\TestBundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "Siciarek/PhotoGalleryBundle"
+}
