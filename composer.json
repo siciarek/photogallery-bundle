@@ -25,6 +25,6 @@
     "autoload": {
         "psr-0": { "NewbridgeGreen\\TestBundle": "" }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "dev-master",
     "target-dir": "Siciarek/PhotoGalleryBundle"
 }
