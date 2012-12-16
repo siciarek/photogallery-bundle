@@ -1,0 +1,95 @@
+html.photogallery div#content div#albums div.image,
+html.photogallery div#content div#images div.image {
+    border: 1px solid #222;
+    background-color: white;
+    float: left;
+    margin: 0 24px 24px 0;
+}
+
+html.photogallery div#content div#albums div.image {
+    width: 500px;
+    height: 350px;
+}
+
+html.photogallery div#content div#albums div.description {
+    margin: 0;
+    padding: 0;
+    margin-top: -7px;
+    width: 560px;
+    float: left;
+}
+
+html.photogallery div#content div#albums div.description h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #444;
+}
+
+
+html.photogallery div#content div#albums div.image.last,
+html.photogallery div#content div#images div.image.last {
+    margin-right: 0;
+}
+
+html.photogallery div#content div#albums div.separator,
+html.photogallery div#content div#images div.separator {
+    clear: both;
+}
+
+html.photogallery {
+    background-color: #ffffe0;
+}
+
+html.photogallery div#header,
+html.photogallery div#content,
+html.photogallery div#footer {
+    min-width: 800px;
+    max-width: 1106px;
+    margin: 0 auto;
+}
+
+
+html.photogallery div#header {
+    border-bottom: 1px solid 222;
+    margin-bottom: 16px;
+}
+
+html.photogallery div#content {
+    /*border: 1px solid #808080;*/
+}
+
+html.photogallery div#footer {
+    border-top: 1px solid #313131;
+    padding-top: 6px;
+    margin-top: 16px;
+    padding-bottom: 40px;
+}
+
+html.photogallery div#footer div#copyrights  {
+    font-size: 16px;
+}
+
+html.photogallery div#header h1 {
+    font: 32px/40px Georgia, Times, serif;
+    letter-spacing: -0.5px;
+    padding: 8px 0;
+    text-shadow: 1px 1px silver;
+    letter-spacing: 4px;
+}
+
+html.photogallery div#header h1:before {
+    content: "#";
+}
+
+html.photogallery div#content p {
+    color: #313131 !important;
+    font: 16px/1.2 Georgia, Times, serif;
+    margin-bottom: 12px;
+}
+
+
+
+
+

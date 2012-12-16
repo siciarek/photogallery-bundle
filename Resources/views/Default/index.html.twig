@@ -1,1 +1,30 @@
-<h1>{{ title }}!</h1>
+{% extends 'SiciarekPhotoGalleryBundle::public.layout.html.twig' %}
+{% block content %}
+
+    <div id="albums">
+
+        <div class="image"></div>
+        <div class="description">
+            <h2>Lorem ipsum dolor sit amet</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sed leo id massa rutrum faucibus at vel ligula. Nunc faucibus imperdiet augue quis ultricies. Pellentesque tristique, metus a auctor aliquet, nulla dui fringilla est, quis blandit lorem lorem at turpis. Suspendisse et mauris enim, nec iaculis quam.</p></div>
+        <div class="separator"></div>
+
+        <div class="image"></div>
+        <div class="description">
+        <h2>Mauris non erat nec metus laoreet</h2>
+        <p>Mauris non erat nec metus laoreet ullamcorper. Etiam blandit, sem at ullamcorper dignissim, nulla nunc hendrerit eros, eget egestas metus nibh nec mauris.</p></div>
+        <div class="separator"></div>
+
+        <div class="image"></div>
+        <div class="description">
+            <h2>Quisque porttitor sem ac justo</h2>
+        </div>
+        <div class="separator"></div>
+
+        <div class="image"></div>
+        <div class="description">
+            <p>pretium eget malesuada ipsum gravida. Morbi at ipsum dui, vitae interdum quam. Ut volutpat ultrices eros, a posuere velit aliquam non. In semper convallis tellus id facilisis. </div>
+        <div class="separator"></div>
+
+    </div>
+{% endblock %}

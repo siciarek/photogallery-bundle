@@ -17,13 +17,51 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('siciarek_photo_gallery');
+        $defaults = $this->getDefaults();
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root("siciarek_photo_gallery", "array");
+
+        $rootNode->children()
+            ->scalarNode("title")
+                ->defaultValue($defaults["title"])
+                ->end()
+            ->scalarNode("style")
+                ->defaultValue($defaults["style"])
+                ->end()
+            ->scalarNode("uploads_directory")
+                ->defaultValue($defaults["uploads_directory"])
+                ->end()
+            ->arrayNode("thumbnails")
+                ->addDefaultsIfNotSet()
+                ->children()
+                    ->booleanNode("cache")->defaultTrue()->end()
+                    ->scalarNode("format")->defaultValue($defaults["thumbnails"]["format"])->end()
+                    ->scalarNode("width")->defaultValue($defaults["thumbnails"]["width"])->end()
+                    ->scalarNode("height")->defaultValue($defaults["thumbnails"]["height"])->end()
+                ->end()
+        ;
 
         return $treeBuilder;
+    }
+
+
+    /**
+     * Get default configuration of the each instance of editor
+     *
+     * @return array
+     */
+    private function getDefaults()
+    {
+        return array(
+            "title" => "Photo Gallery",
+            "style" => "/bundles/siciarekphotogallery/css/photogallery.css",
+            "uploads_directory" => "%kernel.root_dir%/../web/uploads/photogallery",
+            "thumbnails" => array(
+                "format" => "png",
+                "width" => 150,
+                "height" => 100
+            ),
+        );
     }
 }

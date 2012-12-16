@@ -1,0 +1,43 @@
+Siciarek\PhotoGalleryBundle\Entity\Album:
+    type: entity
+    repositoryClass: Siciarek\PhotoGalleryBundle\Entity\AlbumRepository
+    table: photogallery_album
+    gedmo:
+        translation:
+            locale: locale
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        title:
+            type: string
+            length: 255
+            nullable: true
+            gedmo: [ translatable ]
+        description:
+            type: text
+            length: 10000
+            nullable: true
+            gedmo: [ translatable ]
+        is_active:
+            type: boolean
+            nullable: false
+        expires_at:
+            type: datetime
+            nullable: true
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+    oneToMany:
+        images:
+            targetEntity: Image
+            mappedBy: album

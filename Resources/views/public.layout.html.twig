@@ -1,0 +1,12 @@
+{% include 'SiciarekPhotoGalleryBundle::header.html.twig' with {
+    menu: {
+        "page_style" : page_style
+    }
+}
+%}
+
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+
+{% include 'SiciarekPhotoGalleryBundle::footer.html.twig' %}
