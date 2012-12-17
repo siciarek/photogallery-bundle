@@ -2,18 +2,62 @@
 <html class="photogallery">
 <head>
     <meta charset="UTF-8"/>
-    <title>{{ title }}</title>
+    <title>{{ title | trans() }}</title>
+
     <link rel="stylesheet" type="text/css" media="screen" href="/bundles/siciarekphotogallery/css/reset.css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>
+
+    <script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script type="text/javascript" src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+
+    <script type="text/javascript" src="/bundles/siciarekphotogallery/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/bundles/siciarekphotogallery/js/translations.js"></script>
+    <script type="text/javascript" src="{{ asset("bundles/siciarekphotogallery/js/photogallery.js") }}"></script>
+
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"/>
+    <script type="text/javascript"
+            src="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"></script>
+
 </head>
 <body>
+
+
+<div id="menu">
+    <div>
+        <ul>
+
+            {% for text, route in menu %}
+                <li>{{ link_to( text | trans(), route ) }}</li>
+            {% endfor %}
+
+            {#{% for lang, tit in languages %}#}
+                {#<li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"#}
+                    {#onclick="location.href='{{ url_for("_change_locale", { "locale": lang }) }}'">&nbsp;</li>#}
+            {#{% endfor %}#}
+
+            {#{% if app.user %}#}
+            {#<li>{{ link_to("Secured page" | trans(), "_secured") }}</li>#}
+            {#<li>{{ link_to("Editor" | trans(), "_editor") }}</li>#}
+            {#{% endif %}#}
+
+            {#{% if app.user %}#}
+            {#<li>{{ link_to('layout.logout'|trans({}, 'FOSUserBundle') | trans(), "fos_user_security_logout") }}</li>#}
+            {#<li class="user"><a>{{ "user" | trans() ~ ": " ~ app.user.firstname ~ " " ~ app.user.lastname }}</a></li>#}
+            {#{% else %}#}
+            {#<li>{{ link_to('layout.login'|trans({}, 'FOSUserBundle') | trans(), "fos_user_security_login") }}</li>#}
+            {#{% endif %}#}
+
+        </ul>
+    </div>
+</div>
+
 <div id="page">
 
-<div id="header">
+    <div id="header">
 
-    <h1>{{ title | trans() }} :: {{ subtitle | trans() }}</h1>
 
-</div>
+    </div>
 
 
 

@@ -9,10 +9,22 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Album
 {
+    private $locale;
+
+    public function setTranslatableLocale($locale)
+    {
+        $this->locale = $locale;
+    }
+
     /**
      * @var integer
      */
     private $id;
+
+    /**
+     * @var integer
+     */
+    private $sequence_number;
 
     /**
      * @var string
@@ -27,7 +39,7 @@ class Album
     /**
      * @var boolean
      */
-    private $is_active;
+    private $is_visible;
 
     /**
      * @var \DateTime
@@ -43,6 +55,11 @@ class Album
      * @var \DateTime
      */
     private $updated_at;
+
+    /**
+     * @var \Siciarek\PhotoGalleryBundle\Entity\Image
+     */
+    private $cover;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -65,6 +82,29 @@ class Album
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set sequence_number
+     *
+     * @param integer $sequenceNumber
+     * @return Album
+     */
+    public function setSequenceNumber($sequenceNumber)
+    {
+        $this->sequence_number = $sequenceNumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get sequence_number
+     *
+     * @return integer 
+     */
+    public function getSequenceNumber()
+    {
+        return $this->sequence_number;
     }
 
     /**
@@ -114,26 +154,26 @@ class Album
     }
 
     /**
-     * Set is_active
+     * Set is_visible
      *
-     * @param boolean $isActive
+     * @param boolean $isVisible
      * @return Album
      */
-    public function setIsActive($isActive)
+    public function setIsVisible($isVisible)
     {
-        $this->is_active = $isActive;
+        $this->is_visible = $isVisible;
     
         return $this;
     }
 
     /**
-     * Get is_active
+     * Get is_visible
      *
      * @return boolean 
      */
-    public function getIsActive()
+    public function getIsVisible()
     {
-        return $this->is_active;
+        return $this->is_visible;
     }
 
     /**
@@ -203,6 +243,29 @@ class Album
     public function getUpdatedAt()
     {
         return $this->updated_at;
+    }
+
+    /**
+     * Set cover
+     *
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Image $cover
+     * @return Album
+     */
+    public function setCover(\Siciarek\PhotoGalleryBundle\Entity\Image $cover = null)
+    {
+        $this->cover = $cover;
+    
+        return $this;
+    }
+
+    /**
+     * Get cover
+     *
+     * @return \Siciarek\PhotoGalleryBundle\Entity\Image 
+     */
+    public function getCover()
+    {
+        return $this->cover;
     }
 
     /**

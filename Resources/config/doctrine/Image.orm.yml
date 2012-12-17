@@ -11,6 +11,9 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             id: true
             generator:
                 strategy: AUTO
+        sequence_number:
+            type: integer
+            nullable: false
         title:
             type: string
             length: 255
@@ -25,7 +28,20 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             type: text
             length: 10000
             nullable: false
-        is_active:
+        mime_type:
+            type: string
+            length: 255
+            nullable: false
+        file_size:
+            type: integer
+            nullable: false
+        width:
+            type: integer
+            nullable: false
+        height:
+            type: integer
+            nullable: false
+        is_visible:
             type: boolean
             nullable: false
         expires_at:
@@ -45,3 +61,6 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
         album:
             targetEntity: Album
             inversedBy: images
+    oneToOne:
+        thumbnail:
+            targetEntity: Image

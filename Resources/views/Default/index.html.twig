@@ -1,30 +1,59 @@
 {% extends 'SiciarekPhotoGalleryBundle::public.layout.html.twig' %}
 {% block content %}
 
-    <div id="albums">
+    <h1 id="subtitle">{{ "wait a while" | trans() }}...</h1>
 
-        <div class="image"></div>
-        <div class="description">
-            <h2>Lorem ipsum dolor sit amet</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sed leo id massa rutrum faucibus at vel ligula. Nunc faucibus imperdiet augue quis ultricies. Pellentesque tristique, metus a auctor aliquet, nulla dui fringilla est, quis blandit lorem lorem at turpis. Suspendisse et mauris enim, nec iaculis quam.</p></div>
-        <div class="separator"></div>
+    <div id="albums"></div>
 
-        <div class="image"></div>
-        <div class="description">
-        <h2>Mauris non erat nec metus laoreet</h2>
-        <p>Mauris non erat nec metus laoreet ullamcorper. Etiam blandit, sem at ullamcorper dignissim, nulla nunc hendrerit eros, eget egestas metus nibh nec mauris.</p></div>
-        <div class="separator"></div>
+    <script type="text/javascript">
+        // <![CDATA[
 
-        <div class="image"></div>
-        <div class="description">
-            <h2>Quisque porttitor sem ac justo</h2>
-        </div>
-        <div class="separator"></div>
+        var pageTitle = "{{ title | trans() }}";
 
-        <div class="image"></div>
-        <div class="description">
-            <p>pretium eget malesuada ipsum gravida. Morbi at ipsum dui, vitae interdum quam. Ut volutpat ultrices eros, a posuere velit aliquam non. In semper convallis tellus id facilisis. </div>
-        <div class="separator"></div>
+        $(document).ready(function () {
+            $.ajax({
+                url: Routing.generate("_photogallery_api_album_list"),
+                error: function (response) {
+                    alert("Unexpected Exception.");
+                },
+                success: function (response) {
 
-    </div>
+                    var albums = response;
+
+                    $("#subtitle").html(pageTitle);
+
+                    for (var i = 0; i < albums.length; i++) {
+                        var albumId = "album" + albums[i].id;
+                        var descId = "desc" + albums[i].id;
+                        var cover = albums[i].cover;
+                        var title = albums[i].title;
+                        var description = albums[i].description;
+
+                        $("#albums").append("<div class='image' id='" + albumId + "'></div>")
+
+                        if (cover !== null) {
+                            $("#" + albumId + "").css({
+                                "background-position": "center top",
+                                "background-image": "url(" + cover + ")"
+                            });
+                        }
+                        else
+                        {
+                            $("#" + albumId + "").css({
+                                "background-position": "center",
+                                "background-image": "url({{ asset('bundles/siciarekphotogallery/images/default-cover.png') }})"
+                            });
+                        }
+
+                        $("#albums").append("<div class='description' id='" + descId + "'></div>");
+                        $("#" + descId).append("<h2>" + title + "</h2>");
+                        $("#" + descId).append("<p>" + description + "</p>");
+                        $("#albums").append('<div class="separator"></div>');
+                    }
+                }
+            });
+        });
+
+        // ]]>
+    </script>
 {% endblock %}

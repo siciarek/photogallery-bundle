@@ -1,28 +1,122 @@
-{% extends 'SiciarekPhotoGalleryBundle::public.layout.html.twig' %}
+{% extends "SiciarekPhotoGalleryBundle::public.layout.html.twig" %}
 {% block content %}
 
-    <div id="images">
+    <h1 id="subtitle">{{ "wait a while" | trans() }}...</h1>
 
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image last"></div>
-        <div class="separator"></div>
+    <div id="images"></div>
+    <div id="image-preview"></div>
 
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image last"></div>
-        <div class="separator"></div>
+    <style type="text/css">
 
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image"></div>
-        <div class="image last"></div>
-        <div class="separator"></div>
+        html.photogallery .image-preview-dialog {
+            background-color: white;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-image: none;
+            cursor: pointer;
+        }
 
-    </div>
+        html.photogallery div.image-preview-dialog .ui-dialog-titlebar {
+            padding: 0;
+            display: none;
+        }
+
+        html.photogallery div.ui-dialog.image-preview-dialog {
+            padding: 0;
+        }
+
+        html.photogallery .ui-widget-overlay {
+            background: black;
+            opacity: 0.7;
+        }
+
+        html.photogallery .ui-widget-content {
+            border: 0;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+        // <![CDATA[
+
+        var albumId = {{ id }};
+        var currentImage = 0;
+        var frame = 16;
+        var album = [];
+        var image_preview_config = {};
+
+        function displayCurrentImage() {
+
+            var image = album[currentImage].image;
+            var width = album[currentImage].width + frame;
+            var height = album[currentImage].height + frame;
+
+            image_preview_config = {
+                dialogClass: "image-preview-dialog",
+                width: width,
+                height: height,
+                closeOnEscape: true,
+                draggable: false,
+                resizable: false,
+                modal: true,
+                buttons: {},
+                resizable: false,
+                open: function () {
+                    $(".ui-widget-overlay").bind("click", function () {
+                        $("#image-preview").dialog("close");
+                    });
+                    displayCurrentImage();
+                },
+                close: function () {
+
+                }
+            };
+
+            $(".image-preview-dialog").css({
+                "background-image": "url(" + image + ")"
+            });
+
+            $("#image-preview").dialog(image_preview_config);
+        }
+
+
+        $(document).ready(function () {
+            $.ajax({
+                url: Routing.generate("_photogallery_api_album", { id: albumId }),
+                error: function(response) {
+                    alert("Unexpected Exception.");
+                },
+                success: function (response) {
+                    album = response.data;
+
+                    $("#subtitle").html(response.msg + " (" + response.totalCount + ")");
+
+                    if (album.length > 0) {
+
+                        for(var i = 0; i < album.length; i++) {
+                            var imgId = "img" + i;
+                            $("#images").append("<div class='image' id='" + imgId + "'></div>")
+                            $("#" + imgId).css({
+                                "background-image": "url(" + album[i].thumbnail + ")"
+                            });
+                        }
+                        $("#images").append('<div class="separator"></div>');
+
+                        $(".image").click(function () {
+                            currentImage = $(this).attr("id").replace(/^img/, "");
+                            displayCurrentImage();
+                        });
+
+                        $("#image-preview").click(function () {
+                            currentImage++;
+                            currentImage %= album.length;
+                            $("#image-preview").dialog("close");
+                            displayCurrentImage();
+                        });
+                    }
+                }
+            });
+        });
+        // ]]>
+    </script>
 {% endblock %}

@@ -6,10 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
+/**
+ * Post controller.
+ *
+ * @Route("/photogallery")
+ */
 class DefaultController extends Controller
 {
     /**
-     * @Route("/photos/{id}/{slug}.html", name = "_album", requirements = {"id"="^[1-9]\d*$", "slug"="^\S+$"})
+     * @Route("/{id}/{slug}.html", name = "_album", requirements = {"id"="^[1-9]\d*$", "slug"="^\S+$"})
      * @Template()
      */
     public function albumAction($id, $slug)
@@ -19,12 +24,12 @@ class DefaultController extends Controller
         return array(
             "page_style" => $config["style"],
             "title" => $config["title"],
-            "subtitle" => "Simply",
+            "id" => $id,
         );
     }
 
     /**
-     * @Route("/photos/index.html")
+     * @Route("/", name="_albums")
      * @Template()
      */
     public function indexAction()

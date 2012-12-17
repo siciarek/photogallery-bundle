@@ -11,6 +11,9 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
             id: true
             generator:
                 strategy: AUTO
+        sequence_number:
+            type: integer
+            nullable: false
         title:
             type: string
             length: 255
@@ -21,7 +24,7 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
             length: 10000
             nullable: true
             gedmo: [ translatable ]
-        is_active:
+        is_visible:
             type: boolean
             nullable: false
         expires_at:
@@ -41,3 +44,6 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
         images:
             targetEntity: Image
             mappedBy: album
+    oneToOne:
+        cover:
+            targetEntity: Image

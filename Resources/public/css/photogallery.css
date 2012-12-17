@@ -1,12 +1,20 @@
 html.photogallery div#content div#albums div.image,
 html.photogallery div#content div#images div.image {
-    border: 1px solid #222;
+    border: 1px solid #555;
     background-color: white;
+    background-position: center;
+    background-repeat: no-repeat;
     float: left;
-    margin: 0 24px 24px 0;
+    margin: 8px;
+    margin-right: 16px;
+    cursor: pointer;
+    width: 200px;
+    height: 150px;
 }
 
 html.photogallery div#content div#albums div.image {
+    background-color: silver;
+    background-position: center top;
     width: 500px;
     height: 350px;
 }
@@ -14,7 +22,7 @@ html.photogallery div#content div#albums div.image {
 html.photogallery div#content div#albums div.description {
     margin: 0;
     padding: 0;
-    margin-top: -7px;
+    margin-top: 0;
     width: 560px;
     float: left;
 }
@@ -23,6 +31,7 @@ html.photogallery div#content div#albums div.description h2 {
     font-size: 24px;
     font-weight: bold;
     color: #444;
+    margin-top: 0;
     margin-bottom: 16px;
     border-bottom: 1px solid #444;
 }
@@ -50,15 +59,37 @@ html.photogallery div#footer {
     margin: 0 auto;
 }
 
+/* HEADER: */
 
 html.photogallery div#header {
     border-bottom: 1px solid 222;
     margin-bottom: 16px;
 }
 
+/* CONTENT: */
+
 html.photogallery div#content {
-    /*border: 1px solid #808080;*/
+    min-height: 200px;
 }
+
+html.photogallery div#content h1 {
+    font: 32px/40px Georgia, Times, serif;
+    letter-spacing: 4px;
+    margin: 8px 0 16px 0;
+    text-shadow: 1px 1px silver;
+}
+
+html.photogallery div#content h1:before {
+    content: "#";
+}
+
+html.photogallery div#content p {
+    color: #313131 !important;
+    font: 16px/1.2 Georgia, Times, serif;
+    margin-bottom: 12px;
+}
+
+/* FOOTER: */
 
 html.photogallery div#footer {
     border-top: 1px solid #313131;
@@ -71,25 +102,57 @@ html.photogallery div#footer div#copyrights  {
     font-size: 16px;
 }
 
-html.photogallery div#header h1 {
-    font: 32px/40px Georgia, Times, serif;
-    letter-spacing: -0.5px;
-    padding: 8px 0;
-    text-shadow: 1px 1px silver;
-    letter-spacing: 4px;
+
+
+
+
+/* <menu> */
+
+html.photogallery div#menu {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    padding-bottom: 2px;
+    z-index: 100;
 }
 
-html.photogallery div#header h1:before {
-    content: "#";
+html.photogallery div#menu div {
+    background-color:  #C00;
+    background: linear-gradient(to bottom, #BB7070 0%, #B00 78%, #C00 100%) repeat scroll 0 0 transparent;
 }
 
-html.photogallery div#content p {
-    color: #313131 !important;
-    font: 16px/1.2 Georgia, Times, serif;
-    margin-bottom: 12px;
+html.photogallery div#menu div ul {
+    height: 30px;
+    font-size: 14px;
+    line-height: 26px;
+    margin: 0 auto;
+    position: relative;
+    min-width: 800px;
+    max-width: 1106px;
+    z-index: 101;
+    list-style: none outside none;
 }
 
+html.photogallery div#menu div ul li {
+    display: block;
+    float: left;
+    position: relative;
+    padding: 0 8px 4px 8px;
+}
 
+div#menu div ul li a {
+    display: block;
+    color: #FFFFFF;
+    outline: medium none;
+    text-decoration: none;
+}
 
+div#menu div ul li:hover {
+    background-color: #600;
+}
 
+div#menu div ul li.menu-right {
+    float: right;
+    position: relative;
+}
+
+/* </menu> */
 
