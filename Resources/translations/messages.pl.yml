@@ -3,6 +3,10 @@
 Photo Gallery : Galeria fotografii
 Albums : Albumy
 
+number of photos : liczba fotografii
 
 # Menu:
-homepage: strona domowa
+homepage : strona domowa
+albums : albumy
+create new album : załóż nowy album
+add a photo : dodaj fotografię

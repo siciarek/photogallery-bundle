@@ -47,7 +47,7 @@
 
         function displayCurrentImage() {
 
-            var image = album[currentImage].image;
+            var image = album[currentImage].path;
             var width = album[currentImage].width + frame;
             var height = album[currentImage].height + frame;
 
@@ -79,7 +79,6 @@
             $("#image-preview").dialog(image_preview_config);
         }
 
-
         $(document).ready(function () {
             $.ajax({
                 url: Routing.generate("_photogallery_api_album", { id: albumId }),
@@ -95,9 +94,11 @@
 
                         for(var i = 0; i < album.length; i++) {
                             var imgId = "img" + i;
+                            var thumbnail = album[i].thumbnail.path;
+
                             $("#images").append("<div class='image' id='" + imgId + "'></div>")
                             $("#" + imgId).css({
-                                "background-image": "url(" + album[i].thumbnail + ")"
+                                "background-image": "url(" + thumbnail + ")"
                             });
                         }
                         $("#images").append('<div class="separator"></div>');

@@ -26,9 +26,12 @@
 <div id="menu">
     <div>
         <ul>
-
             {% for text, route in menu %}
-                <li>{{ link_to( text | trans(), route ) }}</li>
+                {% if text == "homepage" %}
+                    <li><a title="{{ text | trans() }}" href="{{ app.request.uriForPath("/") }}">{{ text | trans() }}</a></li>
+                {% else %}
+                    <li>{{ link_to( text | trans(), route, true ) }}</li>
+                {% endif %}
             {% endfor %}
 
             {#{% for lang, tit in languages %}#}

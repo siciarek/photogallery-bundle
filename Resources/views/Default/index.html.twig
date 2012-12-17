@@ -23,10 +23,16 @@
                     $("#subtitle").html(pageTitle);
 
                     for (var i = 0; i < albums.length; i++) {
+
+                        if(albums[i].images.length === 0) {
+                            continue;
+                        }
+
                         var albumId = "album" + albums[i].id;
                         var descId = "desc" + albums[i].id;
-                        var cover = albums[i].cover;
+                        var cover = albums[i].cover !== null ? albums[i].cover.path : null;
                         var title = albums[i].title;
+                        var numberOfPhotos = "{{ "number of photos" | trans()  }}" + ": " + albums[i].images.length;
                         var description = albums[i].description;
 
                         $("#albums").append("<div class='image' id='" + albumId + "'></div>")
@@ -48,8 +54,14 @@
                         $("#albums").append("<div class='description' id='" + descId + "'></div>");
                         $("#" + descId).append("<h2>" + title + "</h2>");
                         $("#" + descId).append("<p>" + description + "</p>");
+                        $("#" + descId).append("<p style='color:#AAAAAA !important;font-style:italic;'>" + numberOfPhotos + "</p>");
                         $("#albums").append('<div class="separator"></div>');
                     }
+
+                    $(".image").click(function () {
+                        var id = $(this).attr("id").replace(/^album/, "");
+                        location.href = Routing.generate("_album", {id: id, slug: "album"}, true);
+                    });
                 }
             });
         });

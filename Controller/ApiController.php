@@ -29,16 +29,18 @@ class ApiController extends Controller
      */
     public function albumListAction()
     {
-        $config  = $this->container->getParameter("siciarek_photo_gallery.config");
+        $config = $this->container->getParameter("siciarek_photo_gallery.config");
         $this->request = Request::createFromGlobals();
         $this->doctrine = $this->getDoctrine();
         $this->em = $this->doctrine->getEntityManager();
 
         $qb = $this->em->createQueryBuilder();
 
-        $qb->select("a.id", "a.title", "a.description", "c.path as cover")
+        $qb->select("a", "c", "i")
             ->from("SiciarekPhotoGalleryBundle:Album", "a")
+            ->leftJoin("a.images", "i")
             ->leftJoin("a.cover", "c")
+            ->andWhere("i.thumbnail IS NOT NULL")
             ->orderBy("a.sequence_number", "ASC");
         ;
 
@@ -56,66 +58,46 @@ class ApiController extends Controller
      */
     public function albumAction($id)
     {
-        $config  = $this->container->getParameter("siciarek_photo_gallery.config");
+        $config = $this->container->getParameter("siciarek_photo_gallery.config");
 
-        $json =<<<JSON
-        {
-            "success": true,
-            "type": "data",
-            "datetime": "1966-10-21 15:10:00",
-            "msg": "Simply",
-            "totalCount": 7,
-            "data": [
-                {
-                    "width" : 640,
-                    "height": 427,
-                    "image" : "/uploads/photogallery/01/images/01.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/01.jpg"
-                },
-                {
-                    "width" : 320,
-                    "height": 480,
-                    "image" : "/uploads/photogallery/01/images/02.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/02.jpg"
-                },
-                {
-                    "width" : 480,
-                    "height": 480,
-                    "image" : "/uploads/photogallery/01/images/03.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/03.jpg"
-                },
-                {
-                    "width" :640,
-                    "height": 427,
-                    "image" : "/uploads/photogallery/01/images/04.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/04.jpg"
-                },
-                {
-                    "width" :640,
-                    "height": 427,
-                    "image" : "/uploads/photogallery/01/images/05.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/05.jpg"
-                },
-                {
-                    "width" :320,
-                    "height": 480,
-                    "image" : "/uploads/photogallery/01/images/06.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/06.jpg"
-                },
-                {
-                    "width" :640,
-                    "height": 427,
-                    "image" : "/uploads/photogallery/01/images/07.jpg",
-                    "thumbnail" : "/uploads/photogallery/01/images/07.jpg"
-                }
-            ]
-        }
-JSON;
+        $frame = array(
+            "success"   => true,
+            "type"      => "data",
+            "datetime"  => date("Y-m-d H:i:s"),
+            "msg"       => "Data",
+            "totalCount"=> 0,
+            "data"      => array(),
+        );
+
+        $config = $this->container->getParameter("siciarek_photo_gallery.config");
+        $this->request = Request::createFromGlobals();
+        $this->doctrine = $this->getDoctrine();
+        $this->em = $this->doctrine->getEntityManager();
+
+        $qb = $this->em->createQueryBuilder();
+
+        $qb->select("a", "i", "t")
+            ->from("SiciarekPhotoGalleryBundle:Album", "a")
+            ->leftJoin("a.images", "i")
+            ->innerJoin("i.thumbnail", "t")
+            ->andWhere("a.id = :aid")->setParameter("aid", $id)
+            ->orderBy("i.sequence_number", "ASC");
+        ;
+
+        $query = $qb->getQuery();
+        $data = $query->getArrayResult();
+
+        $frame["msg"] = $data[0]["title"];
+        $frame["data"] = $data[0]["images"];
+        $frame["totalCount"] = count($frame["data"]);
+
+        $json = json_encode($frame);
 
         return $this->jsonResponse($json);
     }
 
-    protected function jsonResponse($json) {
+    protected function jsonResponse($json)
+    {
         $response = new Response();
         $response->headers->set('Content-Type', "application/json");
         $response->headers->set('Content-Length', strlen($json));
