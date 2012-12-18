@@ -2,6 +2,7 @@
 {% block content %}
 
     <h1 id="subtitle">{{ "wait a while" | trans() }}...</h1>
+    <p id="info"></p>
 
     <div id="images"></div>
     <div id="image-preview"></div>
@@ -88,7 +89,12 @@
                 success: function (response) {
                     album = response.data;
 
-                    $("#subtitle").html(response.msg + " (" + response.totalCount + ")");
+                    var temp = response.msg.split(";;;");
+                    var name = temp[0];
+                    var description = temp[1];
+
+                    $("#subtitle").html(name + " (" + response.totalCount + ")");
+                    $("#info").html(description);
 
                     if (album.length > 0) {
 

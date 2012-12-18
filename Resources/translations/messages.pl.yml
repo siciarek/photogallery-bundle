@@ -1,12 +1,23 @@
 # App:
 
 Photo Gallery : Galeria fotografii
-Albums : Albumy
+Albums        : Albumy
 
 number of photos : liczba fotografii
+wait a while     : zaczekaj chwilkę
 
 # Menu:
-homepage : strona domowa
-albums : albumy
+homepage         : strona główna
+albums           : albumy
 create new album : załóż nowy album
-add a photo : dodaj fotografię
+add a photo      : dodaj fotografię
+
+# Forms
+title                      : tytuł
+description                : opis
+hidden                     : ukryty
+add photos                 : dodaj fotografie
+Reset                      : Resetuj
+Create                     : Załóż
+Cancel                     : Anuluj
+Album creation in progress : Zakładanie albumu w toku

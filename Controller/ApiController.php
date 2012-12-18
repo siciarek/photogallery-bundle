@@ -24,6 +24,51 @@ use \Siciarek\PhotoGalleryBundle\Entity as E;
 class ApiController extends Controller
 {
     /**
+     * @Route("/create-new-album.json", name = "_photogallery_api_create_new_album")
+     * @Template()
+     */
+    public function createNewAlbumAction(Request $request)
+    {
+        $config = $this->container->getParameter("siciarek_photo_gallery.config");
+        $this->doctrine = $this->getDoctrine();
+        $this->em = $this->doctrine->getEntityManager();
+
+        $frame = array(
+            "success"   => true,
+            "type"      => "data",
+            "datetime"  => date("Y-m-d H:i:s"),
+            "msg"       => "Data",
+            "totalCount"=> 0,
+            "data"      => array(),
+        );
+
+        $title = $request->get("title");
+        $description = $request->get("description");
+        $is_visible = $request->get("hidden", "off") !== "on";
+
+        $qb = $this->em->createQueryBuilder();
+        $qb->select("max(a.sequence_number) as c")
+            ->from("SiciarekPhotoGalleryBundle:Album", "a")
+        ;
+
+        $query = $qb->getQuery();
+        $sequence_number = $query->getSingleScalarResult();
+
+        $album = new E\Album();
+        $album->setTitle($title);
+        $album->setDescription($description);
+        $album->setIsVisible($is_visible);
+        $album->setSequenceNumber($sequence_number + 1);
+        $this->em->persist($album);
+        $this->em->flush();
+
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
+
+    /**
      * @Route("/album-list.json", name = "_photogallery_api_album_list")
      * @Template()
      */
@@ -36,12 +81,13 @@ class ApiController extends Controller
 
         $qb = $this->em->createQueryBuilder();
 
+//        $qb->select("a", "c", "i")
         $qb->select("a", "c", "i")
             ->from("SiciarekPhotoGalleryBundle:Album", "a")
             ->leftJoin("a.images", "i")
             ->leftJoin("a.cover", "c")
-            ->andWhere("i.thumbnail IS NOT NULL")
-            ->orderBy("a.sequence_number", "ASC");
+            ->addOrderBy("a.sequence_number", "DESC")
+            ->addOrderBy("a.id", "DESC");
         ;
 
         $query = $qb->getQuery();
@@ -74,21 +120,27 @@ class ApiController extends Controller
         $this->doctrine = $this->getDoctrine();
         $this->em = $this->doctrine->getEntityManager();
 
-        $qb = $this->em->createQueryBuilder();
+        $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
 
-        $qb->select("a", "i", "t")
-            ->from("SiciarekPhotoGalleryBundle:Album", "a")
-            ->leftJoin("a.images", "i")
-            ->innerJoin("i.thumbnail", "t")
-            ->andWhere("a.id = :aid")->setParameter("aid", $id)
-            ->orderBy("i.sequence_number", "ASC");
-        ;
+        $images = array();
 
-        $query = $qb->getQuery();
-        $data = $query->getArrayResult();
+        if($album->getImages()->count() > 0) {
+            $qb = $this->em->createQueryBuilder();
+            $qb->select("a", "i", "t")
+                ->from("SiciarekPhotoGalleryBundle:Album", "a")
+                ->leftJoin("a.images", "i")
+                ->innerJoin("i.thumbnail", "t")
+                ->andWhere("a.id = :aid")->setParameter("aid", $id)
+                ->orderBy("i.sequence_number", "ASC");
+            ;
+            $query = $qb->getQuery();
+            $data = $query->getArrayResult();
+            $images = $data[0]["images"];
+        }
 
-        $frame["msg"] = $data[0]["title"];
-        $frame["data"] = $data[0]["images"];
+
+        $frame["msg"] = sprintf("%s;;;%s", $album->getTitle(), $album->getDescription());
+        $frame["data"] = $images;
         $frame["totalCount"] = count($frame["data"]);
 
         $json = json_encode($frame);

@@ -5,14 +5,28 @@
     <title>{{ title | trans() }}</title>
 
     <link rel="stylesheet" type="text/css" media="screen" href="/bundles/siciarekphotogallery/css/reset.css"/>
-    <link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>
+    {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
+
+    {% stylesheets
+    '@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css'
+    output="css/photogallery.css" %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    {% endstylesheets %}
 
     <script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
     <script type="text/javascript" src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
 
     <script type="text/javascript" src="/bundles/siciarekphotogallery/js/jquery-1.8.3.min.js"></script>
     <script type="text/javascript" src="/bundles/siciarekphotogallery/js/translations.js"></script>
-    <script type="text/javascript" src="{{ asset("bundles/siciarekphotogallery/js/photogallery.js") }}"></script>
+    {#<script type="text/javascript" src="{{ asset("bundles/siciarekphotogallery/js/photogallery.js") }}"></script>#}
+
+    {% javascripts
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery.js'
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
 
     <link rel="stylesheet" type="text/css" media="screen"
           href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"/>
@@ -28,15 +42,23 @@
         <ul>
             {% for text, route in menu %}
                 {% if text == "homepage" %}
-                    <li><a title="{{ text | trans() }}" href="{{ app.request.uriForPath("/") }}">{{ text | trans() }}</a></li>
+                    <li><a title="{{ text | trans() }}"
+                           href="{{ app.request.uriForPath("/") }}">{{ text | trans() }}</a></li>
+
                 {% else %}
-                    <li>{{ link_to( text | trans(), route, true ) }}</li>
+                    {% if text == "create new album" %}
+                        <li><a title="{{ text | trans() }}"
+                               href="javascript:void(null)"
+                               onclick="addNewAlbum('{{ "create new album" | trans() }}')">{{ text | trans() }}</a></li>
+                    {% else %}
+                        <li>{{ link_to( text | trans(), route, true ) }}</li>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
 
             {#{% for lang, tit in languages %}#}
-                {#<li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"#}
-                    {#onclick="location.href='{{ url_for("_change_locale", { "locale": lang }) }}'">&nbsp;</li>#}
+            {#<li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"#}
+            {#onclick="location.href='{{ url_for("_change_locale", { "locale": lang }) }}'">&nbsp;</li>#}
             {#{% endfor %}#}
 
             {#{% if app.user %}#}

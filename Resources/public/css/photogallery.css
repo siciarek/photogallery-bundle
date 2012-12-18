@@ -1,3 +1,62 @@
+
+html.photogallery p#info {
+    margin-left: 8px;
+}
+
+html.photogallery div#create-new-album-form {
+    display: none;
+    overflow: hidden;
+}
+
+html.photogallery div#create-new-album-form label {
+    display: block;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+
+html.photogallery div#create-new-album-form label[for="hidden"] {
+    display: inline-block;
+}
+
+html.photogallery div#create-new-album-form div {
+    margin-bottom: 8px;
+}
+
+html.photogallery div#create-new-album-form label:after {
+    content: ":";
+}
+
+html.photogallery .photogallery-form  {
+    font: 16px/1.2 Georgia, Times, serif;
+    background-color: red;
+}
+
+html.photogallery div#create-new-album-form input[type="text"],
+html.photogallery div#create-new-album-form input[type="file"],
+html.photogallery div#create-new-album-form textarea
+{
+    color: #666;
+    width: 99%;
+    padding: 3px 0 3px 3px;
+    font: 16px/1.2 Georgia, Times, serif;
+}
+
+html.photogallery div#create-new-album-form textarea {
+    resize: none;
+    height: 90px;
+}
+
+html.photogallery div#create-new-album-form input[type="checkbox"] {
+    -ms-transform: scale(1.5); /* IE */
+    -moz-transform: scale(1.5); /* FF */
+    -webkit-transform: scale(1.5); /* Safari and Chrome */
+    -o-transform: scale(1.5); /* Opera */
+    vertical-align: text-bottom;
+    margin-left: 6px;
+}
+
+/* --------------------------------------------------------- */
+
 html.photogallery div#content div#albums div.image,
 html.photogallery div#content div#images div.image {
     border: 1px solid #555;
@@ -28,14 +87,14 @@ html.photogallery div#content div#albums div.description {
 }
 
 html.photogallery div#content div#albums div.description h2 {
-    font-size: 24px;
-    font-weight: bold;
-    color: #444;
+    font-size: 32px;
+    font-weight: normal;
+    padding-bottom: 6px;
+    color: #666;
     margin-top: 0;
     margin-bottom: 16px;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #666;
 }
-
 
 html.photogallery div#content div#albums div.image.last,
 html.photogallery div#content div#images div.image.last {
@@ -98,13 +157,9 @@ html.photogallery div#footer {
     padding-bottom: 40px;
 }
 
-html.photogallery div#footer div#copyrights  {
+html.photogallery div#footer div#copyrights {
     font-size: 16px;
 }
-
-
-
-
 
 /* <menu> */
 
@@ -115,7 +170,7 @@ html.photogallery div#menu {
 }
 
 html.photogallery div#menu div {
-    background-color:  #C00;
+    background-color: #C00;
     background: linear-gradient(to bottom, #BB7070 0%, #B00 78%, #C00 100%) repeat scroll 0 0 transparent;
 }
 
