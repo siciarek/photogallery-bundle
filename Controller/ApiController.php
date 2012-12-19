@@ -262,6 +262,7 @@ class ApiController extends Controller
             $im = $im->thumbnail($img_size)->save($image_path);
 
             if($im->getSize()->getHeight() < 200) {
+                $im = $imagine->open($source_path)->save($original_path);
                 $im = $im->thumbnail($wide_img_size)->save($image_path);
             }
 

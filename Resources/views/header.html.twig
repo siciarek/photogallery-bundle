@@ -47,12 +47,12 @@
 
                 {% else %}
                     {% if text == "create new album" %}
-                        <li><a title="{{ text | trans() }}"
+                        <li id="create-new-album-menu"><a title="{{ text | trans() }}"
                                href="javascript:void(null)"
                                onclick="addNewAlbum('{{ "create new album" | trans() }}')">{{ text | trans() }}</a></li>
                     {% else %}
                         {% if text == "add photos" %}
-                            <li><a title="{{ text | trans() }}"
+                            <li id="add-photos-menu"><a title="{{ text | trans() }}"
                                    href="javascript:void(null)"
                                    onclick="addPhotos('{{ "add photos" | trans() }}')">{{ text | trans() }}</a></li>
                         {% else %}

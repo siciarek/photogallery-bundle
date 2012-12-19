@@ -93,22 +93,43 @@
                     $("#subtitle").html(name + " (" + response.totalCount + ")");
                     $("p.info").html(description);
 
-                    if (album.length > 0) {
+                    $("li#create-new-album-menu").show();
+                    $("li#add-photos-menu").show();
 
+                    if (album.length > 0) {
                         var format = "jpg";
-                        bufferImage(currentImage, album, format);
 
                         for (var i = 0; i < album.length; i++) {
                             var imgId = "img" + i;
-                            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: "jpg"});
+                            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
+
+                            $("#image-buffer").attr("src", thumbnail);
+                        }
+
+                        for (var i = 0; i < album.length; i++) {
+                            var imgId = "img" + i;
+                            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
 
                             $("#images").append('<div class="image" id="' + imgId + '"></div>');
                             $("#" + imgId).css({
-                                "width" : album[i].thumbnail.width,
-                                "background-image": "url(" + thumbnail + ")"
+                                "width" : album[i].thumbnail.width
                             });
                         }
+
+                        setTimeout(function(){
+                            for (var i = 0; i < album.length; i++) {
+                                var imgId = "img" + i;
+                                var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
+                                $("#" + imgId).css({
+                                    "border" : "none",
+                                    "background-image": "url(" + thumbnail + ")"
+                                });
+                            }
+                        }, 2000);
+
                         $("#images").append('<div class="separator"></div>');
+
+                        bufferImage(currentImage, album, format);
 
                         $(".image").click(function () {
                             currentImage = $(this).attr("id").replace(/^img/, "");

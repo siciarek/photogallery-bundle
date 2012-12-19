@@ -15,3 +15,8 @@ Photo Gallery TODO list:
    - delete
    - hide/show
    - change
+   - auto show
+ * Settings menu (settings stored in cookies)
+   - number of icons on page
+   - icon size
+   - auto show picture exposition time

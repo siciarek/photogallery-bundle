@@ -68,7 +68,8 @@ html.photogallery div#content div#images div.image {
 }
 
 html.photogallery div#content div#images div.image {
-    border: none;
+    background-color: transparent;
+    border: 1px #808080 solid;
     margin: auto;
     width: 200px;
     height: 150px;
@@ -217,6 +218,12 @@ div#menu div ul li:hover {
 div#menu div ul li.menu-right {
     float: right;
     position: relative;
+}
+
+div#menu div ul li#create-new-album-menu,
+div#menu div ul li#add-photos-menu
+{
+    display:none;
 }
 
 /* </menu> */
