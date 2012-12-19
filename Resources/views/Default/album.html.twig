@@ -1,14 +1,17 @@
 {% extends "SiciarekPhotoGalleryBundle::public.layout.html.twig" %}
 {% block content %}
 
-    <h1 id="subtitle">{{ "wait a while" | trans() }}...</h1>
-    <p id="info"></p>
+    {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
+
+    <img style="display:none" id="image-buffer" />
+
+    <h1 id="subtitle">{{ "wait a while" | trans() }}&hellip;</h1>
+    <p class="info"></p>
 
     <div id="images"></div>
     <div id="image-preview"></div>
 
     <style type="text/css">
-
         html.photogallery .image-preview-dialog {
             background-color: white;
             background-position: center center;
@@ -16,25 +19,6 @@
             background-image: none;
             cursor: pointer;
         }
-
-        html.photogallery div.image-preview-dialog .ui-dialog-titlebar {
-            padding: 0;
-            display: none;
-        }
-
-        html.photogallery div.ui-dialog.image-preview-dialog {
-            padding: 0;
-        }
-
-        html.photogallery .ui-widget-overlay {
-            background: black;
-            opacity: 0.7;
-        }
-
-        html.photogallery .ui-widget-content {
-            border: 0;
-        }
-
     </style>
 
     <script type="text/javascript">
@@ -46,9 +30,13 @@
         var album = [];
         var image_preview_config = {};
 
+    </script>
+
+    <script type="text/javascript">
+
         function displayCurrentImage() {
 
-            var image = album[currentImage].path;
+            var format = "jpg";
             var width = album[currentImage].width + frame;
             var height = album[currentImage].height + frame;
 
@@ -73,17 +61,26 @@
                 }
             };
 
+            bufferImage(currentImage, album, format);
+
             $(".image-preview-dialog").css({
-                "background-image": "url(" + image + ")"
+                "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: album[currentImage].id, slug: "image", format: format}, true) + ")"
             });
 
             $("#image-preview").dialog(image_preview_config);
         }
 
+        function bufferImage(currentImage, album, format) {
+            var bufferedImage = (currentImage + 1) % album.length;
+            var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: album[bufferedImage].id, slug: "image", format: format}, true);
+            $("#image-buffer").attr("src", bufferedImageSrc);
+        }
+
         $(document).ready(function () {
+
             $.ajax({
                 url: Routing.generate("_photogallery_api_album", { id: albumId }),
-                error: function(response) {
+                error: function (response) {
                     alert("Unexpected Exception.");
                 },
                 success: function (response) {
@@ -94,16 +91,20 @@
                     var description = temp[1];
 
                     $("#subtitle").html(name + " (" + response.totalCount + ")");
-                    $("#info").html(description);
+                    $("p.info").html(description);
 
                     if (album.length > 0) {
 
-                        for(var i = 0; i < album.length; i++) {
-                            var imgId = "img" + i;
-                            var thumbnail = album[i].thumbnail.path;
+                        var format = "jpg";
+                        bufferImage(currentImage, album, format);
 
-                            $("#images").append("<div class='image' id='" + imgId + "'></div>")
+                        for (var i = 0; i < album.length; i++) {
+                            var imgId = "img" + i;
+                            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: "jpg"});
+
+                            $("#images").append('<div class="image" id="' + imgId + '"></div>');
                             $("#" + imgId).css({
+                                "width" : album[i].thumbnail.width,
                                 "background-image": "url(" + thumbnail + ")"
                             });
                         }
@@ -120,6 +121,9 @@
                             $("#image-preview").dialog("close");
                             displayCurrentImage();
                         });
+                    }
+                    else {
+                        $("#images").append('<p style="margin-top:100px;text-align:center;color:gray !important;">{{ "Current album contains no photos" | trans() }}.</p>');
                     }
                 }
             });

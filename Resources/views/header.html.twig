@@ -51,7 +51,13 @@
                                href="javascript:void(null)"
                                onclick="addNewAlbum('{{ "create new album" | trans() }}')">{{ text | trans() }}</a></li>
                     {% else %}
-                        <li>{{ link_to( text | trans(), route, true ) }}</li>
+                        {% if text == "add photos" %}
+                            <li><a title="{{ text | trans() }}"
+                                   href="javascript:void(null)"
+                                   onclick="addPhotos('{{ "add photos" | trans() }}')">{{ text | trans() }}</a></li>
+                        {% else %}
+                            <li>{{ link_to( text | trans(), route, true ) }}</li>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endfor %}

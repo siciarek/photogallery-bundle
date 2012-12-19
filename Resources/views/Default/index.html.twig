@@ -1,35 +1,11 @@
 {% extends 'SiciarekPhotoGalleryBundle::public.layout.html.twig' %}
 {% block content %}
 
+    {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
+
     <h1 id="subtitle">{{ "wait a while" | trans() }}&hellip;</h1>
 
-    <div id="create-new-album-form">
-        <form class="create-new-album-form" enctype="application/x-www-form-urlencoded" method="post"
-              action="{{ url_for("_photogallery_api_create_new_album", true) }}">
-            <div><label for="title">{{ "title" | trans() }}</label></label> <input type="text" name="title" id="title"/>
-            </div>
-            <div><label for="description">{{ "description" | trans() }}</label></label> <textarea name="description"
-                                                                                                  id="description"/></textarea>
-            </div>
-
-            <div><label for="photos">{{ "add photos" | trans() }}</label></label> <input multiple="multiple" type="file"
-                                                                                         size="50" name="photos"
-                                                                                         id="photos"/></div>
-
-            <div><label for="hidden">{{ "hidden" | trans() }}</label></label> <input type="checkbox" checked="checked"
-                                                                                     name="hidden" id="hidden"/></div>
-            <div id="info">{{ "New album requires title or description and at least one photo." | trans() }}</div>
-        </form>
-    </div>
-
     <div id="albums"></div>
-
-    <style type="text/css">
-        .ui-widget-content,
-        .ui-dialog {
-            background: #ffffe0 !important;
-        }
-    </style>
 
     <script type="text/javascript">
         // <![CDATA[
@@ -37,105 +13,7 @@
         var pageTitle = "{{ title | trans() }}";
         var waitMessage = "{{ "wait a while" | trans() }}" + "&hellip";
 
-        function addNewAlbum(title) {
-            $("#create-new-album-form").dialog({
-                title: getTitle(title, "image"),
-                dialogClass: "photogallery-form",
-                width: 640,
-                height: 430,
-                closeOnEscape: true,
-                draggable: true,
-                resizable: false,
-                modal: true,
-                resizable: false,
-                buttons: {
-                    "{{ "Reset" | trans() }}": function (event) {
-                        $("form.create-new-album-form").get(0).reset();
-                    },
-                    "{{ "Create" | trans() }}": function (event) {
-                        $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
-                            disabled: true
-                        });
-
-                        $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
-                            disabled: true
-                        });
-
-                        $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
-                            disabled: true
-                        });
-
-                        $("div#info").html("{{ "Album creation in progress" | trans() }}&hellip;")
-
-                        $("form.create-new-album-form").ajaxSubmit({
-                            error: function (response) {
-                                alert("Unexpected Exception.");
-                            },
-                            success: function (response) {
-                                location.reload();
-                            }
-                        });
-                    },
-                    "{{ "Cancel" | trans() }}": function (event) {
-                        $(this).dialog("close");
-                    }
-                },
-
-                open: function () {
-                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
-                        icons: {
-                            primary: 'ui-icon-circle-arrow-w'
-                        }
-                    });
-
-                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
-                        icons: {
-                            primary: 'ui-icon-circle-check'
-                        },
-                        disabled: true
-                    });
-
-                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
-                        icons: {
-                            primary: 'ui-icon-circle-close'
-                        }
-                    });
-
-                    $("form.create-new-album-form").get(0).reset();
-                },
-
-                close: function () {
-                    $("form.create-new-album-form").get(0).reset();
-                }
-            }).show();
-        }
-
-        function enableSubmit() {
-            var titleVal = $("form.create-new-album-form input#title").val() !== "";
-            var descriptionVal = $("form.create-new-album-form textarea#description").val() !== "";
-            var filesVal = $("form.create-new-album-form input#photos").val() !== ""
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-check'
-                },
-                disabled: !((titleVal || descriptionVal) && filesVal)
-            });
-        }
-
         $(document).ready(function () {
-
-            $("form.create-new-album-form input#title").keyup(function (event) {
-                enableSubmit();
-            });
-
-            $("form.create-new-album-form textarea#description").keyup(function (event) {
-                enableSubmit();
-            });
-
-            $("form.create-new-album-form input#photos").change(function (event) {
-                enableSubmit();
-            });
 
             $.ajax({
                 url: Routing.generate("_photogallery_api_album_list"),
@@ -150,15 +28,17 @@
 
                     for (var i = 0; i < albums.length; i++) {
 
-                        if (albums[i].images.length === 0) {
-//                            continue;
-                        }
-
+                        var format = "jpg";
                         var albumId = "album" + albums[i].id;
                         var descId = "desc" + albums[i].id;
-                        var cover = albums[i].cover !== null ? albums[i].cover.path : null;
+                        var cover = albums[i].cover !== null ? Routing.generate("_photogallery_api_show_image", {id: albums[i].cover.id, slug: "cover", format: format}, true) : null;
                         var title = albums[i].title;
                         var numberOfPhotos = "{{ "number of photos" | trans()  }}" + ": " + albums[i].images.length / 2;
+
+                        if(albums[i].images.length === 0) {
+                            numberOfPhotos = "{{ "no photos" | trans()  }}";
+                        }
+
                         var description = albums[i].description;
 
                         $("#albums").append("<div class='image' id='" + albumId + "'></div>")
@@ -177,7 +57,11 @@
                         }
 
                         $("#albums").append("<div class='description' id='" + descId + "'></div>");
-                        $("#" + descId).append("<h2>" + title + "</h2>");
+
+                        if(title !== null && title !== "") {
+                            $("#" + descId).append("<h2>" + title + "</h2>");
+                        }
+
                         $("#" + descId).append("<p>" + description + "</p>");
                         $("#" + descId).append("<p style='color:#AAAAAA !important;font-style:italic;'>" + numberOfPhotos + "</p>");
                         $("#albums").append('<div class="separator"></div>');

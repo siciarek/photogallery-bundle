@@ -1,23 +1,29 @@
 # App:
 
-Photo Gallery : Galeria fotografii
-Albums        : Albumy
+Photo Gallery                    : Galeria fotografii
+Albums                           : Albumy
+Current album contains no photos : Album nie zawiera żadnych fotografii
 
 number of photos : liczba fotografii
+no photos        : w albumie brak fotografii
 wait a while     : zaczekaj chwilkę
 
 # Menu:
 homepage         : strona główna
 albums           : albumy
 create new album : załóż nowy album
-add a photo      : dodaj fotografię
+add photos       : dodaj fotografie
 
 # Forms
+choose album               : wybierz album
 title                      : tytuł
 description                : opis
-hidden                     : ukryty
+hidden                     : ukryj
 add photos                 : dodaj fotografie
 Reset                      : Resetuj
+Add                        : Dodaj
 Create                     : Załóż
 Cancel                     : Anuluj
+Choose album               : Wybierz album
 Album creation in progress : Zakładanie albumu w toku
+Adding photo in progress   : Trwa dodawanie fotografii

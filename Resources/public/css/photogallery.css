@@ -1,39 +1,39 @@
 
-html.photogallery p#info {
+html.photogallery p.info {
     margin-left: 8px;
 }
 
-html.photogallery div#create-new-album-form {
+html.photogallery div.create-new-element {
     display: none;
     overflow: hidden;
 }
 
-html.photogallery div#create-new-album-form label {
+html.photogallery div.create-new-element label {
     display: block;
     margin-bottom: 2px;
     font-weight: bold;
 }
 
-html.photogallery div#create-new-album-form label[for="hidden"] {
+html.photogallery div.create-new-element label[for="hidden"] {
     display: inline-block;
 }
 
-html.photogallery div#create-new-album-form div {
+html.photogallery div.create-new-element div {
     margin-bottom: 8px;
 }
 
-html.photogallery div#create-new-album-form label:after {
+html.photogallery div.create-new-element label:after {
     content: ":";
 }
 
 html.photogallery .photogallery-form  {
     font: 16px/1.2 Georgia, Times, serif;
-    background-color: red;
 }
 
-html.photogallery div#create-new-album-form input[type="text"],
-html.photogallery div#create-new-album-form input[type="file"],
-html.photogallery div#create-new-album-form textarea
+html.photogallery div.create-new-element select,
+html.photogallery div.create-new-element input[type="text"],
+html.photogallery div.create-new-element input[type="file"],
+html.photogallery div.create-new-element textarea
 {
     color: #666;
     width: 99%;
@@ -41,12 +41,12 @@ html.photogallery div#create-new-album-form textarea
     font: 16px/1.2 Georgia, Times, serif;
 }
 
-html.photogallery div#create-new-album-form textarea {
+html.photogallery div.create-new-element textarea {
     resize: none;
     height: 90px;
 }
 
-html.photogallery div#create-new-album-form input[type="checkbox"] {
+html.photogallery div.create-new-element input[type="checkbox"] {
     -ms-transform: scale(1.5); /* IE */
     -moz-transform: scale(1.5); /* FF */
     -webkit-transform: scale(1.5); /* Safari and Chrome */
@@ -60,15 +60,19 @@ html.photogallery div#create-new-album-form input[type="checkbox"] {
 html.photogallery div#content div#albums div.image,
 html.photogallery div#content div#images div.image {
     border: 1px solid #555;
-    background-color: white;
+    background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
     float: left;
-    margin: 8px;
-    margin-right: 16px;
     cursor: pointer;
+}
+
+html.photogallery div#content div#images div.image {
+    border: none;
+    margin: auto;
     width: 200px;
     height: 150px;
+    margin: 8px 8px 8px 8px;
 }
 
 html.photogallery div#content div#albums div.image {
@@ -76,6 +80,8 @@ html.photogallery div#content div#albums div.image {
     background-position: center top;
     width: 500px;
     height: 350px;
+    margin: 8px;
+    margin-right: 16px;
 }
 
 html.photogallery div#content div#albums div.description {
@@ -96,7 +102,11 @@ html.photogallery div#content div#albums div.description h2 {
     border-bottom: 1px solid #666;
 }
 
-html.photogallery div#content div#albums div.image.last,
+html.photogallery div#content div#albums div.description p {
+    margin-top: 5px;
+}
+
+html.photogallery div#content div#albums div.image-frame.last,
 html.photogallery div#content div#images div.image.last {
     margin-right: 0;
 }
@@ -128,7 +138,7 @@ html.photogallery div#header {
 /* CONTENT: */
 
 html.photogallery div#content {
-    min-height: 200px;
+    min-height: 300px;
 }
 
 html.photogallery div#content h1 {

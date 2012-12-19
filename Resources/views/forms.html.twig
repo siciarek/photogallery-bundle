@@ -1,0 +1,297 @@
+
+<div id="create-new-album-form" class="create-new-element">
+    <form class="create-new-album-form" enctype="application/x-www-form-urlencoded" method="post"
+          action="{{ url_for("_photogallery_api_create_new_album", true) }}">
+        <div><label for="title">{{ "title" | trans() }}</label></label> <input type="text" name="title" id="title"/>
+        </div>
+        <div><label for="description">{{ "description" | trans() }}</label></label> <textarea name="description"
+                                                                                              id="description"/></textarea>
+        </div>
+
+        <div><label for="photos">{{ "add photos" | trans() }}</label></label> <input multiple="multiple" type="file"
+                                                                                     size="50" name="photos[]"
+                                                                                     id="photos"/></div>
+
+        <div><label for="hidden">{{ "hidden" | trans() }}</label></label> <input type="checkbox" checked="checked"
+                                                                                 name="hidden" id="hidden"/></div>
+        <div id="info">{{ "New album requires title or description and at least one photo." | trans() }}</div>
+    </form>
+</div>
+
+<div id="add-photos-form" class="create-new-element">
+    <form class="add-photos-form" enctype="application/x-www-form-urlencoded" method="post"
+          action="{{ url_for("_photogallery_api_add_new_photos", true) }}">
+        <div><label for="photos">{{ "add photos" | trans() }}</label></label> <input multiple="multiple" type="file"
+                                                                                     size="50" name="photos[]" id="photos"/></div>
+        <div><label for="album">{{ "album" | trans() }}</label></label>
+            <select name="album" id="album">
+                <option value="0">{{ "Choose album" | trans() }}</option>
+            </select>
+        </div>
+
+        <div><label for="hidden-album">{{ "hidden" | trans() }}</label></label> <input type="checkbox" name="hidden"
+                                                                                 id="hidden-album"/></div>
+        <div><label for="title">{{ "title" | trans() }}</label></label> <input type="text" name="title" id="title"/>
+        </div>
+
+        <div><label for="description">{{ "description" | trans() }}</label></label> <textarea name="description"
+                                                                                              id="description"/></textarea>
+        </div>
+
+        <div id="info"></div>
+    </form>
+</div>
+
+
+<style type="text/css">
+
+    .ui-widget-content,
+    .ui-dialog {
+        /*background-color: #ffffe0 !important;*/
+    }
+
+    html.photogallery div.image-preview-dialog .ui-dialog-titlebar {
+        padding: 0;
+        display: none;
+    }
+
+    html.photogallery div.ui-dialog.image-preview-dialog {
+        padding: 0;
+    }
+
+    html.photogallery .ui-widget-overlay {
+        background: black;
+        opacity: 0.7;
+    }
+
+    html.photogallery .ui-widget-content {
+        border: 0;
+    }
+</style>
+
+<script type="text/javascript">
+
+    function addNewAlbum(title) {
+        $("#create-new-album-form").dialog({
+            title: getTitle(title, "image"),
+            dialogClass: "photogallery-form",
+            width: 640,
+            height: 430,
+            closeOnEscape: true,
+            draggable: true,
+            resizable: false,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "{{ "Reset" | trans() }}": function (event) {
+                    $("form.create-new-album-form").get(0).reset();
+                },
+                "{{ "Create" | trans() }}": function (event) {
+                    var disabled = true;
+                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
+                        disabled: disabled
+                    });
+                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
+                        disabled: disabled
+                    });
+                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
+                        disabled: disabled
+                    });
+
+                    $("div#info").html("{{ "Album creation in progress" | trans() }}&hellip;")
+
+                    $("form.create-new-album-form").ajaxSubmit({
+                        error: function (response) {
+                            alert("Album Unexpected Exception.");
+                        },
+                        success: function (response) {
+                            location.href = Routing.generate("_album", {id: response.data.album, slug: "album"}, true);
+                        }
+                    });
+                },
+                "{{ "Cancel" | trans() }}": function (event) {
+                    $(this).dialog("close");
+                }
+            },
+
+            open: function () {
+                $(".ui-widget-overlay").bind("click", function () {
+                    $("#create-new-album-form").dialog("close");
+                });
+
+                $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
+                    icons: {
+                        primary: 'ui-icon-circle-arrow-w'
+                    }
+                });
+
+                $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
+                    icons: {
+                        primary: 'ui-icon-circle-check'
+                    },
+                    disabled: true
+                });
+
+                $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
+                    icons: {
+                        primary: 'ui-icon-circle-close'
+                    }
+                });
+
+                $("form.create-new-album-form").get(0).reset();
+            },
+
+            close: function () {
+                $("form.create-new-album-form").get(0).reset();
+            }
+        }).show();
+    }
+
+    function addPhotos(title) {
+        $("#add-photos-form").dialog({
+            title: getTitle(title, "image"),
+            dialogClass: "photogallery-form",
+            width: 640,
+            height: 430,
+            closeOnEscape: true,
+            draggable: true,
+            resizable: false,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "{{ "Reset" | trans() }}": function (event) {
+                    $("form.create-new-album-form").get(0).reset();
+                },
+                "{{ "Add" | trans() }}": function (event) {
+                    var disabled = true;
+                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Add" | trans() }}")').button({
+                        disabled: disabled
+                    });
+                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
+                        disabled: disabled
+                    });
+                    $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
+                        disabled: disabled
+                    });
+
+                    $("div#info").html("{{ "Adding photo in progress" | trans() }}&hellip;")
+
+                    $("form.add-photos-form").ajaxSubmit({
+                        error: function (response) {
+                            var disabled = false;
+                            $('.ui-dialog-buttonpane').find('button:contains("{{ "Add" | trans() }}")').button({
+                                disabled: disabled
+                            });
+                            $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
+                                disabled: disabled
+                            });
+                            $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
+                                disabled: disabled
+                            });
+
+                            $("div#info").html("");
+
+                            alert("Photos Unexpected Exception.");
+                        },
+                        success: function (response) {
+                             location.reload();
+                        }
+                    });
+                },
+                "{{ "Cancel" | trans() }}": function (event) {
+                    $(this).dialog("close");
+                }
+            },
+
+            open: function () {
+
+                $(".ui-widget-overlay").bind("click", function () {
+                    $("#add-photos-form").dialog("close");
+                });
+
+                $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
+                    icons: {
+                        primary: 'ui-icon-circle-arrow-w'
+                    }
+                });
+
+                $('.ui-dialog-buttonpane').find('button:contains("{{ "Add" | trans() }}")').button({
+                    icons: {
+                        primary: 'ui-icon-circle-check'
+                    },
+                    disabled: true
+                });
+
+                $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
+                    icons: {
+                        primary: 'ui-icon-circle-close'
+                    }
+                });
+
+                $("form.create-new-album-form").get(0).reset();
+            },
+
+            close: function () {
+                $("form.create-new-album-form").get(0).reset();
+            }
+        }).show();
+    }
+
+    function enableSubmit() {
+        var titleVal = $("div#create-new-album-form form input#title").val() !== "";
+        var descriptionVal = $("div#create-new-album-form form textarea#description").val() !== "";
+        var albumFilesVal = $("div#create-new-album-form form input#photos").val() !== ""
+
+        var photosAlbumVal = $("div#add-photos-form form select#album").val() > 0;
+        var photosFilesVal = $("div#add-photos-form form input#photos").val() !== ""
+
+        var disabled = !((titleVal || descriptionVal) && albumFilesVal);
+
+        $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
+            disabled: disabled
+        });
+
+        $('.ui-dialog-buttonpane').find('button:contains("{{ "Add" | trans() }}")').button({
+            disabled: !(photosFilesVal && photosAlbumVal)
+        });
+    }
+
+    $(document).ready(function () {
+
+        $.ajax({
+            url: Routing.generate("_photogallery_api_album_list"),
+            error: function (response) {
+                alert("Unexpected Exception.");
+            },
+            success: function (response) {
+                var albums = response;
+
+                for (var i = 0; i < albums.length; i++) {
+                    var selected = typeof albumId != 'undefined'  && albumId === albums[i].id ? ' selected="selected"' : "";
+                    $("select#album").append("<option value='" + albums[i].id + "'" + selected + ">" + albums[i].title + "</option>");
+                }
+            }
+        });
+
+        $("div#add-photos-form form select#album").change(function (event) {
+            enableSubmit();
+        });
+
+        $("div#add-photos-form form  input#photos").change(function (event) {
+            enableSubmit();
+        });
+
+        $("div#create-new-album-form form  input#title").keyup(function (event) {
+            enableSubmit();
+        });
+
+        $("div#create-new-album-form form  textarea#description").keyup(function (event) {
+            enableSubmit();
+        });
+
+        $("div#create-new-album-form form input#photos").change(function (event) {
+            enableSubmit();
+        });
+    });
+
+</script>
