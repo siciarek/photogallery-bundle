@@ -8,8 +8,9 @@
     {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
 
     {% stylesheets
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/css/jquery.contextMenu.css'
     '@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css'
-    output="css/photogallery.css" %}
+    %}
     <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
     {% endstylesheets %}
 
@@ -24,6 +25,7 @@
     '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.cookie.js'
     '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery.js'
     '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js'
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js'
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
