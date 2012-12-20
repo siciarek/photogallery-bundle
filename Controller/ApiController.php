@@ -177,6 +177,10 @@ class ApiController extends Controller
         $config = $this->container->getParameter("siciarek_photo_gallery.config");
         $sequence_number = $seq_number;
 
+        if($files === null) {
+            return;
+        }
+
         foreach ($files as $file) {
             $source_path = $file->getPathName();
 

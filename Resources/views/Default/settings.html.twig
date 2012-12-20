@@ -1,0 +1,54 @@
+{% extends 'SiciarekPhotoGalleryBundle::public.layout.html.twig' %}
+{% block content %}
+
+    <h1 id="subtitle">{{ "settings" | trans() }}</h1>
+
+    <pre>{{ settings | var_dump() }}</pre>
+
+    <script type="text/javascript">
+        // <![CDATA[
+        $(document).ready(function () {
+            $.cookie.defaults = {
+                expires: 365
+            };
+
+            $.cookie.json = true;
+
+            $("#subtitle").click(function () {
+
+                var object = {
+                    private: {
+                        background: "#CACACA",
+                        thumbnails: {
+                            size: "medium",
+                            onpage: 45
+                        },
+                        autoshow: {
+                            enabled: true,
+                            seconds: 4
+                        },
+                        storeoriginals: true
+                    },
+                    public: {
+                        albums: {
+                            pager: 5
+                        },
+                        photos: {
+                            pager: 25,
+                            thumbnails: {
+                                size: "medium",
+                                title: true,
+                                description: true
+                            }
+                        }
+                    },
+                    datetime: "{{ "now" | date("Y-m-d H:i:s") }}"
+                };
+
+                $.cookie("settings", object);
+            });
+        });
+        // ]]>
+    </script>
+
+{% endblock %}

@@ -13,13 +13,14 @@ wait a while     : zaczekaj chwilkę
 homepage         : strona główna
 albums           : albumy
 create new album : załóż nowy album
-add photos       : dodaj fotografie
+settings         : ustawienia
 
 # Forms
 choose album               : wybierz album
 title                      : tytuł
 description                : opis
 hidden                     : ukryj
+do not publish             : nie publikuj
 add photos                 : dodaj fotografie
 Reset                      : Resetuj
 Add                        : Dodaj
@@ -28,3 +29,6 @@ Cancel                     : Anuluj
 Choose album               : Wybierz album
 Album creation in progress : Zakładanie albumu w toku
 Adding photo in progress   : Trwa dodawanie fotografii
+
+New album requires title or description. Adding at least one photo is recommended. : Nowy album wymaga podania tytułu lub opisu. Zalecane jest również dodanie przynajmniej jednej fotografii.
+Choose at least one photo. Title and description are optional. : Wybierz przynajmniej jedną fotografię. Tytuł lub opis jest opcjonalny.
