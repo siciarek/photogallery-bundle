@@ -1,0 +1,20 @@
+<script type="text/javascript">
+    // <![CDATA[
+    var translations = {};
+
+    /**
+     * i18n javascript interface
+     *
+     * @param phrase
+     * @return {*}
+     */
+    function __(phrase) {
+        return typeof translations[phrase] !== "undefined" ?  translations[phrase] : phrase;
+    }
+
+    $(document).ready(function () {
+        translations["Requested album is not available."] = "Żądany album nie jest dostępny.";
+    });
+
+    // ]]>
+</script>

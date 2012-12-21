@@ -289,3 +289,12 @@ div#menu div ul li#add-photos-menu
 
 /* </menu> */
 
+/* CONTEXT MENU UPDATE */
+
+.context-menu-item.icon-edit { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_edit.png); }
+.context-menu-item.icon-cut { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/cut.png); }
+.context-menu-item.icon-copy { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_copy.png); }
+.context-menu-item.icon-paste { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_paste.png); }
+.context-menu-item.icon-delete { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_delete.png); }
+.context-menu-item.icon-add { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_add.png); }
+.context-menu-item.icon-quit { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/door.png); }

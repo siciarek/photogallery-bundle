@@ -24,18 +24,59 @@ use \Siciarek\PhotoGalleryBundle\Entity\Image;
  */
 class ApiController extends Controller
 {
+    protected $config, $doctrine, $em;
+    protected $frames = array();
+
+    public function preExecute()
+    {
+        $this->config = $this->container->getParameter("siciarek_photo_gallery.config");
+        $this->doctrine = $this->getDoctrine();
+        $this->em = $this->doctrine->getEntityManager();
+
+        $this->frames = array(
+            "ok"      => array(
+                "success"   => true,
+                "type"      => "info",
+                "datetime"  => date("Y-m-d H:i:s"),
+                "msg"       => "OK",
+                "data"      => new \stdClass(),
+            ),
+            "data"    => array(
+                "success"   => true,
+                "type"      => "data",
+                "datetime"  => date("Y-m-d H:i:s"),
+                "msg"       => "Data",
+                "totalCount"=> 0,
+                "data"      => array(),
+            ),
+            "error"   => array(
+                "success"   => false,
+                "type"      => "error",
+                "datetime"  => date("Y-m-d H:i:s"),
+                "msg"       => "Error",
+                "totalCount"=> 0,
+                "data"      => new \stdClass(),
+            ),
+            "warning" => array(
+                "success"   => true,
+                "type"      => "warning",
+                "datetime"  => date("Y-m-d H:i:s"),
+                "msg"       => "Warning",
+                "data"      => new \stdClass(),
+            ),
+        );
+    }
+
     /**
      * @Route("/{id}/image/{slug}.{format}", name = "_photogallery_api_show_image", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$", "slug"="^[a-z0-9][a-z0-9\-]*[a-z0-9]$"}))
      * @Template()
      */
     public function showImageAction($id, $slug, $format)
     {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
+
         $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($id);
 
-        $file = $config["uploads_directory"] . $image->getPath();
+        $file = $this->config["uploads_directory"] . $image->getPath();
         $mime_type = $image->getMimeType();
 
         return $this->fileResponse($file, $mime_type);
@@ -109,21 +150,45 @@ class ApiController extends Controller
         return $this->jsonResponse($json);
     }
 
-    private function setAlbumCover($album) {
+    /**
+     * @Route("/{photos}/delete-photos.json", name = "_photogallery_api_delete_photos", requirements = {"photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
+     * @Template()
+     */
+    public function deletePhotosAction($photos)
+    {
+        $frame = array();
 
-        $this->em->refresh($album);
+        try {
+            $ids = explode(",", $photos);
+            $ids = array_unique($ids);
+            $ids = array_map("intval", $ids);
 
-        foreach ($album->getImages() as $im) {
-            if($im->getThumbnail() !== null) {
-                $album->setCover($im);
-                break;
-            }
+            $ids = array_filter($ids, function ($item) {
+                return $item > 0;
+            });
+
+            $ids = array_map("intval", $ids);
+            sort($ids);
+
+            $qb = $this->em->createQueryBuilder();
+            $qb->delete()
+                ->from("SiciarekPhotoGalleryBundle:Image", "i")
+                ->andWhere("i.id in (:ids)")->setParameter("ids", $ids);
+            $query = $qb->getQuery();
+            $sequence_number = $query->execute();
+
+            $frame = $this->frames["ok"];
+            $frame["data"] = $ids;
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
         }
 
-        $this->em->persist($album);
-        $this->em->flush();
-    }
+        $json = json_encode($frame);
 
+        return $this->jsonResponse($json);
+    }
 
     /**
      * @Route("/add-photos.json", name = "_photogallery_api_add_new_photos")
@@ -131,7 +196,6 @@ class ApiController extends Controller
      */
     public function addNewPhotosAction(Request $request)
     {
-//        print_r($config);exit;
 
         $this->doctrine = $this->getDoctrine();
         $this->em = $this->doctrine->getEntityManager();
@@ -172,12 +236,103 @@ class ApiController extends Controller
         return $this->jsonResponse($json);
     }
 
-    private function createImages($files, $album, $title, $description, $is_visible, $seq_number = 0)
+    /**
+     * @Route("/album-list.json", name = "_photogallery_api_album_list")
+     * @Template()
+     */
+    public function albumListAction()
+    {
+        $config = $this->container->getParameter("siciarek_photo_gallery.config");
+        $this->request = Request::createFromGlobals();
+        $this->doctrine = $this->getDoctrine();
+        $this->em = $this->doctrine->getEntityManager();
+
+        $qb = $this->em->createQueryBuilder();
+
+        $qb->select("a", "c", "i")
+            ->from("SiciarekPhotoGalleryBundle:Album", "a")
+            ->leftJoin("a.images", "i")
+            ->leftJoin("a.cover", "c")
+            ->addOrderBy("a.sequence_number", "DESC")
+            ->addOrderBy("a.id", "DESC");
+        ;
+
+        $query = $qb->getQuery();
+        $data = $query->getArrayResult();
+
+        $json = json_encode($data);
+
+        return $this->jsonResponse($json);
+    }
+
+    /**
+     * @Route("/{id}/album.json", name = "_photogallery_api_album", requirements = {"id"="^[1-9]\d*$"})
+     * @Template()
+     */
+    public function albumAction($id)
+    {
+        $config = $this->container->getParameter("siciarek_photo_gallery.config");
+
+        try {
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
+
+            if($album === null) {
+                throw new \Exception("Requested album is not available.");
+            }
+
+            $images = array();
+
+            if ($album->getImages()->count() > 0) {
+                $qb = $this->em->createQueryBuilder();
+                $qb->select("a", "i", "t")
+                    ->from("SiciarekPhotoGalleryBundle:Album", "a")
+                    ->leftJoin("a.images", "i")
+                    ->innerJoin("i.thumbnail", "t")
+                    ->andWhere("a.id = :aid")->setParameter("aid", $id)
+                    ->orderBy("i.sequence_number", "DESC");
+                ;
+                $query = $qb->getQuery();
+                $data = $query->getArrayResult();
+                $images = $data[0]["images"];
+            }
+
+            $frame = $this->frames["data"];
+            $frame["msg"] = sprintf("%s;;;%s", $album->getTitle(), $album->getDescription());
+            $frame["data"] = $images;
+            $frame["totalCount"] = count($frame["data"]);
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
+
+    protected function setAlbumCover($album)
+    {
+
+        $this->em->refresh($album);
+
+        foreach ($album->getImages() as $im) {
+            if ($im->getThumbnail() !== null) {
+                $album->setCover($im);
+                break;
+            }
+        }
+
+        $this->em->persist($album);
+        $this->em->flush();
+    }
+
+    protected function createImages($files, $album, $title, $description, $is_visible, $seq_number = 0)
     {
         $config = $this->container->getParameter("siciarek_photo_gallery.config");
         $sequence_number = $seq_number;
 
-        if($files === null) {
+        if ($files === null) {
             return;
         }
 
@@ -243,7 +398,7 @@ class ApiController extends Controller
                 mkdir($config["uploads_directory"] . $thdir, 0777, true);
             }
 
-            $origpath= sprintf("%s/%02d.%s", $origdir, $image->getId(), $image_extension);
+            $origpath = sprintf("%s/%02d.%s", $origdir, $image->getId(), $image_extension);
             $impath = sprintf("%s/%02d.%s", $imdir, $image->getId(), $image_extension);
             $thumpath = sprintf("%s/%02d.%s", $thdir, $image->getId(), $thumbnail_extension);
 
@@ -265,7 +420,7 @@ class ApiController extends Controller
 
             $im = $im->thumbnail($img_size)->save($image_path);
 
-            if($im->getSize()->getHeight() < 200) {
+            if ($im->getSize()->getHeight() < 200) {
                 $im = $imagine->open($source_path)->save($original_path);
                 $im = $im->thumbnail($wide_img_size)->save($image_path);
             }
@@ -302,88 +457,9 @@ class ApiController extends Controller
             $this->em->flush();
         }
 
-        if($album->getCover() === null) {
+        if ($album->getCover() === null) {
             $this->setAlbumCover($album);
         }
-    }
-
-    /**
-     * @Route("/album-list.json", name = "_photogallery_api_album_list")
-     * @Template()
-     */
-    public function albumListAction()
-    {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->request = Request::createFromGlobals();
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
-
-        $qb = $this->em->createQueryBuilder();
-
-        $qb->select("a", "c", "i")
-            ->from("SiciarekPhotoGalleryBundle:Album", "a")
-            ->leftJoin("a.images", "i")
-            ->leftJoin("a.cover", "c")
-            ->addOrderBy("a.sequence_number", "DESC")
-            ->addOrderBy("a.id", "DESC");
-        ;
-
-        $query = $qb->getQuery();
-        $data = $query->getArrayResult();
-
-        $json = json_encode($data);
-
-        return $this->jsonResponse($json);
-    }
-
-    /**
-     * @Route("/{id}/album.json", name = "_photogallery_api_album", requirements = {"id"="^[1-9]\d*$"})
-     * @Template()
-     */
-    public function albumAction($id)
-    {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-
-        $frame = array(
-            "success"   => true,
-            "type"      => "data",
-            "datetime"  => date("Y-m-d H:i:s"),
-            "msg"       => "Data",
-            "totalCount"=> 0,
-            "data"      => array(),
-        );
-
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->request = Request::createFromGlobals();
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
-
-        $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
-
-        $images = array();
-
-        if ($album->getImages()->count() > 0) {
-            $qb = $this->em->createQueryBuilder();
-            $qb->select("a", "i", "t")
-                ->from("SiciarekPhotoGalleryBundle:Album", "a")
-                ->leftJoin("a.images", "i")
-                ->innerJoin("i.thumbnail", "t")
-                ->andWhere("a.id = :aid")->setParameter("aid", $id)
-                ->orderBy("i.sequence_number", "DESC");
-            ;
-            $query = $qb->getQuery();
-            $data = $query->getArrayResult();
-            $images = $data[0]["images"];
-        }
-
-
-        $frame["msg"] = sprintf("%s;;;%s", $album->getTitle(), $album->getDescription());
-        $frame["data"] = $images;
-        $frame["totalCount"] = count($frame["data"]);
-
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
     }
 
     protected function fileResponse($path, $mime_type)
