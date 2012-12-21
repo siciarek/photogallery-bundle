@@ -9,13 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Album
 {
-    private $locale;
-
-    public function setTranslatableLocale($locale)
-    {
-        $this->locale = $locale;
-    }
-
     /**
      * @var integer
      */

@@ -364,8 +364,12 @@ class ApiController extends Controller
             $image->setHeight($image_height);
             $image->setMimeType($image_mime_type);
             $image->setFileSize($image_file_size);
-            $image->setAlbum($album);
+            $image->addAlbum($album);
             $image->setPath($image_path);
+
+            $this->em->persist($image);
+            $this->em->flush();
+            $this->em->refresh($image);
 
             $thumbnail = new Image();
             $thumbnail->setIsVisible($image->getIsVisible());
@@ -374,7 +378,6 @@ class ApiController extends Controller
             $thumbnail->setHeight($thumbnail_height);
             $thumbnail->setMimeType($thumbnail_mime_type);
             $thumbnail->setFileSize($thumbnail_file_size);
-            $thumbnail->setAlbum($album);
             $thumbnail->setPath($thumbnail_path);
             $this->em->persist($thumbnail);
 

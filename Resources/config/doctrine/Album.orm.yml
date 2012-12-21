@@ -2,9 +2,9 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
     type: entity
     repositoryClass: Siciarek\PhotoGalleryBundle\Entity\AlbumRepository
     table: photogallery_album
-    gedmo:
-        translation:
-            locale: locale
+#    gedmo:
+#        translation:
+#            locale: locale
     fields:
         id:
             type: integer
@@ -18,12 +18,12 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
             type: string
             length: 255
             nullable: true
-            gedmo: [ translatable ]
+#            gedmo: [ translatable ]
         description:
             type: text
             length: 10000
             nullable: true
-            gedmo: [ translatable ]
+#            gedmo: [ translatable ]
         is_visible:
             type: boolean
             nullable: false
@@ -40,10 +40,17 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
             gedmo:
                 timestampable:
                     on: update
-    oneToMany:
-        images:
-            targetEntity: Image
-            mappedBy: album
     oneToOne:
         cover:
             targetEntity: Image
+    manyToMany:
+        images:
+            targetEntity: Image
+            joinTable:
+                name: photogallery_album_image
+                joinColumns:
+                    album_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    image_id:
+                        referencedColumnName: id

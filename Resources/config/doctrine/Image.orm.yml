@@ -2,9 +2,9 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
     type: entity
     repositoryClass: Siciarek\PhotoGalleryBundle\Entity\ImageRepository
     table: photogallery_image
-    gedmo:
-        translation:
-            locale: locale
+#    gedmo:
+#        translation:
+#            locale: locale
     fields:
         id:
             type: integer
@@ -18,12 +18,12 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             type: string
             length: 255
             nullable: true
-            gedmo: [ translatable ]
+#            gedmo: [ translatable ]
         description:
             type: text
             length: 10000
             nullable: true
-            gedmo: [ translatable ]
+#            gedmo: [ translatable ]
         path:
             type: text
             length: 10000
@@ -57,10 +57,11 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             gedmo:
                 timestampable:
                     on: update
-    manyToOne:
-        album:
-            targetEntity: Album
-            inversedBy: images
     oneToOne:
         thumbnail:
             targetEntity: Image
+    manyToMany:
+        albums:
+            targetEntity: Album
+            mappedBy: images
+

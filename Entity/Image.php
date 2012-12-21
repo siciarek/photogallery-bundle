@@ -9,13 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Image
 {
-    private $locale;
-
-    public function setTranslatableLocale($locale)
-    {
-        $this->locale = $locale;
-    }
-
     /**
      * @var integer
      */
@@ -87,11 +80,18 @@ class Image
     private $thumbnail;
 
     /**
-     * @var \Siciarek\PhotoGalleryBundle\Entity\Album
+     * @var \Doctrine\Common\Collections\Collection
      */
-    private $album;
+    private $albums;
 
-
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->albums = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
     /**
      * Get id
      *
@@ -402,32 +402,37 @@ class Image
     }
 
     /**
-     * Set album
+     * Add albums
      *
-     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $album
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $albums
      * @return Image
      */
-    public function setAlbum(\Siciarek\PhotoGalleryBundle\Entity\Album $album = null)
+    public function addAlbum(\Siciarek\PhotoGalleryBundle\Entity\Album $albums)
     {
-        $this->album = $album;
+        $albums->addImage($this);
+        $this->albums[] = $albums;
     
         return $this;
     }
 
     /**
-     * Get album
+     * Remove albums
      *
-     * @return \Siciarek\PhotoGalleryBundle\Entity\Album 
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $albums
      */
-    public function getAlbum()
+    public function removeAlbum(\Siciarek\PhotoGalleryBundle\Entity\Album $albums)
     {
-        return $this->album;
+        $albums->removeImage($this);
+        $this->albums->removeElement($albums);
     }
+
     /**
-     * @ORM\PrePersist
+     * Get albums
+     *
+     * @return \Doctrine\Common\Collections\Collection 
      */
-    public function updateCover()
+    public function getAlbums()
     {
-        // Add your code here
+        return $this->albums;
     }
 }
