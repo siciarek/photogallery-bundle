@@ -151,10 +151,10 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{photos}/delete-photos.json", name = "_photogallery_api_delete_photos", requirements = {"photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
+     * @Route("/{album}/{photos}/delete-photos.json", name = "_photogallery_api_delete_photos", requirements = {"album"="^[1-9]\d*$", "photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
      * @Template()
      */
-    public function deletePhotosAction($photos)
+    public function deletePhotosAction($album, $photos)
     {
         $frame = array();
 
@@ -170,12 +170,26 @@ class ApiController extends Controller
             $ids = array_map("intval", $ids);
             sort($ids);
 
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+
             $qb = $this->em->createQueryBuilder();
-            $qb->delete()
+            $qb->select("i")
                 ->from("SiciarekPhotoGalleryBundle:Image", "i")
                 ->andWhere("i.id in (:ids)")->setParameter("ids", $ids);
+
             $query = $qb->getQuery();
-            $sequence_number = $query->execute();
+            $images = $query->getResult();
+
+            foreach($images as $image) {
+                $image->removeAlbum($album);
+            }
+
+            if($album->getImages()->count() === 0) {
+                $album->setCover(null);
+            }
+
+            $this->em->persist($album);
+            $this->em->flush();
 
             $frame = $this->frames["ok"];
             $frame["data"] = $ids;

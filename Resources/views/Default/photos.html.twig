@@ -89,12 +89,12 @@
         $("#image-buffer").attr("src", bufferedImageSrc);
     }
 
-    function deletePhotos(ids) {
+    function deletePhotos(album, ids) {
 
         var photos = ids.join(",");
 
         $.ajax({
-            url: Routing.generate("_photogallery_api_delete_photos", { photos: photos }),
+            url: Routing.generate("_photogallery_api_delete_photos", { album: album, photos: photos }),
             type: "POST",
 
             error: function (response) {
@@ -135,7 +135,7 @@
             buttons: {
                 "{{ "Yes" | trans() }}": function (event) {
                     var ids = [image.id];
-                    deletePhotos(ids);
+                    deletePhotos(albumId, ids);
                 },
                 "{{ "No" | trans() }}": function (event) {
                     $("#confirmation-dialog").dialog("close");
