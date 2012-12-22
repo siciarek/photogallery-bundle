@@ -7,90 +7,19 @@
 
     <div id="albums"></div>
 
+
+
     <script type="text/javascript">
         // <![CDATA[
-
         var pageTitle = "{{ title | trans() }}";
-        var waitMessage = "{{ "wait a while" | trans() }}" + "&hellip";
-
-        function loadAlbumPhotos(albums) {
-            $("#subtitle").html(pageTitle);
-
-            $("li#create-new-album-menu").show();
-
-            if (albums.length > 0) {
-
-                $("li#add-photos-menu").show();
-
-                for (var i = 0; i < albums.length; i++) {
-
-                    var format = "jpg";
-                    var albumId = "album" + albums[i].id;
-                    var descId = "desc" + albums[i].id;
-                    var cover = albums[i].cover !== null ? Routing.generate("_photogallery_api_show_image", {id: albums[i].cover.id, slug: "cover", format: format}, true) : null;
-                    var title = albums[i].title;
-                    var numberOfPhotos = "{{ "number of photos" | trans()  }}" + ": " + albums[i].images.length / 2;
-
-                    if (albums[i].images.length === 0) {
-                        numberOfPhotos = "{{ "no photos" | trans()  }}";
-                    }
-
-                    var description = albums[i].description;
-
-                    $("#albums").append("<div class='image' id='" + albumId + "'></div>")
-
-                    if (cover !== null) {
-                        $("#" + albumId + "").css({
-                            "background-position": "center top",
-                            "background-image": "url(" + cover + ")"
-                        });
-                    }
-                    else {
-                        $("#" + albumId + "").css({
-                            "background-position": "center",
-                            "background-image": "url({{ asset('bundles/siciarekphotogallery/images/default-cover.png') }})"
-                        });
-                    }
-
-                    $("#albums").append("<div class='description' id='" + descId + "'></div>");
-
-                    if (title !== null && title !== "") {
-                        $("#" + descId).append("<h2>" + title + "</h2>");
-                    }
-
-                    $("#" + descId).append("<p>" + description + "</p>");
-                    $("#" + descId).append("<p style='color:#AAAAAA !important;font-style:italic;'>" + numberOfPhotos + "</p>");
-                    $("#albums").append('<div class="separator"></div>');
-                }
-            }
-            else {
-                $("#albums").append('<p style="margin-top:100px;text-align:center;color:gray !important;">{{ "Gallery contains no albums" | trans() }}.</p>');
-            }
-
-            $(".image").click(function () {
-                var id = $(this).attr("id").replace(/^album/, "");
-                location.href = Routing.generate("_album", {id: id, slug: "album"}, true);
-            });
-        }
-
-        $(document).ready(function () {
-
-            if (albums.length == 0) {
-                $.ajax({
-                    url: Routing.generate("_photogallery_api_album_list"),
-                    error: function (response) {
-                        errorBox("Unexpected Exception.");
-                    },
-                    success: function (response) {
-
-                        albums = response;
-                    }
-                });
-            }
-
-            loadAlbumPhotos(albums)
-        });
-
+        var waitMessage = __("wait a while") + "&hellip";
+        var defaultCover = "{{ config.default_cover }}";
         // ]]>
     </script>
+
+    {% javascripts
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/albums.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
 {% endblock %}

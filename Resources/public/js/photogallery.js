@@ -1,4 +1,8 @@
 var albums = [];
+var albumName = "Album";
+var albumDescription = "";
+var frame = 8;
+var clickIsDisabled = false;
 
 function enableButtons(buttons) {
     buttons.each(function (index, elem) {

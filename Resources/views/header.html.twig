@@ -4,39 +4,33 @@
     <meta charset="UTF-8"/>
     <title>{{ title | trans() }}</title>
 
+    <script type="text/javascript" src="{{ asset("bundles/fosjsrouting/js/router.js") }}"></script>
+    <script type="text/javascript" src="{{ path("fos_js_routing_js", {"callback": "fos.Router.setData"}) }}"></script>
 
     {% stylesheets
-    '@SiciarekPhotoGalleryBundle/Resources/public/css/reset.css'
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/css/jquery.contextMenu.css'
+    "@SiciarekPhotoGalleryBundle/Resources/public/css/reset.css"
+    "@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/css/jquery.contextMenu.css"
     %}
     <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
     {% endstylesheets %}
 
-    <link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>
-
-    <script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-    <script type="text/javascript" src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-
-    <script type="text/javascript" src="/bundles/siciarekphotogallery/js/jquery-1.8.3.min.js"></script>
-
+    {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
 
     {% javascripts
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.cookie.js'
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/msgbox.js'
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery.js'
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js'
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js'
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-1.8.3.min.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.cookie.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/msgbox.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js"
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
-
-    <link rel="stylesheet" type="text/css" media="screen"
-          href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"/>
-    <script type="text/javascript"
-            src="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"></script>
-
-    {% include 'SiciarekPhotoGalleryBundle::translations.html.twig' %}
+    {% include "SiciarekPhotoGalleryBundle::translations.html.twig" %}
 </head>
 <body>
 
@@ -66,8 +60,8 @@
                 {% endif %}
             {% endfor %}
 
-            <li id="restore-changes" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "restore changes" | trans() }}</a></li>
-            <li id="update-album" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "update album" | trans() }}</a></li>
+            <li id="undo-changes" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "undo changes" | trans() }}</a></li>
+            <li id="update-view" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "update view" | trans() }}</a></li>
 
             {#{% for lang, tit in languages %}#}
             {#<li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"#}

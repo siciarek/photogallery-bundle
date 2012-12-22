@@ -29,6 +29,9 @@ class Configuration implements ConfigurationInterface
             ->scalarNode("style")
                 ->defaultValue($defaults["style"])
                 ->end()
+            ->scalarNode("default_cover")
+                ->defaultValue($defaults["default_cover"])
+                ->end()
             ->scalarNode("uploads_directory")
                 ->defaultValue($defaults["uploads_directory"])
                 ->end()
@@ -56,6 +59,7 @@ class Configuration implements ConfigurationInterface
         return array(
             "title" => "Photo Gallery",
             "style" => "/bundles/siciarekphotogallery/css/photogallery.css",
+            "default_cover" => "/bundles/siciarekphotogallery/images/default-cover.png",
             "uploads_directory" => "%kernel.root_dir%/../web/uploads/photogallery",
             "thumbnails" => array(
                 "format" => "png",

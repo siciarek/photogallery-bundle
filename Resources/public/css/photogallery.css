@@ -26,16 +26,7 @@ html.photogallery div.create-new-element label:after {
     content: ":";
 }
 
-
-
-
-
-
-
-
-
-
-
+/* FILE UPLOAD CONTROL: */
 
 html.photogallery div.create-new-element label.cabinet:after {
     content: "";
@@ -76,17 +67,6 @@ html.photogallery div.create-new-element label.cabinet input[id^="photos"] {
     filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
 
-
-
-
-
-
-
-
-
-
-
-
 html.photogallery .photogallery-form  {
     font: 16px/1.2 Georgia, Times, serif;
 }
@@ -120,52 +100,53 @@ html.photogallery div.create-new-element input[type="checkbox"] {
 
 html.photogallery div#content div#albums div.image,
 html.photogallery div#content div#images div.image {
-    border: 1px solid #555;
     background-color: transparent;
     background-position: center;
     background-repeat: no-repeat;
     float: left;
     cursor: pointer;
+    margin: 8px;
+    border: 1px #808080 solid;
 }
 
 html.photogallery div#content div#images div.image {
-    background-color: transparent;
-    border: 1px #808080 solid;
-    margin: auto;
+    margin-bottom: 0;
     width: 200px;
     height: 150px;
-    margin: 8px 8px 0 8px;
 }
 
 html.photogallery div#content div#albums div.image {
-    background-color: silver;
-    background-position: center top;
-    width: 500px;
-    height: 350px;
-    margin: 8px;
-    margin-right: 16px;
+    border: 1px grey outset;
+    background-color: #a47e3c;
+    margin-right: 24px;
+    width: 216px;
+    height: 166px;
 }
 
 html.photogallery div#content div#albums div.description {
     margin: 0;
     padding: 0;
     margin-top: 0;
-    width: 560px;
+    width: 850px;
     float: left;
 }
 
 html.photogallery div#content div#albums div.description h2 {
-    font-size: 32px;
+    font-family: Georgia, Times, serif;
+    font-size: 24px;
     font-weight: normal;
+    font-style: normal;
     padding-bottom: 6px;
     color: #666;
     margin-top: 0;
-    margin-bottom: 16px;
-    border-bottom: 1px solid #666;
 }
 
 html.photogallery div#content div#albums div.description p {
-    margin-top: 5px;
+    font-family: Georgia, Times, serif;
+    font-size: 16px;
+    font-weight: normal;
+    font-style: italic;
+    margin-bottom: 8px;
 }
 
 html.photogallery div#content div#albums div.image-frame.last,

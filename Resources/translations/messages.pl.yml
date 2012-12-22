@@ -14,6 +14,8 @@ homepage         : strona główna
 albums           : albumy
 create new album : załóż nowy album
 settings         : ustawienia
+undo changes     : usuń zmiany
+update view      : zapisz widok
 
 # Context menu:
 Yes                : Tak

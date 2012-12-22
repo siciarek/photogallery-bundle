@@ -28,6 +28,7 @@ class DefaultController extends Controller
         $this->output = array(
             "page_style" => $this->config["style"],
             "title"      => $this->config["title"],
+            "config"     => $this->config,
             "settings"   => new \stdClass(),
         );
 

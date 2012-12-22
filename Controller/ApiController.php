@@ -180,11 +180,11 @@ class ApiController extends Controller
             $query = $qb->getQuery();
             $images = $query->getResult();
 
-            foreach($images as $image) {
+            foreach ($images as $image) {
                 $image->removeAlbum($album);
             }
 
-            if($album->getImages()->count() === 0) {
+            if ($album->getImages()->count() === 0) {
                 $album->setCover(null);
             }
 
@@ -204,6 +204,63 @@ class ApiController extends Controller
         return $this->jsonResponse($json);
     }
 
+    /**
+     * @Route("/{album}/{photos}/reorder-photos.json", name = "_photogallery_api_reorder_photos", requirements = {"album"="^[1-9]\d*$", "photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
+     */
+    public function reorderImagesAction($album, $photos)
+    {
+        $frame = array();
+
+        try {
+            $ids = explode(",", $photos);
+            $ids = array_unique($ids);
+            $ids = array_map("intval", $ids);
+
+            $ids = array_filter($ids, function ($item) {
+                return $item > 0;
+            });
+
+            $ids = array_map("intval", $ids);
+
+            $alb = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+
+            $qb = $this->em->createQueryBuilder();
+            $qb->select("i", "a")
+                ->from("SiciarekPhotoGalleryBundle:Image", "i")
+                ->leftJoin("i.albums", "a")
+                ->andWhere("a.id = :aid")->setParameter("aid", $alb->getId())
+                ->andWhere("i.id in (:ids)")->setParameter("ids", $ids);
+
+            $query = $qb->getQuery();
+            $images = $query->getResult();
+            $imcount = count($images);
+
+            $order = array();
+
+            foreach ($ids as $id) {
+                $order[$id] = $imcount--;
+            }
+
+            foreach($images as $image) {
+                $image->setSequenceNumber($order[$image->getId()]);
+                $this->em->persist($image);
+            }
+
+            $this->em->flush();
+
+            $frame = $this->frames["ok"];
+            $frame["msg"] = "Album has been updated successfully";
+            $frame["data"] = $ids;
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
 
     /**
      * @Route("/{album}/{image}/delete-photos.json", name = "_photogallery_api_change_cover", requirements = {"album"="^[1-9]\d*$", "image"="^[1-9]\d*$"})
@@ -221,7 +278,7 @@ class ApiController extends Controller
             $this->em->flush();
 
             $frame = $this->frames["ok"];
-            $frame["msg"] = "Album cover has been changed successfuly";
+            $frame["msg"] = "Album cover has been changed successfully";
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
             $frame["msg"] = $e->getMessage();
@@ -319,7 +376,7 @@ class ApiController extends Controller
         try {
             $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
 
-            if($album === null) {
+            if ($album === null) {
                 throw new \Exception("Requested album is not available.");
             }
 

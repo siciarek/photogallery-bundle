@@ -1,7 +1,3 @@
-var albumName = "Album";
-var albumDescription = "";
-var frame = 8;
-var clickIsDisabled = false;
 
 function displayCurrentImage(direction) {
 
@@ -181,16 +177,65 @@ function displayPrevImage() {
 }
 
 function updateAlbum() {
-    var order = {};
+    var order = [];
 
     $(".image").each(function(index, element) {
         var inx = $(element).attr("id").replace(/[a-z]*/i, '');
         var id = album[inx].id;
-        order[album.length - inx] = id;
+        order.push(id);
     });
 
-    console.log(order);
+    $.ajax({
+        url: Routing.generate("_photogallery_api_reorder_photos", { album: albumId, photos: order.join(",") }),
+        error: function (response) {
+            errorBox("Unexpected Exception.");
+        },
+        success: function (response) {
+            var resp = {
+                success: false,
+                msg: response
+            };
+
+            if(typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
+                resp = response;
+            }
+
+            if (resp.success === true) {
+                $("div#menu li#update-view").hide();
+                $("div#menu li#undo-changes").hide();
+
+                infoBox(__(resp.msg));
+            }
+            else {
+                errorBox(__(resp.msg));
+            }
+        }
+    });
 }
+
+function undoChanges() {
+    var order = {};
+    var count = 0;
+
+    $("div#menu li#update-view").hide();
+    $("div#menu li#undo-changes").hide();
+
+    $(".image").each(function(index, element) {
+        var inx = $(element).attr("id").replace(/[a-z]*/i, '');
+        order[inx] = element;
+        count++;
+    })
+
+    $("#images").empty();
+
+    for(var i = 0; i < count; i++) {
+        var element = order["" + i];
+
+        $("#images").append(element);
+    }
+    $("#images").append('<div style="clear:both"></div>');
+}
+
 
 $(document).ready(function () {
 
@@ -263,12 +308,12 @@ $(document).ready(function () {
                     }
                 }, 1000);
 
-                $("div#menu li#update-album").click(function(event){
+                $("div#menu li#update-view").click(function(event){
                     updateAlbum();
                 });
 
-                $("div#menu li#restore-changes").click(function(event){
-                    location.reload();
+                $("div#menu li#undo-changes").click(function(event){
+                    undoChanges();
                 });
 
                 $("#images").sortable({
@@ -286,12 +331,12 @@ $(document).ready(function () {
                         });
 
                         if(inorder === false) {
-                            $("div#menu li#update-album").show();
-                            $("div#menu li#restore-changes").show();
+                            $("div#menu li#update-view").show();
+                            $("div#menu li#undo-changes").show();
                         }
                         else  {
-                            $("div#menu li#update-album").hide();
-                            $("div#menu li#restore-changes").hide();
+                            $("div#menu li#update-view").hide();
+                            $("div#menu li#undo-changes").hide();
                         }
                     }
                 });
