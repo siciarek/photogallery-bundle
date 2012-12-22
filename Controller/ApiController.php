@@ -20,7 +20,7 @@ use \Siciarek\PhotoGalleryBundle\Entity\Image;
 /**
  * API controller.
  *
- * @Route("/photogallery")
+ * @Route("/api")
  */
 class ApiController extends Controller
 {
@@ -193,6 +193,35 @@ class ApiController extends Controller
 
             $frame = $this->frames["ok"];
             $frame["data"] = $ids;
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
+
+
+    /**
+     * @Route("/{album}/{image}/delete-photos.json", name = "_photogallery_api_change_cover", requirements = {"album"="^[1-9]\d*$", "image"="^[1-9]\d*$"})
+     */
+    public function changeCoverAction($album, $image)
+    {
+        $frame = array();
+
+        try {
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+            $cover = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image);
+            $album->setCover($cover);
+
+            $this->em->persist($album);
+            $this->em->flush();
+
+            $frame = $this->frames["ok"];
+            $frame["msg"] = "Album cover has been changed successfuly";
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
             $frame["msg"] = $e->getMessage();

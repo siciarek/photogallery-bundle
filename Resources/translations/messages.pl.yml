@@ -1,19 +1,28 @@
 # App:
 
-Photo Gallery                    : Galeria fotografii
-Albums                           : Albumy
-Gallery contains no albums       : Galeria nie zawiera żadnych albumów
-Current album contains no photos : Album nie zawiera żadnych fotografii
+Photo Gallery                     : Galeria fotografii
+Albums                            : Albumy
+Gallery contains no albums        : Galeria nie zawiera żadnych albumów
+Current album contains no photos. : Album nie zawiera żadnych fotografii.
 
 number of photos : liczba fotografii
 no photos        : w albumie brak fotografii
-wait a while     : zaczekaj chwilkę
+wait a while     : zaczekaj chwilę
 
-# Menu:
+# Main menu:
 homepage         : strona główna
 albums           : albumy
 create new album : załóż nowy album
 settings         : ustawienia
+
+# Context menu:
+Yes                : Tak
+No                 : Nie
+Next               : Następne
+Previous           : Poprzednie
+Delete             : Usuń
+Use as album cover : Użyj jako okładki albumu
+
 
 # Forms
 choose album               : wybierz album
@@ -29,8 +38,11 @@ Cancel                     : Anuluj
 Choose album               : Wybierz album
 Album creation in progress : Zakładanie albumu w toku
 Adding photo in progress   : Trwa dodawanie fotografii
+Deleting photo in progress : Trwa usuwanie fotografii
+number of chosen files     : liczba wybranych plików
 
 Requested album is not available.           : Żądany album nie jest dostępny.
 Are you sure you want to delete this photo? : Czy na pewno chcesz usunąć tę fotografię?
 Choose at least one photo. Title and description are optional.                     : Wybierz przynajmniej jedną fotografię. Tytuł lub opis jest opcjonalny.
 New album requires title or description. Adding at least one photo is recommended. : Nowy album wymaga podania tytułu lub opisu. Zalecane jest również dodanie przynajmniej jednej fotografii.
+

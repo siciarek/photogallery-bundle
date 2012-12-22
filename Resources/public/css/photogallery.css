@@ -51,7 +51,7 @@ html.photogallery div.create-new-element label.cabinet  {
     display: inline-block !important;
     width: 32px;
     height: 32px;
-    background-image: url(/bundles/siciarekphotogallery/images/btn-choose-file-off.png);
+    background-image: url(../images/btn-choose-file-off.png);
     background-position: center;
     background-repeat: no-repeat;
 
@@ -61,7 +61,7 @@ html.photogallery div.create-new-element label.cabinet  {
 }
 
 html.photogallery div.create-new-element label.cabinet:hover {
-    background-image: url(/bundles/siciarekphotogallery/images/btn-choose-file-on.png);
+    background-image: url(../images/btn-choose-file-on.png);
 }
 
 html.photogallery div.create-new-element label.cabinet input[id^="photos"] {
@@ -190,6 +190,23 @@ html.photogallery div#footer {
     margin: 0 auto;
 }
 
+/*DIALOGS*/
+
+html.photogallery #confirmation-dialog #confirmation-message {
+    width: 100%;
+    text-align: center;
+    margin-top: 180px;
+    color: #666;
+}
+
+html.photogallery .image-preview-dialog {
+    background-color: white;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-image: none;
+    cursor: pointer;
+}
+
 /* HEADER: */
 
 html.photogallery div#header {
@@ -233,7 +250,7 @@ html.photogallery div#footer div#copyrights {
     font-size: 16px;
 }
 
-/* <menu> */
+/* MAIN MENU: */
 
 html.photogallery div#menu {
     font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -265,36 +282,88 @@ html.photogallery div#menu div ul li {
     padding: 0 8px 4px 8px;
 }
 
-div#menu div ul li a {
+html.photogallery div#menu div ul li a {
     display: block;
     color: white;
     outline: medium none;
     text-decoration: none;
 }
 
-div#menu div ul li:hover {
+html.photogallery div#menu div ul li:hover {
     background-color: #999;
 }
 
-div#menu div ul li.menu-right {
+html.photogallery div#menu div ul li.menu-right {
     float: right;
     position: relative;
 }
 
-div#menu div ul li#create-new-album-menu,
-div#menu div ul li#add-photos-menu
+html.photogallery div#menu div ul li#create-new-album-menu,
+html.photogallery div#menu div ul li#add-photos-menu
 {
     display:none;
 }
 
-/* </menu> */
+/*NEXT PREV ARROWS*/
+
+html.photogallery div#prev-image,
+html.photogallery div#next-image {
+    background-color: transparent;
+    background-image: url(../images/nextprev.png);
+    background-position: 0 -50px;
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    display: inline-block;
+    height: 45px;
+    width: 27px;
+    position: relative;
+    /*top: 50%;*/
+    /*left: -20%;*/
+}
+
+html.photogallery div#next-image {
+    background-position: 0 -142px;
+    /*left: 120%;*/
+}
+
+/*STATUS BAR*/
+
+html.photogallery div#status-bar {
+    position: fixed;
+    height: 30px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: #111;
+    z-index: 6400;
+}
+
+html.photogallery div#status-bar .content {
+    height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    line-height: 27px;
+    color: #f8f8ff;
+    margin: 0 auto;
+    position: relative;
+    min-width: 800px;
+    max-width: 1106px;
+    padding-left: 8px;
+}
+
+html.photogallery div#status-bar .content span {
+    color: silver;
+    font-weight: normal;
+}
 
 /* CONTEXT MENU UPDATE */
 
-.context-menu-item.icon-edit { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_edit.png); }
-.context-menu-item.icon-cut { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/cut.png); }
-.context-menu-item.icon-copy { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_copy.png); }
-.context-menu-item.icon-paste { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_paste.png); }
-.context-menu-item.icon-delete { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_delete.png); }
-.context-menu-item.icon-add { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/page_white_add.png); }
-.context-menu-item.icon-quit { background-image: url(/bundles/siciarekphotogallery/js/jquery-context-menu/css/images/door.png); }
+.context-menu-item.icon-edit { background-image: url(../js/jquery-context-menu/css/images/page_white_edit.png); }
+.context-menu-item.icon-cut { background-image: url(../js/jquery-context-menu/css/images/cut.png); }
+.context-menu-item.icon-copy { background-image: url(../js/jquery-context-menu/css/images/page_white_copy.png); }
+.context-menu-item.icon-paste { background-image: url(../js/jquery-context-menu/css/images/page_white_paste.png); }
+.context-menu-item.icon-delete { background-image: url(../js/jquery-context-menu/css/images/page_white_delete.png); }
+.context-menu-item.icon-add { background-image: url(../js/jquery-context-menu/css/images/page_white_add.png); }
+.context-menu-item.icon-quit { background-image: url(../js/jquery-context-menu/css/images/door.png); }
+.context-menu-item.icon-change-cover { background-image: url(../images/icons/node-image.png); }

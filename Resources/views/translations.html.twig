@@ -1,6 +1,11 @@
 <script type="text/javascript">
     // <![CDATA[
-    var translations = {};
+    var translations = {
+        {% for key, value in translations %}
+        "{{ key }}" : "{{ key | trans() }}",
+        {% endfor %}
+        "{{ title }}" : "{{ title | trans() }}"
+    };
 
     /**
      * i18n javascript interface
@@ -9,12 +14,8 @@
      * @return {*}
      */
     function __(phrase) {
-        return typeof translations[phrase] !== "undefined" ?  translations[phrase] : phrase;
+        return typeof translations[phrase] !== "undefined" ? translations[phrase] : phrase;
     }
-
-    $(document).ready(function () {
-        translations["Requested album is not available."] = "Żądany album nie jest dostępny.";
-    });
 
     // ]]>
 </script>

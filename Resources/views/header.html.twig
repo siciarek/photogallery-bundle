@@ -22,6 +22,7 @@
 
     {% javascripts
     '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.cookie.js'
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/msgbox.js'
     '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery.js'
     '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js'
     '@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js'
@@ -64,6 +65,9 @@
                     {% endif %}
                 {% endif %}
             {% endfor %}
+
+            <li id="restore-changes" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "restore changes" | trans() }}</a></li>
+            <li id="update-album" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "update album" | trans() }}</a></li>
 
             {#{% for lang, tit in languages %}#}
             {#<li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"#}

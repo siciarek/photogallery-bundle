@@ -3,19 +3,21 @@
 namespace Siciarek\PhotoGalleryBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Yaml\Parser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 /**
  * Post controller.
  *
- * @Route("/photogallery")
+ * @Route("/")
  */
 class DefaultController extends Controller
 {
     protected $config;
     protected $output;
     protected $request;
+    protected $translations = array();
 
     public function preExecute()
     {
@@ -32,6 +34,10 @@ class DefaultController extends Controller
         if (array_key_exists("settings", $cookies)) {
             $this->output["settings"] = json_decode($cookies["settings"], true);
         }
+
+        $yaml = new Parser();
+        $transfile = __DIR__ . "/../Resources/translations/messages.pl.yml";
+        $this->output["translations"] = $yaml->parse(file_get_contents($transfile));
     }
 
     /**

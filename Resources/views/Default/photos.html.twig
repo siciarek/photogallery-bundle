@@ -9,267 +9,45 @@
     <p class="info"></p>
 
     <div id="images"></div>
-    <div id="image-preview"></div>
+
+    <div id="image-preview" style="display:none">
+        <div id="prev-image" title="{{ "Previous" | trans() }}"></div>
+        <div id="next-image" title="{{ "Next" | trans() }}"></div>
+    </div>
+
     <div id="confirmation-dialog">
         <div id="confirmation-message" class="dialog-message"></div>
     </div>
 
-    <style type="text/css">
+    <div id="status-bar" style="display:none">
+        <div class="content"></div>
+    </div>
 
-        html.photogallery #confirmation-dialog #confirmation-message {
-            width: 100%;
-            text-align: center;
-            margin-top: 180px;
-            color: #666;
-        }
-
-        html.photogallery .image-preview-dialog {
-            background-color: white;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-image: none;
-            cursor: pointer;
-        }
-    </style>
 
     <script type="text/javascript">
         // <![CDATA[
 
         var albumId = {{ id }};
+        var title = "{{ title | trans() }}";
         var currentImage = 0;
-        var frame = 16;
         var album = [];
-        var image_preview_config = {};
-
-        // ]]>
-    </script>
-
-    <script type="text/javascript">
-    // <![CDATA[
-
-    function displayCurrentImage() {
-
-        var format = "jpg";
-        var width = album[currentImage].width + frame;
-        var height = album[currentImage].height + frame;
-
-        image_preview_config = {
-            dialogClass: "image-preview-dialog",
-            width: width,
-            height: height,
-            closeOnEscape: true,
-            draggable: false,
-            resizable: false,
-            modal: true,
-            buttons: {},
-            resizable: false,
-            open: function () {
-                $(".ui-widget-overlay").bind("click", function () {
-                    $("#image-preview").dialog("close");
-                });
-                displayCurrentImage();
-            },
-            close: function () {
-
-            }
-        };
-
-        bufferImage(currentImage, album, format);
-
-        $(".image-preview-dialog").css({
-            "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: album[currentImage].id, slug: "image", format: format}, true) + ")"
-        });
-
-        $("#image-preview").dialog(image_preview_config);
-    }
-
-    function bufferImage(currentImage, album, format) {
-        var bufferedImage = (currentImage + 1) % album.length;
-        var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: album[bufferedImage].id, slug: "image", format: format}, true);
-        $("#image-buffer").attr("src", bufferedImageSrc);
-    }
-
-    function deletePhotos(album, ids) {
-
-        var photos = ids.join(",");
-
-        $.ajax({
-            url: Routing.generate("_photogallery_api_delete_photos", { album: album, photos: photos }),
-            type: "POST",
-
-            error: function (response) {
-                alert("Unexpected Exception.");
-            },
-
-            success: function (response) {
-
-                if (typeof response.msg === "undefined") {
-                    alert(response);
-                    return;
-                }
-
-                if (response.success === true) {
-                    location.reload();
-                }
-                else {
-                    alert("[ ERROR ] " + response.msg);
-                }
-            }
-        });
-    }
-
-    function confirmationBox(image, action) {
-        var msg = "{{ "Are you sure you want to delete this photo?" | trans() }}";
-
-        var icon = action === "delete" ? "trash" : "image";
-
-        var confirmationDialog = {
-            title: getTitle("{{ title | trans() }}", icon),
-            dialogClass: "photogallery-form",
-            width: 350,
-            height: 330,
-            closeOnEscape: true,
-            draggable: true,
-            resizable: false,
-            modal: true,
-            buttons: {
-                "{{ "Yes" | trans() }}": function (event) {
-                    var ids = [image.id];
-                    deletePhotos(albumId, ids);
-                },
-                "{{ "No" | trans() }}": function (event) {
-                    $("#confirmation-dialog").dialog("close");
-                }
-            },
-            open: function () {
-                $("#confirmation-dialog #confirmation-message")
-                        .html(msg);
-                $("#confirmation-dialog").css({
-                    "background": "url(" + image.thumbnail.src + ") center no-repeat"
-                });
-
-                $(".ui-dialog-titlebar-close").css({
-                    "display": "none"
-                });
-            },
-            close: function () {
-
-            }
-        };
-
-        $("#confirmation-dialog").dialog(confirmationDialog);
-    }
-
-    $(document).ready(function () {
-
-        $.ajax({
-            url: Routing.generate("_photogallery_api_album", { id: albumId }),
-            error: function (response) {
-                alert("Unexpected Exception.");
-            },
-            success: function (response) {
-                album = response.data;
-
-                if (typeof response.msg === "undefined") {
-                    alert("[ ERROR ] " + response);
-                    return;
-                }
-
-                if (response.success === false) {
-                    $("#subtitle").html(__(response.msg));
-                    return;
-                }
-
-                var temp = response.msg.split(";;;");
-                var name = temp[0];
-                var description = temp[1];
-
-                $("#subtitle").html(name + " (" + response.totalCount + ")");
-                $("p.info").html(description);
-
-                $("li#create-new-album-menu").show();
-                $("li#add-photos-menu").show();
-
-                if (album.length > 0) {
-                    var format = "jpg";  // TODO: album[i].format;
-
-                    for (var i = album.length - 1; i >= 0; i--) {
-                        var imgId = "img" + i;
-                        var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
-
-                        album[i].thumbnail["src"] = thumbnail;
-
-                        $("#images").append('<div class="image" id="' + imgId + '"></div>');
-
-                        $("#" + imgId).css({
-                            "width": album[i].thumbnail.width
-                        });
-
-                        if (i == 0) {
-                            $("#images").append('<div style="clear:both"></div>');
-                        }
-                    }
-
-                    setTimeout(function () {
-                        for (var i = 0; i < album.length; i++) {
-                            var imgId = "img" + i;
-                            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
-                            $("#" + imgId).css({
-                                "border": "none",
-                                "background-color": "transparent",
-                                "background-image": "url(" + thumbnail + ")"
-                            });
-
-                        }
-                    }, 1000);
-
-                    $(".image").click(function () {
-                        currentImage = $(this).attr("id").replace(/^img/, "");
-                        displayCurrentImage();
-                    });
-
-                    $("#image-preview").click(function () {
-                        currentImage++;
-                        currentImage %= album.length;
-                        $("#image-preview").dialog("close");
-                        displayCurrentImage();
-                    });
-
-                    $.contextMenu({
-                        selector: ".image",
-                        callback: function (key, options) {
-
-                            var id = $(this).attr("id").replace(/\D+/, "");
-                            var image = album[id];
-
-                            switch (key) {
-                                case "delete":
-                                    confirmationBox(image, key);
-                                    break;
-
-                                default:
-                                    break;
-                            }
-                        },
-                        items: {
+        var contextMenuItems = {
 //                                "edit": {name: "Edit", icon: "edit"},
 //                                "cut": {name: "Cut", icon: "cut"},
 //                                "copy": {name: "Copy", icon: "copy"},
 //                                "paste": {name: "Paste", icon: "paste"},
-                            "delete": {name: "Delete", icon: "delete"},
-                            "sep1": "---------",
-                            "quit": {name: "Quit", icon: "quit"}
-                        }
-                    });
+            "change-cover": {name: __("Use as album cover"), icon: "change-cover"},
+            "delete": {name: __("Delete"), icon: "delete"},
+            "sep1": "---------",
+            "quit": {name: __("Quit"), icon: "quit"}
+        }
 
-                    bufferImage(0, album, format);
-                }
-                else {
-                    $("#images").append('<p style="margin-top:100px;text-align:center;color:gray !important;">{{ "Current album contains no photos" | trans() }}.</p>');
-                }
-            }
-        });
-    });
-    // ]]>
+        // ]]>
     </script>
+
+    {% javascripts
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/photos.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
 {% endblock %}

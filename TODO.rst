@@ -1,6 +1,12 @@
 
 Photo Gallery TODO list:
 ========================
+    - Status bar with title, X/Y X current image, Y number of album images
+
+Refactoring:
+    - remove page reload
+    - use one form for album and photos or create temlate for it
+    - add inserting titles and description for each photo
 
 General tasks:
 --------------
@@ -13,6 +19,8 @@ Menu on displayed photo (guest)
     - download
     - send by email
     - publish to facebook
+    - description in tinymce
+
 
 Menu on displayed photo (owner)
 -------------------------------
@@ -35,3 +43,9 @@ Guest settings page (data stored in cookies)
    - thumbnail size
    - show/hide photos titles/descriptions
    - auto show photo exposition time
+
+
+Special features
+----------------
+   - When user needs to insert description or title in other language
+     he should have a possiblility to use google translator.

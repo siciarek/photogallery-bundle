@@ -2,24 +2,28 @@
     <form class="create-new-album-form" enctype="application/x-www-form-urlencoded" method="post"
           action="{{ url_for("_photogallery_api_create_new_album", true) }}">
 
-        <div id="info-album" class="form-info">{{ "New album requires title or description. Adding at least one photo is recommended." | trans() }}</div>
+        <div id="info-album"
+             class="form-info">{{ "New album requires title or description. Adding at least one photo is recommended." | trans() }}</div>
 
-        <div>
+        <div class="xelem">
             <label for="title-album">{{ "title" | trans() }}</label>
             <input type="text" name="title" id="title-album"/>
         </div>
-        <div>
+        <div class="xelem">
             <label for="description-album">{{ "description" | trans() }}</label>
             <textarea name="description" id="description-album"/></textarea>
         </div>
 
-        <div>
-            <span id="label-photos-album" onclick="showFileDialog(this)" style="cursor:default;font-weight:bold;display:inline-block;margin-right:3px;">{{ "add photos" | trans() }}:</span>
+        <div class="xelem">
+            <span id="label-photos-album" onclick="showFileDialog(this)"
+                  style="cursor:default;font-weight:bold;display:inline-block;margin-right:3px;">{{ "add photos" | trans() }}
+                :</span>
             <label class="cabinet">
                 <input size="1" multiple="multiple" type="file" name="photos[]" id="photos-album"/>
             </label>
             <span style="display:inline-block;width:8px;"></span>
-            <label style="display:inline-block;left-margin:24px" for="hidden-album">{{ "do not publish" | trans() }}</label>
+            <label style="display:inline-block;left-margin:24px"
+                   for="hidden-album">{{ "do not publish" | trans() }}</label>
             <input type="checkbox" name="hidden" id="hidden-album"/>
         </div>
 
@@ -30,34 +34,48 @@
     <form class="add-photos-form" enctype="application/x-www-form-urlencoded" method="post"
           action="{{ url_for("_photogallery_api_add_new_photos", true) }}">
 
-        <div id="info-photos" class="form-info">{{ "Choose at least one photo. Title and description are optional." | trans() }}</div>
+        <div id="info-photos"
+             class="form-info">{{ "Choose at least one photo. Title and description are optional." | trans() }}</div>
 
-        <div>
-            <label for="album-photos">{{ "album" | trans() }}</label>
-            <select name="album" id="album-photos">
-                <option value="0">{{ "Choose album" | trans() }}</option>
-            </select>
+        <div style="float:left">
+            <div class="xelem">
+                <label for="album-photos">{{ "album" | trans() }}</label>
+                <select name="album" id="album-photos">
+                    <option value="0">{{ "Choose album" | trans() }}</option>
+                </select>
+            </div>
+
+            <div class="xelem">
+                <label for="title-photos">{{ "title" | trans() }}</label> <input type="text" name="title"
+                                                                                 id="title-photos"/>
+            </div>
+
+            <div class="xelem">
+                <label for="description-photos">{{ "description" | trans() }}</label>
+                <textarea name="description" id="description-photos"/></textarea>
+            </div>
+        </div>
+        <div style="margin-left:24px;float:left;">
+            <div class="xelem">
+                <span id="label-photos-photos" onclick="showFileDialog(this)"
+                      style="cursor:default;font-weight:bold;display:inline-block;margin-right:3px;">{{ "add photos" | trans() }}
+                    :</span>
+                <label class="cabinet">
+                    <input size="1" multiple="multiple" type="file" name="photos[]" id="photos-photos"/>
+                </label>
+                <span style="display:inline-block;width:8px;"></span>
+                <label style="display:inline-block;left-margin:24px"
+                       for="hidden-photos">{{ "do not publish" | trans() }}</label>
+                <input type="checkbox" name="hidden" id="hidden-photos"/>
+            </div>
+            <div style="height:195px;overflow:auto;border:1px solid silver;">
+                <ul id="files-to-upload" style="padding:8px;">
+                </ul>
+            </div>
+            <div id="number-of-chosen-files" class="form-info" style="text-align:left">{{ "number of chosen files" | trans() }}: 0</div>
         </div>
 
-        <div>
-            <label for="title-photos">{{ "title" | trans() }}</label> <input type="text" name="title"
-                                                                             id="title-photos"/>
-        </div>
-
-        <div>
-            <label for="description-photos">{{ "description" | trans() }}</label>
-            <textarea name="description" id="description-photos"/></textarea>
-        </div>
-
-        <div>
-            <span id="label-photos-photos" onclick="showFileDialog(this)" style="cursor:default;font-weight:bold;display:inline-block;margin-right:3px;">{{ "add photos" | trans() }}:</span>
-            <label class="cabinet">
-                <input size="1" multiple="multiple" type="file" name="photos[]" id="photos-photos"/>
-            </label>
-            <span style="display:inline-block;width:8px;"></span>
-            <label style="display:inline-block;left-margin:24px" for="hidden-photos">{{ "do not publish" | trans() }}</label>
-            <input type="checkbox" name="hidden" id="hidden-photos"/>
-        </div>
+        <div style="clear:both"></div>
 
     </form>
 </div>
@@ -68,6 +86,10 @@
     .ui-widget-content,
     .ui-dialog {
         /*background-color: #ffffe0 !important;*/
+    }
+
+    html.photogallery div.create-new-element div.xelem {
+        width: 350px;
     }
 
     html.photogallery div.image-preview-dialog .ui-dialog-titlebar {
@@ -91,10 +113,9 @@
 
 <script type="text/javascript">
 
-
 function showFileDialog(label) {
     var id = $(label).attr("id").replace(/^\w+\-/, "#");
-    $(id).trigger("click");;
+    $(id).trigger("click");
 }
 
 function addNewAlbum(title) {
@@ -133,7 +154,7 @@ function addNewAlbum(title) {
 
                 $("form.create-new-album-form").ajaxSubmit({
                     error: function (response) {
-                        alert("Album Unexpected Exception.");
+                        errorBox("Album Unexpected Exception.");
                     },
                     success: function (response) {
                         location.href = Routing.generate("_album", {id: response.data.album, slug: "album"}, true);
@@ -182,7 +203,7 @@ function addPhotos(title) {
     $("#add-photos-form").dialog({
         title: getTitle(title, "image"),
         dialogClass: "photogallery-form",
-        width: 640,
+        width: 770,
         height: 480,
         closeOnEscape: true,
         draggable: true,
@@ -191,7 +212,10 @@ function addPhotos(title) {
         resizable: false,
         buttons: {
             "{{ "Reset" | trans() }}": function (event) {
-                $("form.create-new-album-form").get(0).reset();
+                $("form.add-photos-form").get(0).reset();
+                $("#files-to-upload").empty();
+                var nof = $("#number-of-chosen-files").text().replace(/\d+/, 0);
+                $("#number-of-chosen-files").html(nof);
             },
             "{{ "Add" | trans() }}": function (event) {
                 var disabled = true;
@@ -228,7 +252,7 @@ function addPhotos(title) {
 
                         $("div#info").html("");
 
-                        alert("Photos Unexpected Exception.");
+                        errorBox("Photos Unexpected Exception.");
                     },
                     success: function (response) {
                         location.href = Routing.generate("_album", {id: response.data.album, slug: "album"}, true);
@@ -295,11 +319,12 @@ $(document).ready(function () {
 
     $.ajax({
         url: Routing.generate("_photogallery_api_album_list"),
+        async: false,
         error: function (response) {
-            alert("Unexpected Exception.");
+            errorBox("Unexpected Exception.");
         },
         success: function (response) {
-            var albums = response;
+            albums = response;
 
             for (var i = 0; i < albums.length; i++) {
                 var selected = typeof albumId != 'undefined' && albumId === albums[i].id ? ' selected="selected"' : "";
@@ -334,8 +359,20 @@ $(document).ready(function () {
         });
     });
 
-    $("div#add-photos-form form select#album-photos").change(function (event) {
+
+    $("div#add-photos-form form  input[id^=photos]").change(function (event) {
         enableSubmit();
+
+        var files = $(this).prop("files");
+
+        var nof = $("#number-of-chosen-files").text().replace(/\d+/, files.length);
+        $("#number-of-chosen-files").html(nof);
+
+        $("#files-to-upload").empty();
+
+        $(files).each(function (index, elem) {
+            $("#files-to-upload").append("<li>" + elem.name + "</li>");
+        });
     });
 
     $("div#add-photos-form form  input#photos-photos").change(function (event) {
