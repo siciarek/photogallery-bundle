@@ -1,0 +1,33 @@
+Siciarek\PhotoGalleryBundle\Entity\User:
+    type: entity
+    table: photogallery_user
+    repositoryClass: Siciarek\PhotoGalleryBundle\Entity\UserRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        first_name:
+          type: string
+          length: 64
+        last_name:
+          type: string
+          length: 64
+        description:
+          type: string
+          nullable: true
+        logged_at:
+          type: datetime
+          nullable: true
+        created_at:
+          type: datetime
+          gedmo:
+            timestampable:
+              on: create
+        updated_at:
+          type: datetime
+          gedmo:
+            timestampable:
+              on: update
+    lifecycleCallbacks: {  }
