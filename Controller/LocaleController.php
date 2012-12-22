@@ -10,11 +10,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Query;
 
 
+/**
+ * Locale controller.
+ *
+ * @Route("/photogallery")
+ */
 class LocaleController extends Controller
 {
 
     /**
-     * @Route("/lang-{locale}.html", name="_change_locale", defaults={"locale"="pl"}, requirements = {"locale"="^[a-z]{2}$"})
+     * @Route("/lang-{locale}.html", name="_photogallery_change_locale", defaults={"locale"="pl"}, requirements = {"locale"="^[a-z]{2}$"})
      * @Template()
      */
     public function setLocaleAction($locale) {

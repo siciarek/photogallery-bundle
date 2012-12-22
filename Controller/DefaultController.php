@@ -7,23 +7,30 @@ use Symfony\Component\Yaml\Parser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
-/**
- * Post controller.
- *
- * @Route("/")
- */
+    /**
+     * Default controller.
+     *
+     * @Route("/photogallery")
+     */
 class DefaultController extends Controller
 {
     protected $config;
     protected $output;
     protected $request;
+    protected $session;
+    protected $cookies;
+    protected $locale;
     protected $translations = array();
 
     public function preExecute()
     {
         $this->config = $this->container->getParameter("siciarek_photo_gallery.config");
         $this->request = $this->getRequest();
-        $cookies = $this->request->cookies->all();
+        $this->session = $this->request->getSession();
+        $this->cookies = $this->request->cookies->all();
+
+        $this->locale = $this->session->get("locale", $this->request->getLocale());
+        $this->request->setLocale($this->locale);
 
         $this->output = array(
             "page_style" => $this->config["style"],
@@ -32,8 +39,8 @@ class DefaultController extends Controller
             "settings"   => new \stdClass(),
         );
 
-        if (array_key_exists("settings", $cookies)) {
-            $this->output["settings"] = json_decode($cookies["settings"], true);
+        if (array_key_exists("settings", $this->cookies)) {
+            $this->output["settings"] = json_decode($this->cookies["settings"], true);
         }
 
         $yaml = new Parser();

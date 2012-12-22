@@ -64,6 +64,9 @@ security:
 
 /app/config/config.yml (add)
 --------------------------------------------------------------------------------
+framework:
+    # uncomment:
+    translator:      { fallback: "%locale%" }
 
 assetic:
     debug:          "%kernel.debug%"
@@ -79,6 +82,15 @@ fos_user:
 
 fos_js_routing:
     routes_to_expose: [\w+]
+
+stof_doctrine_extensions:
+    default_locale: %locale%
+    translation_fallback: true
+    orm:
+        default:
+            sluggable: true
+            timestampable: true
+            translatable: true
 
 /app/config/routing.yml  (add)
 --------------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 
     {% stylesheets
     "@SiciarekPhotoGalleryBundle/Resources/public/css/reset.css"
+    "@SiciarekPhotoGalleryBundle/Resources/public/css/lang.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/css/jquery.contextMenu.css"
@@ -38,6 +39,9 @@
 <div id="menu">
     <div>
         <ul>
+
+            {#LEFT SIDE MENUS#}
+
             {% for text, route in menu %}
                 {% if text == "homepage" %}
                     <li><a title="{{ text | trans() }}"
@@ -60,13 +64,17 @@
                 {% endif %}
             {% endfor %}
 
+            {#RIGHT SIDE MENUS#}
+
+            {% for lang, tit in languages %}
+                <li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"
+                    onclick="location.href='{{ url_for("_photogallery_change_locale", { "locale": lang }) }}'">&nbsp;</li>
+            {% endfor %}
+
             <li id="undo-changes" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "undo changes" | trans() }}</a></li>
             <li id="update-view" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "update view" | trans() }}</a></li>
 
-            {#{% for lang, tit in languages %}#}
-            {#<li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"#}
-            {#onclick="location.href='{{ url_for("_change_locale", { "locale": lang }) }}'">&nbsp;</li>#}
-            {#{% endfor %}#}
+
 
             {#{% if app.user %}#}
             {#<li>{{ link_to("Secured page" | trans(), "_secured") }}</li>#}
