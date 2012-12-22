@@ -88,12 +88,10 @@ siciarek_photogallery_annotation:
     type:     annotation
     prefix:   /photogallery
 
-# ================= FOS JS ROUTING ==============================
+# Following FOS routes are required:
 
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
-
-# ================= FOS ROUTING =================================
 
 fos_user_group:
     resource: "@FOSUserBundle/Resources/config/routing/group.xml"

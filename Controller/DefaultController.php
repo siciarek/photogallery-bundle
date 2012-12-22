@@ -62,10 +62,19 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/", name="_albums")
+     * @Route("/albums.html", name="_albums")
      * @Template()
      */
     public function albumsAction()
+    {
+        return $this->output;
+    }
+
+    /**
+     * @Route("/", name="_photogallery_home")
+     * @Template()
+     */
+    public function indexAction()
     {
         return $this->output;
     }
