@@ -75,17 +75,16 @@ function bufferImage(currentImage, album, format, direction) {
     $("#image-buffer").attr("src", bufferedImageSrc);
 }
 
-function deletePhotos(album, ids, buttons) {
+function deletePhotos(ids, index) {
 
     var photos = ids.join(",");
 
     $.ajax({
-        url: Routing.generate("_photogallery_api_delete_photos", { album: album, photos: photos }),
+        url: Routing.generate("_photogallery_api_delete_photos", { album: albumId, photos: photos }),
         type: "POST",
 
         error: function (response) {
             $("#confirmation-dialog").dialog("close");
-            enableButtons(buttons);
             errorBox("Unexpected Exception.");
         },
 
@@ -97,26 +96,47 @@ function deletePhotos(album, ids, buttons) {
             };
 
             var resp = typeof response.msg === "undefined" ? defresp : response;
+            $.ui.Mask.hide();
 
             if (response.success === true) {
-                location.reload();
+                delete album[index];
+                $("#img" + index).hide();
             }
             else {
-                enableButtons(buttons);
-                $("#confirmation-dialog").dialog("close");
                 errorBox(response.msg);
             }
         }
     });
 }
 
-function confirmationBox(image, action) {
+function confirmationBox(index, action) {
     var msg = __("Are you sure you want to delete this photo?");
 
     var icon = action === "delete" ? "trash" : "image";
 
     var yes = __("Yes");
     var no = __("No");
+
+    var image = album[index];
+
+    var buttons = {};
+    buttons[yes] = function (event) {
+        var ids = [image.id];
+        $("#confirmation-dialog").dialog("close");
+        $.ui.Mask.show(__("Deleting photo in progress"));
+
+        switch(action) {
+            case "delete":
+                deletePhotos(ids, index);
+                break;
+            default:
+                break;
+        }
+    };
+
+    buttons[no] = function (event) {
+        $("#confirmation-dialog").dialog("close");
+    };
 
     var confirmationDialog = {
         title: getTitle(__(title), icon),
@@ -127,22 +147,7 @@ function confirmationBox(image, action) {
         draggable: true,
         resizable: false,
         modal: true,
-        buttons: {
-            yes: function (event) {
-                var ids = [image.id];
-                $("#confirmation-dialog #confirmation-message")
-                    .html(__("Deleting photo in progress") + "&hellip;");
-                var buttons = $('.ui-dialog-buttonpane').find('button');
-                disableButtons(buttons);
-
-                if (action === "delete") {
-                    deletePhotos(albumId, ids, buttons);
-                }
-            },
-            no: function (event) {
-                $("#confirmation-dialog").dialog("close");
-            }
-        },
+        buttons: buttons,
         open: function () {
             $("#confirmation-dialog #confirmation-message")
                 .html(msg);
@@ -179,6 +184,8 @@ function displayPrevImage() {
 function updateAlbum() {
     var order = [];
 
+    $.ui.Mask.show(__("New photos sequence is being saved"));
+
     $(".image").each(function(index, element) {
         var inx = $(element).attr("id").replace(/[a-z]*/i, '');
         var id = album[inx].id;
@@ -187,7 +194,10 @@ function updateAlbum() {
 
     $.ajax({
         url: Routing.generate("_photogallery_api_reorder_photos", { album: albumId, photos: order.join(",") }),
+        done: function(response) {
+        },
         error: function (response) {
+            $.ui.Mask.hide();
             errorBox("Unexpected Exception.");
         },
         success: function (response) {
@@ -199,6 +209,8 @@ function updateAlbum() {
             if(typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
                 resp = response;
             }
+
+            $.ui.Mask.hide();
 
             if (resp.success === true) {
                 $("div#menu li#update-view").hide();
@@ -255,6 +267,7 @@ $(document).ready(function () {
         success: function (response) {
             album = response.data;
 
+
             if (typeof response.msg === "undefined") {
                 errorBox(response);
                 return;
@@ -306,6 +319,8 @@ $(document).ready(function () {
                         });
                     }
                 }, 1000);
+
+                $.ui.Mask.hide();
 
                 $("div#menu li#update-view").click(function(event){
                     updateAlbum();
@@ -363,17 +378,21 @@ $(document).ready(function () {
                     callback: function (key, options) {
 
                         var index = $(this).attr("id").replace(/\D+/, "");
-                        var image = album[index];
 
                         switch (key) {
                             case "change-cover":
-                                confirmationBox(image, key);
+                                $.ui.Mask.show(__("Setting up album cover"));
+                                setTimeout(function(){
+                                    $.ui.Mask.hide();
+                                }, 30000);
                                 break;
+
                             case "delete":
-                                confirmationBox(image, key);
+                                confirmationBox(index, key);
                                 break;
 
                             default:
+
                                 break;
                         }
                     },

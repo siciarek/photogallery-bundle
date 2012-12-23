@@ -1,4 +1,137 @@
-function getActionButton(action, id, object) {
+
+function processAction(action, object, id) {
+
+    switch(object) {
+        case "album":
+            processAlbumAction(action, id);
+            break;
+
+        case "image":
+            processImageAction(action, id);
+            break;
+
+        default:
+            break;
+    }
+}
+
+function processImageAction(action, id) {
+
+    var url = null;
+
+    switch(action) {
+        case "edit":
+            console.log(["processImageAction", "EDIT", id]);
+            return;
+
+        case "show":
+        case "hide":
+//            url = Routing.generate("_photogallery_api_show_hide_album", { album: id, action: action });
+            break;
+
+        case "delete":
+//            url = Routing.generate("_photogallery_api_delete_album", { album: id });
+            break;
+
+        case "cover":
+//            url = Routing.generate("_photogallery_api_delete_album", { album: id });
+            break;
+
+        default:
+            break;
+    }
+
+    $.ui.Mask.show(__("Wait a while"));
+    location.reload();
+
+    return;
+
+    $.ajax({
+        url: url,
+        error: function (response) {
+            $.ui.Mask.hide();
+            errorBox("Unexpected Exception.");
+        },
+        success: function (response) {
+            var resp = {
+                success: false,
+                msg: response
+            };
+
+            if(typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
+                resp = response;
+            }
+
+            $.ui.Mask.hide();
+
+            if (resp.success === true) {
+                // TODO: no reload action
+                $.ui.Mask.show(__("Wait a while"));
+                location.reload();
+            }
+            else {
+                errorBox(__(resp.msg));
+            }
+        }
+    });
+}
+
+function processAlbumAction(action, id) {
+
+    var url = null;
+
+    switch(action) {
+        case "edit":
+            console.log(["processAlbumAction", "EDIT", id]);
+            return;
+
+        case "show":
+        case "hide":
+            url = Routing.generate("_photogallery_api_show_hide_album", { album: id, action: action });
+            break;
+
+        case "delete":
+            url = Routing.generate("_photogallery_api_delete_album", { album: id });
+            break;
+
+        default:
+            break;
+    }
+
+    $.ui.Mask.show(__("Wait a while"));
+
+    $.ajax({
+        url: url,
+        error: function (response) {
+            $.ui.Mask.hide();
+            errorBox("Unexpected Exception.");
+        },
+        success: function (response) {
+            var resp = {
+                success: false,
+                msg: response
+            };
+
+            if(typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
+                resp = response;
+            }
+
+            $.ui.Mask.hide();
+
+            if (resp.success === true) {
+                // TODO: no reload action
+                $.ui.Mask.show(__("Wait a while"));
+                location.reload();
+            }
+            else {
+                errorBox(__(resp.msg));
+            }
+        }
+    });
+}
+
+
+function getActionButton(action, object, id) {
     var button = "";
     button += '<span title="' + __(action) + '" class="' + action + ' ' + object + ' action" id="element' + id + '">&nbsp;</span>';
 
@@ -12,17 +145,15 @@ function getAlbumToolbar(index) {
     var toolbar = "";
     toolbar += '<span class="toolbar">';
 
-    toolbar += getActionButton("edit", album.id, "album");
-    toolbar += getActionButton(showHide, album.id, "album");
-    toolbar += getActionButton("delete", album.id, "album");
+    toolbar += getActionButton("edit",   "album", album.id);
+    toolbar += getActionButton(showHide, "album", album.id);
+    toolbar += getActionButton("delete", "album", album.id);
 
     toolbar += '</span>';
     return toolbar;
 }
 
 function loadAlbumPhotos(albums) {
-
-    $("#subtitle").html(pageTitle);
 
     $("li#create-new-album-menu").show();
 
@@ -36,6 +167,7 @@ function loadAlbumPhotos(albums) {
             var albumId = "album" + albums[i].id;
             var descId = "desc" + i;
             var title = albums[i].title;
+            var hidden = albums[i].is_visible === false ? " hidden" : "";
             var numberOfPhotos = __("number of photos") + ": " + albums[i].images.length;
             var cover = albums[i].cover !== null
                 ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, slug: "cover", format: format}, true)
@@ -45,26 +177,27 @@ function loadAlbumPhotos(albums) {
                 numberOfPhotos = __("no photos");
             }
 
-            var description = albums[i].description;
+            var description = albums[i].description !== null ? albums[i].description : "";
 
             var toolbar = getAlbumToolbar(i);
 
             $("#albums").append("<div class='description' id='" + descId + "'></div>");
 
-            $("#albums div.description#" + descId).append("<div class='image' id='" + albumId + "'></div>")
+            $("#albums div.description#" + descId).append('<div class="image' + hidden + '" id="' + albumId + '"></div>');
 
             $("#" + albumId + "").css({
                 "background-image": "url(" + cover + ")"
             });
+
             if (title !== null && title !== "") {
-                $("#albums div.description#" + descId).append("<h2>" + title + "</h2>");
+                $("#albums div.description#" + descId).append('<h2 class="' + hidden + '">' + title + '</h2>');
             }
 
-            $("#albums div.description#" + descId).append("<p style='color:#AAAAAA !important;font-style:normal;'>"
+            $("#albums div.description#" + descId).append("<p class='number-of-photos'>"
                 + numberOfPhotos
                 + toolbar
                 + "</p>");
-            $("#albums div.description#" + descId).append("<p>" + description + "</p>");
+            $("#albums div.description#" + descId).append('<p class="' + hidden + '">' + description + '</p>');
             $("#albums").append('<div class="separator"></div>');
         }
     }
@@ -112,16 +245,17 @@ function loadAlbumPhotos(albums) {
 }
 
 $(document).ready(function () {
+
     $("div#albums").delegate("span.action", "click", function(event){
         var cls = $(event.target).attr("class").split(" ");
         var action = cls.shift();
         var object = cls.shift();
         var id = parseInt($(event.target).attr("id").replace(/\D+/, ''));
 
-        console.log([action, object, id]);
+        processAction(action, object, id);
     });
 
-    if (albums.length == 0) {
+    if (albums === null) {
 
         $.ajax({
             url: Routing.generate("_photogallery_api_album_list"),
@@ -129,10 +263,14 @@ $(document).ready(function () {
                 errorBox("Unexpected Exception.");
             },
             success: function (response) {
-
+                $.ui.Mask.hide();
                 albums = response;
             }
         });
+    }
+    else
+    {
+        $.ui.Mask.hide();
     }
 
     loadAlbumPhotos(albums)

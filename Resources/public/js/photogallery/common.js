@@ -1,8 +1,10 @@
-var albums = [];
+var albums = null;
+var currentImage = 0;
+var album = [];
 var albumName = "Album";
 var albumDescription = "";
-var frame = 8;
 var clickIsDisabled = false;
+var frame = 8;
 
 function enableButtons(buttons) {
     buttons.each(function (index, elem) {

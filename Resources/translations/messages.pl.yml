@@ -9,11 +9,12 @@ User settings    : Ustawienia użytkownika
 
 number of photos : liczba fotografii
 no photos        : w albumie brak fotografii
-wait a while     : zaczekaj chwilę
+Wait a while     : Zaczekaj chwilę
 
 # Main menu:
 homepage         : strona główna
 albums           : albumy
+refresh view     : odśwież widok
 create new album : załóż nowy album
 settings         : ustawienia
 undo changes     : usuń zmiany
@@ -28,7 +29,7 @@ Delete             : Usuń
 Use as album cover : Użyj jako okładki albumu
 Publish            : Pokaż
 Hide               : Ukryj
-Quit               : Zamknij
+Quit               : Zamknij menu
 
 # Toolbar:
 edit   : edytuj
@@ -51,6 +52,8 @@ Choose album               : Wybierz album
 Album creation in progress : Zakładanie albumu w toku
 Adding photo in progress   : Trwa dodawanie fotografii
 Deleting photo in progress : Trwa usuwanie fotografii
+New photos sequence is being saved : Zapisywanie kolejności fotografii
+
 number of chosen files     : liczba wybranych plików
 
 Requested album is not available.           : Żądany album nie jest dostępny.

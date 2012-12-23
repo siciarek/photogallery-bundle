@@ -3,15 +3,17 @@
 
     {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
 
-    <h1 id="subtitle">{{ "wait a while" | trans() }}&hellip;</h1>
+    <h1 id="subtitle">{{ title | trans() }} &#0151; {{ "Albums" | trans() }}</h1>
 
     <div id="albums"></div>
 
 
     <script type="text/javascript">
         // <![CDATA[
-        var pageTitle = "{{ title | trans() }} &#0151; {{ "Albums" | trans() }}";
+
         var defaultCover = "{{ config.default_cover }}";
+        $.ui.Mask.show(__("Wait a while"));
+
         // ]]>
     </script>
 

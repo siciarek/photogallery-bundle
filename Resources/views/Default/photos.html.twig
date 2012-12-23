@@ -3,7 +3,8 @@
 
     {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
 
-    <h1 id="subtitle">{{ "wait a while" | trans() }}&hellip;</h1>
+    <h1 id="subtitle">{{ title | trans() }}</h1>
+
     <p class="info"></p>
 
     <div id="images"></div>
@@ -28,8 +29,7 @@
 
         var albumId = {{ id }};
         var title = "{{ title | trans() }}";
-        var currentImage = 0;
-        var album = [];
+        $.ui.Mask.show(__("Wait a while"));
 
         // ]]>
     </script>

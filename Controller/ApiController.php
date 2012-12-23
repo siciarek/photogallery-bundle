@@ -151,6 +151,63 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/{album}/delete-album.json", name = "_photogallery_api_delete_album", requirements = {"album"="^[1-9]\d*$"})
+     * @Template()
+     */
+    public function deleteAlbumAction($album)
+    {
+        $frame = array();
+
+        try {
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+
+            $this->em->remove($album);
+            $this->em->flush();
+
+            $frame = $this->frames["ok"];
+            $frame["msg"] = "Album has been deleted successfuly";
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
+
+    /**
+     * @Route("/{album}/{action}-album.json", name = "_photogallery_api_show_hide_album", requirements = {"album"="^[1-9]\d*$", "action"="^(hide|show)$"})
+     * @Template()
+     */
+    public function showHideAlbumAction($album, $action)
+    {
+        $frame = array();
+
+        try {
+            $visible = $action === "show";
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+            $album->setIsVisible($visible);
+
+            $this->em->persist($album);
+            $this->em->flush();
+
+            $frame = $this->frames["ok"];
+            $frame["msg"] = sprintf("Album is now %s", $action === "show" ? "visible" : "hidden");
+
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
+
+    /**
      * @Route("/{album}/{photos}/delete-photos.json", name = "_photogallery_api_delete_photos", requirements = {"album"="^[1-9]\d*$", "photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
      * @Template()
      */

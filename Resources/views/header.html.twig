@@ -10,12 +10,13 @@
     {% stylesheets
     "@SiciarekPhotoGalleryBundle/Resources/public/css/reset.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/css/lang.css"
-    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/css/jquery.contextMenu.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css"
     %}
     <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
     {% endstylesheets %}
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css" />
 
     {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
 
@@ -27,6 +28,7 @@
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-Mask/jquery.ui.Mask.js"
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
@@ -35,6 +37,9 @@
 </head>
 <body>
 
+<script type="text/javascript">
+//    var loader = jQuery.ui.Mask.new();
+</script>
 
 <div id="menu">
     <div>
@@ -54,11 +59,18 @@
                                href="javascript:void(null)"
                                onclick="addPhotos('{{ "add photos" | trans() }}')">{{ text | trans() }}</a></li>
                     {% else %}
-                        <li>{{ link_to( text | trans(), route, true ) }}</li>
+                        {% if text == "refresh view" %}
+                            <li id="refresh-view"><a title="{{ text | trans() }}"
+                                                     href="javascript:void(null)"
+                                                     onclick="$.ui.Mask.show('{{ "Wait a while" | trans() }}');location.reload()">{{ text | trans() }}</a></li>
+                        {% else %}
+                            <li>{{ link_to( text | trans(), route, true ) }}</li>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
 
             {% endfor %}
+
 
             {#RIGHT SIDE MENUS#}
 
