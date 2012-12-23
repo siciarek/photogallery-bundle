@@ -1,4 +1,5 @@
 function loadAlbumPhotos(albums) {
+
     $("#subtitle").html(pageTitle);
 
     $("li#create-new-album-menu").show();

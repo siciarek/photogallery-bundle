@@ -296,7 +296,7 @@ $(document).ready(function () {
                 }
 
                 setTimeout(function () {
-                    for (var i = 0; i < album.length; i++) {
+                    for (var i = album.length - 1; i >= 0; i--) {
                         var imgId = "img" + i;
                         var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
                         $("#" + imgId).css({
@@ -304,7 +304,6 @@ $(document).ready(function () {
                             "background-color": "transparent",
                             "background-image": "url(" + thumbnail + ")"
                         });
-
                     }
                 }, 1000);
 
