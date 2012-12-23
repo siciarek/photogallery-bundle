@@ -347,6 +347,8 @@ class ApiController extends Controller
         $this->doctrine = $this->getDoctrine();
         $this->em = $this->doctrine->getEntityManager();
 
+        sleep(3);
+
         $qb = $this->em->createQueryBuilder();
 
         $qb->select("a", "c", "i")

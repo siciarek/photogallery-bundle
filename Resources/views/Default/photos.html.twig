@@ -3,8 +3,6 @@
 
     {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
 
-    <img style="display:none" id="image-buffer"/>
-
     <h1 id="subtitle">{{ "wait a while" | trans() }}&hellip;</h1>
     <p class="info"></p>
 
@@ -23,6 +21,7 @@
         <div class="content"></div>
     </div>
 
+    <img style="display:none" id="image-buffer"/>
 
     <script type="text/javascript">
         // <![CDATA[
@@ -31,22 +30,12 @@
         var title = "{{ title | trans() }}";
         var currentImage = 0;
         var album = [];
-        var contextMenuItems = {
-//                                "edit": {name: "Edit", icon: "edit"},
-//                                "cut": {name: "Cut", icon: "cut"},
-//                                "copy": {name: "Copy", icon: "copy"},
-//                                "paste": {name: "Paste", icon: "paste"},
-            "change-cover": {name: __("Use as album cover"), icon: "change-cover"},
-            "delete": {name: __("Delete"), icon: "delete"},
-            "sep1": "---------",
-            "quit": {name: __("Quit"), icon: "quit"}
-        }
 
         // ]]>
     </script>
 
     {% javascripts
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/photos.js' %}
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/photos.js' %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

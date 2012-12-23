@@ -8,17 +8,15 @@
     <div id="albums"></div>
 
 
-
     <script type="text/javascript">
         // <![CDATA[
         var pageTitle = "{{ title | trans() }} &#0151; {{ "Albums" | trans() }}";
-        var waitMessage = __("wait a while") + "&hellip";
         var defaultCover = "{{ config.default_cover }}";
         // ]]>
     </script>
 
     {% javascripts
-    '@SiciarekPhotoGalleryBundle/Resources/public/js/albums.js' %}
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/albums.js' %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

@@ -10,7 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
     /**
      * Default controller.
      *
-     * @Route("/photogallery")
+     * @Route("/")
      */
 class DefaultController extends Controller
 {
