@@ -43,25 +43,21 @@
             {#LEFT SIDE MENUS#}
 
             {% for text, route in menu %}
-                {% if text == "homepage" %}
-                    <li><a title="{{ text | trans() }}"
-                           href="{{ app.request.uriForPath("/") }}">{{ text | trans() }}</a></li>
 
+                {% if text == "create new album" %}
+                    <li id="create-new-album-menu"><a title="{{ text | trans() }}"
+                           href="javascript:void(null)"
+                           onclick="addNewAlbum('{{ "create new album" | trans() }}')">{{ text | trans() }}</a></li>
                 {% else %}
-                    {% if text == "create new album" %}
-                        <li id="create-new-album-menu"><a title="{{ text | trans() }}"
+                    {% if text == "add photos" %}
+                        <li id="add-photos-menu"><a title="{{ text | trans() }}"
                                href="javascript:void(null)"
-                               onclick="addNewAlbum('{{ "create new album" | trans() }}')">{{ text | trans() }}</a></li>
+                               onclick="addPhotos('{{ "add photos" | trans() }}')">{{ text | trans() }}</a></li>
                     {% else %}
-                        {% if text == "add photos" %}
-                            <li id="add-photos-menu"><a title="{{ text | trans() }}"
-                                   href="javascript:void(null)"
-                                   onclick="addPhotos('{{ "add photos" | trans() }}')">{{ text | trans() }}</a></li>
-                        {% else %}
-                            <li>{{ link_to( text | trans(), route, true ) }}</li>
-                        {% endif %}
+                        <li>{{ link_to( text | trans(), route, true ) }}</li>
                     {% endif %}
                 {% endif %}
+
             {% endfor %}
 
             {#RIGHT SIDE MENUS#}

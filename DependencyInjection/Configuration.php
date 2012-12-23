@@ -24,26 +24,28 @@ class Configuration implements ConfigurationInterface
 
         $rootNode->children()
             ->scalarNode("title")
-                ->defaultValue($defaults["title"])
-                ->end()
+            ->defaultValue($defaults["title"])
+            ->end()
+            ->scalarNode("homepage")
+            ->defaultValue($defaults["homepage"])
+            ->end()
             ->scalarNode("style")
-                ->defaultValue($defaults["style"])
-                ->end()
+            ->defaultValue($defaults["style"])
+            ->end()
             ->scalarNode("default_cover")
-                ->defaultValue($defaults["default_cover"])
-                ->end()
+            ->defaultValue($defaults["default_cover"])
+            ->end()
             ->scalarNode("uploads_directory")
-                ->defaultValue($defaults["uploads_directory"])
-                ->end()
+            ->defaultValue($defaults["uploads_directory"])
+            ->end()
             ->arrayNode("thumbnails")
-                ->addDefaultsIfNotSet()
-                ->children()
-                    ->booleanNode("cache")->defaultTrue()->end()
-                    ->scalarNode("format")->defaultValue($defaults["thumbnails"]["format"])->end()
-                    ->scalarNode("width")->defaultValue($defaults["thumbnails"]["width"])->end()
-                    ->scalarNode("height")->defaultValue($defaults["thumbnails"]["height"])->end()
-                ->end()
-        ;
+            ->addDefaultsIfNotSet()
+            ->children()
+            ->booleanNode("cache")->defaultTrue()->end()
+            ->scalarNode("format")->defaultValue($defaults["thumbnails"]["format"])->end()
+            ->scalarNode("width")->defaultValue($defaults["thumbnails"]["width"])->end()
+            ->scalarNode("height")->defaultValue($defaults["thumbnails"]["height"])->end()
+            ->end();
 
         return $treeBuilder;
     }
@@ -57,13 +59,14 @@ class Configuration implements ConfigurationInterface
     private function getDefaults()
     {
         return array(
-            "title" => "Photo Gallery",
-            "style" => "/bundles/siciarekphotogallery/css/photogallery.css",
-            "default_cover" => "/bundles/siciarekphotogallery/images/default-cover.png",
+            "title"             => "Photo Gallery",
+            "homepage"          => "_photogallery_homepage",
+            "style"             => "/bundles/siciarekphotogallery/css/photogallery.css",
+            "default_cover"     => "/bundles/siciarekphotogallery/images/default-cover.png",
             "uploads_directory" => "%kernel.root_dir%/../web/uploads/photogallery",
-            "thumbnails" => array(
+            "thumbnails"        => array(
                 "format" => "png",
-                "width" => 150,
+                "width"  => 150,
                 "height" => 100
             ),
         );

@@ -54,7 +54,6 @@ class DefaultController extends Controller
      */
     public function settingsAction()
     {
-
         return $this->output;
     }
 
@@ -78,7 +77,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/", name="_photogallery_home")
+     * @Route("/", name="_photogallery_homepage")
      * @Template()
      */
     public function indexAction()
