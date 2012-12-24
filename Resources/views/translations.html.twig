@@ -4,7 +4,7 @@
         {% for key, value in translations %}
         "{{ key }}" : "{{ key | trans() }}",
         {% endfor %}
-        "{{ title }}" : "{{ title | trans() }}"
+        "{{ config.title }}" : "{{ config.title | trans() | raw }}"
     };
 
     /**

@@ -3,13 +3,13 @@
 
     {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
 
-    <h1 id="subtitle">{{ title | trans() }}</h1>
+    <h1 id="subtitle">{{ config.title | trans() }}</h1>
 
     <p class="info"></p>
 
     <div id="images"></div>
 
-    <div id="image-preview" style="display:none">
+    <div id="image-preview" class="context-menu-trigger" style="display:none">
         <div id="prev-image" title="{{ "Previous" | trans() }}"></div>
         <div id="next-image" title="{{ "Next" | trans() }}"></div>
     </div>
@@ -28,7 +28,7 @@
         // <![CDATA[
 
         var albumId = {{ id }};
-        var title = "{{ title | trans() }}";
+        var title = "{{ config.title }}";
         $.ui.Mask.show(__("Wait a while"));
 
         // ]]>

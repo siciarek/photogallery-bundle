@@ -2,7 +2,7 @@
 <html class="photogallery">
 <head>
     <meta charset="UTF-8"/>
-    <title>{{ title | trans() }}</title>
+    <title>{{ config.title | trans() }}</title>
 
     <script type="text/javascript" src="{{ asset("bundles/fosjsrouting/js/router.js") }}"></script>
     <script type="text/javascript" src="{{ path("fos_js_routing_js", {"callback": "fos.Router.setData"}) }}"></script>
@@ -25,6 +25,7 @@
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.cookie.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/msgbox.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/common.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/actions.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js"
@@ -48,6 +49,7 @@
             {#LEFT SIDE MENUS#}
 
             {% for text, route in menu %}
+
 
                 {% if text == "create new album" %}
                     <li id="create-new-album-menu"><a title="{{ text | trans() }}"

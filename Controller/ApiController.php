@@ -151,21 +151,36 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{album}/delete-album.json", name = "_photogallery_api_delete_album", requirements = {"album"="^[1-9]\d*$"})
+     * @Route("/{id}/delete-{element}.json", name = "_photogallery_api_delete_element", requirements = {"id"="^[1-9]\d*$", "element"="^(album|image)$"})
      * @Template()
      */
-    public function deleteAlbumAction($album)
+    public function deleteElementAction($id, $element)
     {
         $frame = array();
 
         try {
-            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+            $elemname = ucfirst($element);
 
-            $this->em->remove($album);
+            $obj = $this->em->getRepository("SiciarekPhotoGalleryBundle:" . $elemname)->find($id);
+
+            if($element === "image") {
+                $albums = $obj->getAlbums();
+
+                foreach($albums as $album) {
+                    if ($album->getCover()->getId() === $obj->getId()) {
+                        $album->setCover(null);
+
+                        $this->em->persist($album);
+                        $this->em->flush();
+                    }
+                }
+            }
+
+            $this->em->remove($obj);
             $this->em->flush();
 
             $frame = $this->frames["ok"];
-            $frame["msg"] = "Album has been deleted successfuly";
+            $frame["msg"] = $elemname . " has been deleted successfuly";
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
             $frame["msg"] = $e->getMessage();
@@ -178,23 +193,26 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{album}/{action}-album.json", name = "_photogallery_api_show_hide_album", requirements = {"album"="^[1-9]\d*$", "action"="^(hide|show)$"})
+     * @Route("/{id}/{action}-{element}.json", name = "_photogallery_api_show_hide_element", requirements = {"id"="^[1-9]\d*$", "action"="^(hide|show)$", "element"="^(album|image)$"})
      * @Template()
      */
-    public function showHideAlbumAction($album, $action)
+    public function showHideElementAction($id, $action, $element)
     {
         $frame = array();
 
         try {
             $visible = $action === "show";
-            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
-            $album->setIsVisible($visible);
 
-            $this->em->persist($album);
+            $elemname = ucfirst($element);
+
+            $obj = $this->em->getRepository("SiciarekPhotoGalleryBundle:" . $elemname)->find($id);
+            $obj->setIsVisible($visible);
+
+            $this->em->persist($obj);
             $this->em->flush();
 
             $frame = $this->frames["ok"];
-            $frame["msg"] = sprintf("Album is now %s", $action === "show" ? "visible" : "hidden");
+            $frame["msg"] = sprintf($elemname . " is now %s", $action === "show" ? "visible" : "hidden");
 
         } catch (\Exception $e) {
             $frame = $this->frames["error"];

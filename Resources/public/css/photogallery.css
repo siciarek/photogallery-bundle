@@ -123,10 +123,14 @@ html.photogallery div#content div#albums div.image {
     height: 166px;
 }
 
-html.photogallery div#content div#albums .hidden {
+html.photogallery div#content .hidden {
     opacity: 0.3;
     -moz-opacity: 0.3;
     filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.3);
+}
+
+html.photogallery div#content #images .hidden {
+    background-color: dimgray !important;
 }
 
 html.photogallery div#content div#albums div.description {

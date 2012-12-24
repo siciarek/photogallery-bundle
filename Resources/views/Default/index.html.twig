@@ -1,7 +1,7 @@
 {% extends 'SiciarekPhotoGalleryBundle::public.layout.html.twig' %}
 {% block content %}
 
-    <h1 id="subtitle">{{ title | trans() }}</h1>
+    <h1 id="subtitle">{{ config.title | trans() }}</h1>
 
     <h3>{{ "homepage.body" | trans({}, "PhotoGalleryBundle") | raw }}</h3>
 

@@ -1,185 +1,5 @@
 
-function displayCurrentImage(direction) {
-
-    var image = album[currentImage];
-    var format = "jpg";
-    var width = image.width + frame * 2;
-    var height = image.height + frame * 2;
-
-    var arrowTop = height / 2 - $("#prev-image").height() / 2 - 10;
-    var arrowLeft = -5;
-    var arrowRight = image.width - 4 * $("#prev-image").width() + 10 - arrowLeft + 2 * frame;
-
-    $("#prev-image").css({
-        top: arrowTop,
-        left: arrowLeft
-    });
-
-    $("#next-image").css({
-        top: arrowTop,
-        left: arrowRight
-    });
-
-    var config = {
-        dialogClass: "image-preview-dialog",
-        width: width,
-        height: height,
-        closeOnEscape: true,
-        draggable: false,
-        modal: true,
-        buttons: {},
-        resizable: false,
-        open: function () {
-            $(".ui-widget-overlay").bind("click", function () {
-                $("#image-preview").dialog("close");
-            });
-            displayCurrentImage(1);
-
-            var statusBarDescription = "&#9745; " + albumName + " (" + (1 * currentImage + 1) + "/" + (album.length) + ")";
-
-            if (image.title !== null && image.title.length > 0) {
-                statusBarDescription += " :: <span>" + image.title + "</span>";
-            }
-
-            $("#status-bar .content").html(statusBarDescription);
-            $("#status-bar").show();
-        },
-        close: function () {
-            $("#status-bar").hide();
-        }
-    };
-
-    bufferImage(currentImage, album, format, direction);
-
-    $(".image-preview-dialog").css({
-        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: image.id, slug: "image", format: format}, true) + ")"
-    });
-
-    $("#image-preview").dialog(config);
-}
-
-function bufferImage(currentImage, album, format, direction) {
-
-    var bufferedImage = currentImage;
-
-    if (direction > 0) {
-        ++bufferedImage;
-        bufferedImage %= album.length;
-    }
-    else {
-        bufferedImage = bufferedImage == 0 ? album.length : bufferedImage;
-        --bufferedImage;
-    }
-
-    var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: album[bufferedImage].id, slug: "image", format: format}, true);
-    $("#image-buffer").attr("src", bufferedImageSrc);
-}
-
-function deletePhotos(ids, index) {
-
-    var photos = ids.join(",");
-
-    $.ajax({
-        url: Routing.generate("_photogallery_api_delete_photos", { album: albumId, photos: photos }),
-        type: "POST",
-
-        error: function (response) {
-            $("#confirmation-dialog").dialog("close");
-            errorBox("Unexpected Exception.");
-        },
-
-        success: function (response) {
-
-            var defresp = {
-                success: false,
-                msg: response
-            };
-
-            var resp = typeof response.msg === "undefined" ? defresp : response;
-            $.ui.Mask.hide();
-
-            if (response.success === true) {
-                delete album[index];
-                $("#img" + index).hide();
-            }
-            else {
-                errorBox(response.msg);
-            }
-        }
-    });
-}
-
-function confirmationBox(index, action) {
-    var msg = __("Are you sure you want to delete this photo?");
-
-    var icon = action === "delete" ? "trash" : "image";
-
-    var yes = __("Yes");
-    var no = __("No");
-
-    var image = album[index];
-
-    var buttons = {};
-    buttons[yes] = function (event) {
-        var ids = [image.id];
-        $("#confirmation-dialog").dialog("close");
-        $.ui.Mask.show(__("Deleting photo in progress"));
-
-        switch(action) {
-            case "delete":
-                deletePhotos(ids, index);
-                break;
-            default:
-                break;
-        }
-    };
-
-    buttons[no] = function (event) {
-        $("#confirmation-dialog").dialog("close");
-    };
-
-    var confirmationDialog = {
-        title: getTitle(__(title), icon),
-        dialogClass: "photogallery-form",
-        width: 350,
-        height: 330,
-        closeOnEscape: false,
-        draggable: true,
-        resizable: false,
-        modal: true,
-        buttons: buttons,
-        open: function () {
-            $("#confirmation-dialog #confirmation-message")
-                .html(msg);
-            $("#confirmation-dialog").css({
-                "background": "url(" + image.thumbnail.src + ") center no-repeat"
-            });
-
-            $(".ui-dialog-titlebar-close").css({
-                "display": "none"
-            });
-        },
-        close: function () {
-
-        }
-    };
-
-    $("#confirmation-dialog").dialog(confirmationDialog);
-}
-
-function displayNextImage() {
-    ++currentImage;
-    currentImage %= album.length;
-    $("#image-preview").dialog("close");
-    displayCurrentImage(1);
-}
-
-function displayPrevImage() {
-    currentImage = currentImage == 0 ? album.length : currentImage;
-    --currentImage;
-    $("#image-preview").dialog("close");
-    displayCurrentImage(-1);
-}
+// CHANGE IMAGES SEQUENCE:
 
 function updateAlbum() {
     var order = [];
@@ -248,6 +68,105 @@ function undoChanges() {
     $("#images").append('<div style="clear:both"></div>');
 }
 
+// DISPLAY LOGIC:
+
+function displayCurrentImage(direction) {
+
+    var image = album[currentImage];
+    var format = "jpg";
+    var width = image.width + frame * 2;
+    var height = image.height + frame * 2;
+
+    var arrowTop = height / 2 - $("#prev-image").height() / 2 - 10;
+    var arrowLeft = -5;
+    var arrowRight = image.width - 4 * $("#prev-image").width() + 10 - arrowLeft + 2 * frame;
+
+    $("#prev-image").css({
+        top: arrowTop,
+        left: arrowLeft
+    });
+
+    $("#next-image").css({
+        top: arrowTop,
+        left: arrowRight
+    });
+
+    var config = {
+        dialogClass: "image-preview-dialog",
+        width: width,
+        height: height,
+        closeOnEscape: true,
+        draggable: false,
+        modal: true,
+        buttons: {},
+        resizable: false,
+        open: function () {
+            $(".ui-widget-overlay").bind("click", function () {
+                $("#image-preview").dialog("close");
+            });
+            displayCurrentImage(1);
+
+            var statusBarDescription = "&#9745; " + albumName + " (" + (1 * currentImage + 1) + "/" + (album.length) + ")";
+
+            if (image.title !== null && image.title.length > 0) {
+                statusBarDescription += " :: <span>" + image.title + "</span>";
+            }
+
+            $("#status-bar .content").html(statusBarDescription);
+            $("#status-bar").show();
+        },
+        close: function () {
+            $("#status-bar").hide();
+        }
+    };
+
+    bufferImage(currentImage, album, format, direction);
+
+    $(".image-preview-dialog").css({
+        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: image.id, slug: "image", format: format}, true) + ")"
+    });
+
+    $("#image-preview").dialog(config);
+}
+
+function displayNextImage() {
+    do {
+        ++currentImage;
+        currentImage %= album.length;
+    } while(album[currentImage] === null);
+
+    $("#image-preview").dialog("close");
+    displayCurrentImage(1);
+}
+
+function displayPrevImage() {
+    currentImage = currentImage == 0 ? album.length : currentImage;
+    do {
+        --currentImage;
+    } while(album[currentImage] === null);
+    $("#image-preview").dialog("close");
+    displayCurrentImage(-1);
+}
+
+function bufferImage(currentImage, album, format, direction) {
+
+    var bufferedImage = currentImage;
+
+    if (direction > 0) {
+        ++bufferedImage;
+        bufferedImage %= album.length;
+    }
+    else {
+        bufferedImage = bufferedImage == 0 ? album.length : bufferedImage;
+        --bufferedImage;
+    }
+
+    var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: album[bufferedImage].id, slug: "image", format: format}, true);
+    $("#image-buffer").attr("src", bufferedImageSrc);
+}
+
+// CONFIRMATION:
+
 
 $(document).ready(function () {
 
@@ -294,10 +213,11 @@ $(document).ready(function () {
                 for (var i = 0; i < album.length; i++) {
                     var imgId = "img" + i;
                     var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
+                    var hidden = album[i].is_visible === false ? " hidden" : "";
 
                     album[i].thumbnail["src"] = thumbnail;
 
-                    $("#images").append('<div class="image" id="' + imgId + '"></div>');
+                    $("#images").append('<div class="image context-menu-trigger' + hidden + '" id="' + imgId + '"></div>');
 
                     $("#" + imgId).css({
                         "width": album[i].thumbnail.width
@@ -311,12 +231,16 @@ $(document).ready(function () {
                 setTimeout(function () {
                     for (var i = album.length - 1; i >= 0; i--) {
                         var imgId = "img" + i;
-                        var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: album[i].id, format: format});
                         $("#" + imgId).css({
                             "border": "none",
-                            "background-color": "transparent",
-                            "background-image": "url(" + thumbnail + ")"
+                            "background-image": "url(" + album[i].thumbnail["src"] + ")"
                         });
+
+                        if(album[i].is_visible === true) {
+                            $("#" + imgId).css({
+                                "background-color": "transparent"
+                            });
+                        }
                     }
                 }, 1000);
 
@@ -373,22 +297,22 @@ $(document).ready(function () {
                 });
 
                 $.contextMenu({
-                    selector: ".image",
+                    selector: ".context-menu-trigger",
 
-                    callback: function (key, options) {
+                    callback: function (action, options) {
 
-                        var index = $(this).attr("id").replace(/\D+/, "");
-
-                        switch (key) {
+                        switch (action) {
                             case "change-cover":
                                 $.ui.Mask.show(__("Setting up album cover"));
                                 setTimeout(function(){
                                     $.ui.Mask.hide();
                                 }, 30000);
                                 break;
-
+                            case "show":
+                            case "hide":
                             case "delete":
-                                confirmationBox(index, key);
+                                processAction(action, "image", album[currentImage].id);
+                                break;
                                 break;
 
                             default:
@@ -399,11 +323,12 @@ $(document).ready(function () {
 
                     build: function($trigger, e) {
 
-                        var index = $($trigger).attr("id").replace(/\D+/, "");
-                        var image = album[index];
+                        var id = $($trigger).attr("id");
+                        currentImage = id == "image-preview"
+                             ? currentImage
+                             : id.replace(/\D+/, "");
 
-                        var index = $($trigger).attr("id").replace(/\D+/, "");
-                        var image = album[index];
+                        var image = album[currentImage];
 
                         var items = {
                             "edit": {name: "Edit", icon: "edit"},
@@ -431,6 +356,7 @@ $(document).ready(function () {
                 bufferImage(0, album, format);
             }
             else {
+                $.ui.Mask.hide();
                 $("#images").append('<p style="margin-top:100px;text-align:center;color:gray !important;">' + __("Current album contains no photos.") + '</p>');
             }
         }
