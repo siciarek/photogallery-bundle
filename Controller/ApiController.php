@@ -119,6 +119,7 @@ class ApiController extends Controller
             "data"      => array(),
         );
 
+        $id = intval($request->get("id"));
         $title = $request->get("title");
         $description = $request->get("description");
         $description = trim($description);
@@ -133,10 +134,16 @@ class ApiController extends Controller
         $sequence_number = $query->getSingleScalarResult();
 
         $album = new Album();
+        $album->setSequenceNumber($sequence_number + 1);
+
+        if($id > 0) {
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
+        }
+
         $album->setTitle($title);
         $album->setDescription($description);
         $album->setIsVisible($is_visible);
-        $album->setSequenceNumber($sequence_number + 1);
+
         $this->em->persist($album);
         $this->em->flush();
 

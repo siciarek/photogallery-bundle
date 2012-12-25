@@ -1,14 +1,33 @@
-
 function processAction(action, element, id, message) {
 
     message = message || "Wait a while";
     var url = null;
     var params = {};
 
-
-    switch(action) {
+    switch (action) {
         case "edit":
-            console.log(["processAction", action, element, id]);
+
+            switch (element) {
+                case "image":
+                    for (var i = 0; i < album.length; i++) {
+                        if (obj.id == id) {
+                            openAlbumForm(__("update image data"), obj);
+                            break;
+                        }
+                    }
+                    break;
+
+                case "album":
+                    for (var i = 0; i < albums.length; i++) {
+                        var obj = albums[i];
+                        if (obj.id == id) {
+                            openAlbumForm(__("update album data"), obj);
+                            break;
+                        }
+                    }
+                    break;
+            }
+
             return;
 
         case "show":
@@ -18,7 +37,8 @@ function processAction(action, element, id, message) {
 
         case "delete":
             url = Routing.generate("_photogallery_api_delete_element", { id: id, element: element });
-            break;
+            confirmDeleteBox(id, element, url);
+            return;
 
         default:
             break;
@@ -45,7 +65,7 @@ function remoteAction(url, params) {
                 msg: response
             };
 
-            if(typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
+            if (typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
                 resp = response;
             }
 
@@ -63,30 +83,40 @@ function remoteAction(url, params) {
     });
 }
 
-function confirmationBox(index, action, element) {
+function confirmDeleteBox(id, element, url) {
 
     var msg = __("Are you sure you want to delete this " + element + "?");
 
-    var icon = action === "delete" ? "trash" : "image";
-    var yes = __("Yes");
-    var no = __("No");
+    var yes = __("Delete");
+    var no = __("Cancel");
+    var dialogTitle = __(title);
 
-    var image = album[index];
+    if(element === "image") {
+        for(var i = 0; i < album.length; i++) {
+            if(album[i].id === id) {
+                thumbnail = album[i].thumbnail.src;
+                break;
+            }
+        }
+    }
+
+    if(element === "album") {
+        for(var i = 0; i < albums.length; i++) {
+            if(albums[i].id === id) {
+                thumbnail = albums[i].cover.src;
+                dialogTitle = albums[i].title;
+                break;
+            }
+        }
+    }
 
     var buttons = {};
 
     buttons[yes] = function (event) {
-
+        $.ui.Mask.show(__("Deleting in progress"));
         $("#confirmation-dialog").dialog("close");
-
-        switch(action) {
-            case "delete":
-                $("#image-preview").hide();
-                processAction(action, "image", image.id);
-                break;
-            default:
-                break;
-        }
+        $("#image-preview").hide();
+        remoteAction(url);
     };
 
     buttons[no] = function (event) {
@@ -94,7 +124,7 @@ function confirmationBox(index, action, element) {
     };
 
     $("#confirmation-dialog").dialog({
-        title: getTitle(__(title), icon),
+        title: getTitle(dialogTitle, "trash"),
         dialogClass: "photogallery-form",
         width: 350,
         height: 330,
@@ -104,14 +134,26 @@ function confirmationBox(index, action, element) {
         modal: true,
         buttons: buttons,
         open: function () {
-            $("#confirmation-dialog #confirmation-message")
-                .html(msg);
+            $("#confirmation-dialog #confirmation-message").html(msg);
+
             $("#confirmation-dialog").css({
-                "background": "url(" + image.thumbnail.src + ") center no-repeat"
+                "background": "url(" + thumbnail + ") center no-repeat"
             });
 
             $(".ui-dialog-titlebar-close").css({
                 "display": "none"
+            });
+
+            $('.ui-dialog-buttonpane').find('button:contains("' + __("Delete") + '")').button({
+                icons: {
+                    primary: 'ui-icon-circle-check'
+                }
+            });
+
+            $('.ui-dialog-buttonpane').find('button:contains("' + __("Cancel") + '")').button({
+                icons: {
+                    primary: 'ui-icon-circle-close'
+                }
             });
         },
         close: function () {

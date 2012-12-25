@@ -13,6 +13,11 @@
     }
 %}
 
+
+<div id="confirmation-dialog" style="display:none">
+    <div id="confirmation-message" class="dialog-message"></div>
+</div>
+
 {% for key, data in forms %}
 
 <div id="{{ data.formid }}" class="create-new-element">
@@ -21,6 +26,8 @@
 
         <div id="info-{{ key }}"
              class="form-info">{{ data.info | trans() }}</div>
+
+        <input type="hidden" name="id" />
 
         <div style="float:left">
             {% if key == "photos" %}
@@ -52,7 +59,7 @@
                 </label>
                 <span style="display:inline-block;width:8px;"></span>
                 <label style="display:inline-block;left-margin:24px"
-                       for="hidden-{{ key }}">{{ "do not publish" | trans() }}</label>
+                       for="hidden-{{ key }}">{{ "hidden" | trans() }}</label>
                 <input type="checkbox" name="hidden" id="hidden-{{ key }}"/>
             </div>
             <div style="height:195px;overflow:auto;border:1px solid silver;">
@@ -107,7 +114,16 @@ function showFileDialog(label) {
     $(id).trigger("click");
 }
 
-function addNewAlbum(title) {
+function openAlbumForm(title, data) {
+    title = title || __("add new album");
+
+    data = data || {
+        id: 0,
+        title: "",
+        descripion: "",
+        is_visible: true
+    };
+
     $("#create-new-album-form").dialog({
         title: getTitle(title, "image"),
         dialogClass: "photogallery-form",
@@ -124,7 +140,7 @@ function addNewAlbum(title) {
                 var nof = $("#number-of-chosen-files-album").text().replace(/\d+/, 0);
                 $("#number-of-chosen-files-album").html(nof);
             },
-            "{{ "Create" | trans() }}": function (event) {
+            "{{ "Save" | trans() }}": function (event) {
 
                 $.ui.Mask.show(__("Album creation in progress"));
 
@@ -166,6 +182,13 @@ function addNewAlbum(title) {
                     primary: 'ui-icon-circle-close'
                 }
             });
+
+            $("input[name='id']").val(data.id);
+            $("#title-album").val(data.title);
+            $("#description-album").val(data.description);
+            $("#hidden-album").attr("checked", !data.is_visible);
+
+            console.log(data);
         },
 
         close: function () {
@@ -177,7 +200,11 @@ function addNewAlbum(title) {
     }).show();
 }
 
-function addPhotos(title) {
+function openImagesForm(title, data) {
+
+    title = title || __("add images");
+    data = data || {};
+
     $("#add-photos-form").dialog({
         title: getTitle(title, "image"),
         dialogClass: "photogallery-form",
@@ -194,9 +221,9 @@ function addPhotos(title) {
                 var nof = $("#number-of-chosen-files-photos").text().replace(/\d+/, 0);
                 $("#number-of-chosen-files-photos").html(nof);
             },
-            "{{ "Add" | trans() }}": function (event) {
+            "{{ "Save" | trans() }}": function (event) {
 
-                $.ui.Mask.show(__("Adding photo in progress"));
+                $.ui.Mask.show(__("Saving photo in progress"));
 
                 $("form.add-photos-form").ajaxSubmit({
                     error: function (response) {
@@ -257,13 +284,10 @@ function enableSubmit() {
     var photosAlbumVal = $("select#album-photos").val() > 0;
     var photosFilesVal = $("input#photos-photos").val() !== ""
 
-    $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
-        disabled: !(albumsTitleVal || albumsDescriptionVal)
+    $('.ui-dialog-buttonpane').find('button:contains("{{ "Save" | trans() }}")').button({
+        disabled: !(albumsTitleVal || albumsDescriptionVal) || !(photosFilesVal && photosAlbumVal)
     });
 
-    $('.ui-dialog-buttonpane').find('button:contains("{{ "Add" | trans() }}")').button({
-        disabled: !(photosFilesVal && photosAlbumVal)
-    });
 }
 
 $(document).ready(function () {

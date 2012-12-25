@@ -42,18 +42,20 @@ show   : pokaż
 choose album               : wybierz album
 title                      : tytuł
 description                : opis
-hidden                     : ukryj
+hidden                     : ukryte
 do not publish             : nie publikuj
 add photos                 : dodaj fotografie
+
 Reset                      : Resetuj
-Add                        : Dodaj
-Create                     : Załóż
+Save                       : Zapisz
 Cancel                     : Anuluj
+
 Choose album               : Wybierz album
-Album creation in progress : Zakładanie albumu w toku
-Adding photo in progress   : Trwa dodawanie fotografii
-Deleting photo in progress : Trwa usuwanie fotografii
-New photos sequence is being saved : Zapisywanie kolejności fotografii
+Saving album in progress   : Zapisywanie albumu w toku
+Saving photo in progress   : Zapisywanie fotografii w toku
+Deleting photo in progress : Usuwanie albumu w toku
+Deleting album in progress : Usuwanie fotografii w toku
+New photos sequence is being saved : Zapisywanie nowej kolejności fotografii
 
 number of chosen files     : liczba wybranych plików
 

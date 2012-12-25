@@ -35,6 +35,11 @@ function loadAlbumPhotos(albums) {
                 ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, slug: "cover", format: format}, true)
                 : defaultCover;
 
+            if(cover === defaultCover)
+                albums[i].cover = {"src" : cover};
+            else
+                albums[i].cover["src"] = cover;
+
             if (albums[i].images.length === 0) {
                 numberOfPhotos = __("no photos");
             }
