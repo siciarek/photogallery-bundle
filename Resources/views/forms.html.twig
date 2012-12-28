@@ -1,17 +1,13 @@
-{%
-    set forms = {
-        "photos" : {
-            "formid" : "add-photos-form",
-            "action" :  url_for("_photogallery_api_add_new_photos", true),
-            "info"   : "Choose at least one photo. Title and description are optional.",
-        },
-        "album" : {
-            "formid" : "create-new-album-form",
-            "action" : url_for("_photogallery_api_create_new_album", true),
-            "info"   : "New album requires title or description. Adding at least one photo is recommended.",
-        }
-    }
-%}
+{% set forms = {
+"images" : {
+"action" :  url_for("_photogallery_api_add_new_photos", true),
+"info"   : "Choose at least one image. Title and description are optional.",
+},
+"album" : {
+"action" : url_for("_photogallery_api_create_new_album", true),
+"info"   : "New album requires title or description. Adding at least one image is recommended.",
+}
+} %}
 
 
 <div id="confirmation-dialog" style="display:none">
@@ -20,352 +16,72 @@
 
 {% for key, data in forms %}
 
-<div id="{{ data.formid }}" class="create-new-element">
-    <form class="{{ data.formid }}" enctype="application/x-www-form-urlencoded" method="post"
-          action="{{ data.action }}">
+    <div id="{{ key }}-form" class="create-new-element">
+        <form class="{{ key }}-form" enctype="application/x-www-form-urlencoded" method="post"
+              action="{{ data.action }}">
 
-        <div id="info-{{ key }}"
-             class="form-info">{{ data.info | trans() }}</div>
+            <div id="info-{{ key }}" class="form-info">{{ data.info | trans() }}</div>
 
-        <input type="hidden" name="id" />
+            <input type="hidden" name="id"/>
 
-        <div style="float:left">
-            {% if key == "photos" %}
-            <div class="xelem">
-                <label for="album-{{ key }}">{{ "album" | trans() }}</label>
-                <select name="album" id="album-{{ key }}">
-                    <option value="0">{{ "Choose album" | trans() }}</option>
-                </select>
+            {#LEFT COLUMN#}
+
+            <div class="form-colum left">
+
+                {% if key == "images" %}
+                    <div class="form-field" style="width: 430px;">
+                        <label for="album-{{ key }}">{{ "album" | trans() }}</label>
+                        <select name="album" id="album-{{ key }}" class="validalbum">
+                            <option value="0">{{ "Choose album" | trans() }}</option>
+                        </select>
+                    </div>
+                {% endif %}
+
+                <div class="form-field">
+                    <label for="title-{{ key }}">{{ "title" | trans() }}</label>
+                    <input style="width: 430px;" type="text" name="title"
+                           id="title-{{ key }}"
+                           class="{% if key == "album" %}titleordescription{% endif %}"/>
+                </div>
+
+                <div class="form-field">
+                    <label for="description-{{ key }}">{{ "description" | trans() }}</label>
+                    <textarea name="description" id="description-{{ key }}"></textarea>
+                </div>
+
             </div>
-            {% endif %}
 
-            <div class="xelem">
-                <label for="title-{{ key }}">{{ "title" | trans() }}</label> <input type="text" name="title"
-                                                                                 id="title-{{ key }}"/>
+            {#RIGHT COLUMN#}
+
+            <div class="form-colum right">
+
+                <div class="form-field">
+                    <span id="label-photos-{{ key }}" onclick="showFileDialog(this)">{{ "add images" | trans() }}</span>
+
+                    <label class="cabinet">
+                        <input size="1" class="images" multiple="multiple"
+                               type="file" name="photos[]" id="photos-{{ key }}"/>
+                    </label>
+
+                    <span style="display:inline-block;width:8px;"></span>
+
+                    <label style="display:inline-block"
+                           for="hidden-{{ key }}">{{ "hidden" | trans() }}</label>
+                    <input type="checkbox" name="hidden" id="hidden-{{ key }}"/>
+                </div>
+                <div class="files-list">
+                    <ul id="files-to-upload-{{ key }}" style="padding:8px;">
+                    </ul>
+                </div>
+                <div id="number-of-chosen-files-{{ key }}" class="form-info"
+                     style="text-align:left">{{ "number of chosen files" | trans() }}: 0
+                </div>
+
             </div>
 
-            <div class="xelem">
-                <label for="description-{{ key }}">{{ "description" | trans() }}</label>
-                <textarea name="description" id="description-{{ key }}"/></textarea>
-            </div>
-        </div>
-        <div style="margin-left:24px;float:left;">
-            <div class="xelem">
-                <span id="label-photos-{{ key }}" onclick="showFileDialog(this)"
-                      style="cursor:default;font-weight:bold;display:inline-block;margin-right:3px;">{{ "add photos" | trans() }}
-                    :</span>
-                <label class="cabinet">
-                    <input size="1" multiple="multiple" type="file" name="photos[]" id="photos-{{ key }}"/>
-                </label>
-                <span style="display:inline-block;width:8px;"></span>
-                <label style="display:inline-block;left-margin:24px"
-                       for="hidden-{{ key }}">{{ "hidden" | trans() }}</label>
-                <input type="checkbox" name="hidden" id="hidden-{{ key }}"/>
-            </div>
-            <div style="height:195px;overflow:auto;border:1px solid silver;">
-                <ul id="files-to-upload-{{ key }}" style="padding:8px;">
-                </ul>
-            </div>
-            <div id="number-of-chosen-files-{{ key }}" class="form-info" style="text-align:left">{{ "number of chosen files" | trans() }}: 0</div>
-        </div>
+            <div style="clear:both"></div>
 
-        <div style="clear:both"></div>
-
-    </form>
-</div>
+        </form>
+    </div>
 
 {% endfor %}
-
-
-<style type="text/css">
-
-    .ui-widget-content,
-    .ui-dialog {
-        /*background-color: #ffffe0 !important;*/
-    }
-
-    html.photogallery div.create-new-element div.xelem {
-        width: 350px;
-    }
-
-    html.photogallery div.image-preview-dialog .ui-dialog-titlebar {
-        padding: 0;
-        display: none;
-    }
-
-    html.photogallery .ui-dialog.image-preview-dialog {
-        padding: 0;
-    }
-
-    html.photogallery .ui-widget-overlay {
-        background: black;
-        opacity: 0.7;
-    }
-
-    html.photogallery .ui-widget-content {
-        border: 0;
-    }
-</style>
-
-<script type="text/javascript">
-
-function showFileDialog(label) {
-    var id = $(label).attr("id").replace(/^\w+\-/, "#");
-    $(id).trigger("click");
-}
-
-function openAlbumForm(title, data) {
-    title = title || __("add new album");
-
-    data = data || {
-        id: 0,
-        title: "",
-        descripion: "",
-        is_visible: true
-    };
-
-    $("#create-new-album-form").dialog({
-        title: getTitle(title, "image"),
-        dialogClass: "photogallery-form",
-        width: 770,
-        height: 480,
-        closeOnEscape: true,
-        draggable: true,
-        modal: true,
-        resizable: false,
-        buttons: {
-            "{{ "Reset" | trans() }}": function (event) {
-                $("form.create-new-album-form").get(0).reset();
-                $("#files-to-upload-album").empty();
-                var nof = $("#number-of-chosen-files-album").text().replace(/\d+/, 0);
-                $("#number-of-chosen-files-album").html(nof);
-            },
-            "{{ "Save" | trans() }}": function (event) {
-
-                $.ui.Mask.show(__("Album creation in progress"));
-
-                $("form.create-new-album-form").ajaxSubmit({
-                    error: function (response) {
-                        $.ui.Mask.hide();
-                        errorBox("Album Unexpected Exception.");
-                    },
-                    success: function (response) {
-                        location.href = Routing.generate("_album", {id: response.data.album, slug: "album"}, true);
-                    }
-                });
-            },
-            "{{ "Cancel" | trans() }}": function (event) {
-                $(this).dialog("close");
-            }
-        },
-
-        open: function () {
-            $(".ui-widget-overlay").bind("click", function () {
-                $("#create-new-album-form").dialog("close");
-            });
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-arrow-w'
-                }
-            });
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Create" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-check'
-                },
-                disabled: true
-            });
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-close'
-                }
-            });
-
-            $("input[name='id']").val(data.id);
-            $("#title-album").val(data.title);
-            $("#description-album").val(data.description);
-            $("#hidden-album").attr("checked", !data.is_visible);
-
-            console.log(data);
-        },
-
-        close: function () {
-            $("form.create-new-album-form").get(0).reset();
-            $("#files-to-upload-album").empty();
-            var nof = $("#number-of-chosen-files-album").text().replace(/\d+/, 0);
-            $("#number-of-chosen-files-album").html(nof);
-        }
-    }).show();
-}
-
-function openImagesForm(title, data) {
-
-    title = title || __("add images");
-    data = data || {};
-
-    $("#add-photos-form").dialog({
-        title: getTitle(title, "image"),
-        dialogClass: "photogallery-form",
-        width: 770,
-        height: 480,
-        closeOnEscape: true,
-        draggable: true,
-        modal: true,
-        resizable: false,
-        buttons: {
-            "{{ "Reset" | trans() }}": function (event) {
-                $("form.add-photos-form").get(0).reset();
-                $("#files-to-upload-photos").empty();
-                var nof = $("#number-of-chosen-files-photos").text().replace(/\d+/, 0);
-                $("#number-of-chosen-files-photos").html(nof);
-            },
-            "{{ "Save" | trans() }}": function (event) {
-
-                $.ui.Mask.show(__("Saving photo in progress"));
-
-                $("form.add-photos-form").ajaxSubmit({
-                    error: function (response) {
-                        $.ui.Mask.hide();
-                        errorBox("Photos Unexpected Exception.");
-                    },
-                    success: function (response) {
-                        location.href = Routing.generate("_album", {id: response.data.album, slug: "album"}, true);
-                    }
-                });
-            },
-            "{{ "Cancel" | trans() }}": function (event) {
-                $(this).dialog("close");
-            }
-        },
-
-        open: function () {
-
-            $(".ui-widget-overlay").bind("click", function () {
-                $("#add-photos-form").dialog("close");
-            });
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Reset" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-arrow-w'
-                }
-            });
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Add" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-check'
-                },
-                disabled: true
-            });
-
-            $('.ui-dialog-buttonpane').find('button:contains("{{ "Cancel" | trans() }}")').button({
-                icons: {
-                    primary: 'ui-icon-circle-close'
-                }
-            });
-
-        },
-
-        close: function () {
-            $("form.add-photos-form").get(0).reset();
-            $("#files-to-upload-photos").empty();
-            var nof = $("#number-of-chosen-files-photos").text().replace(/\d+/, 0);
-            $("#number-of-chosen-files-photos").html(nof);
-        }
-    }).show();
-}
-
-function enableSubmit() {
-
-    var albumsTitleVal = $("input#title-album").val() !== "";
-    var albumsDescriptionVal = $("textarea#description-album").val() !== "";
-
-    var photosAlbumVal = $("select#album-photos").val() > 0;
-    var photosFilesVal = $("input#photos-photos").val() !== ""
-
-    $('.ui-dialog-buttonpane').find('button:contains("{{ "Save" | trans() }}")').button({
-        disabled: !(albumsTitleVal || albumsDescriptionVal) || !(photosFilesVal && photosAlbumVal)
-    });
-
-}
-
-$(document).ready(function () {
-
-    $.ajax({
-        url: Routing.generate("_photogallery_api_album_list"),
-        async: false,
-        error: function (response) {
-            errorBox("Unexpected Exception.");
-        },
-        success: function (response) {
-            albums = response;
-
-            for (var i = 0; i < albums.length; i++) {
-                var selected = typeof albumId != 'undefined' && albumId === albums[i].id || albums.length === 1
-                    ? ' selected="selected"'
-                    : "";
-                $("select#album-photos").append("<option value='" + albums[i].id + "'" + selected + ">" + albums[i].title + "</option>");
-            }
-        }
-    });
-
-    $("[class=cabinet]").mouseover(function (event) {
-        $(this).css({
-            "background-image": "url(/bundles/siciarekphotogallery/images/btn-choose-file-on.png)"
-        });
-    });
-
-    $("[class=cabinet]").mouseout(function (event) {
-        $(this).css({
-            "background-image": "url(/bundles/siciarekphotogallery/images/btn-choose-file-off.png)"
-        });
-    });
-
-    $("[id^=label-photos]").mouseover(function (event) {
-        var fields = $(this).siblings();
-        $(fields[0]).css({
-            "background-image": "url(/bundles/siciarekphotogallery/images/btn-choose-file-on.png)"
-        });
-    });
-
-    $("[id^=label-photos]").mouseout(function (event) {
-        var fields = $(this).siblings();
-        $(fields[0]).css({
-            "background-image": "url(/bundles/siciarekphotogallery/images/btn-choose-file-off.png)"
-        });
-    });
-
-
-    $("form  input[id^=photos]").change(function (event) {
-        enableSubmit();
-
-        var files = $(this).prop("files");
-
-        var sufix = $(this).attr("id").replace(/^\w+\-/, "");
-
-
-        var nof = $("#number-of-chosen-files-" + sufix).text().replace(/\d+/, files.length);
-        $("#number-of-chosen-files-" + sufix).html(nof);
-
-        $("#files-to-upload-" + sufix).empty();
-
-        $(files).each(function (index, elem) {
-            $("#files-to-upload-" + sufix).append("<li>" + elem.name + "</li>");
-        });
-    });
-
-    $("div#add-photos-form form  input#photos-photos").change(function (event) {
-        enableSubmit();
-    });
-
-    $("div#create-new-album-form form  input#title-album").keyup(function (event) {
-        enableSubmit();
-    });
-
-    $("div#create-new-album-form form  textarea#description-album").keyup(function (event) {
-        enableSubmit();
-    });
-});
-
-</script>

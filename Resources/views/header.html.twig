@@ -11,35 +11,39 @@
     "@SiciarekPhotoGalleryBundle/Resources/public/css/reset.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/css/lang.css"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/css/jquery.contextMenu.css"
-    "@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css"
-    %}
+    "@SiciarekPhotoGalleryBundle/Resources/public/css/photogallery.css" %}
     <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
     {% endstylesheets %}
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css" />
+    <link rel="stylesheet" type="text/css" media="screen"
+          href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"/>
 
     {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
 
+    {% include "SiciarekPhotoGalleryBundle::translations.html.twig" %}
+
     {% javascripts
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-1.8.3.min.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.validate.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.cookie.js"
+
     "@SiciarekPhotoGalleryBundle/Resources/public/js/msgbox.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/common.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/validators.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/actions.js"
-    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery.form.js"
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/forms.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"
     "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-context-menu/jquery.contextMenu.js"
-    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-Mask/jquery.ui.Mask.js"
-    %}
+    "@SiciarekPhotoGalleryBundle/Resources/public/js/jquery-ui-Mask/jquery.ui.Mask.js" %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
-    {% include "SiciarekPhotoGalleryBundle::translations.html.twig" %}
 </head>
 <body>
 
 <script type="text/javascript">
-//    var loader = jQuery.ui.Mask.new();
+    //    var loader = jQuery.ui.Mask.new();
 </script>
 
 <div id="menu">
@@ -50,21 +54,21 @@
 
             {% for text, route in menu %}
 
-
                 {% if text == "create new album" %}
-                    <li id="create-new-album-menu"><a title="{{ text | trans() }}"
+                    <li><a title="{{ text | trans() }}"
                            href="javascript:void(null)"
                            onclick="openAlbumForm()">{{ text | trans() }}</a></li>
                 {% else %}
-                    {% if text == "add photos" %}
-                        <li id="add-photos-menu"><a title="{{ text | trans() }}"
+                    {% if text == "add images" %}
+                        <li><a title="{{ text | trans() }}"
                                href="javascript:void(null)"
                                onclick="openImagesForm()">{{ text | trans() }}</a></li>
                     {% else %}
                         {% if text == "refresh view" %}
-                            <li id="refresh-view"><a title="{{ text | trans() }}"
-                                                     href="javascript:void(null)"
-                                                     onclick="$.ui.Mask.show('{{ "Wait a while" | trans() }}');location.reload()">{{ text | trans() }}</a></li>
+                            <li><a title="{{ text | trans() }}"
+                                   href="javascript:void(null)"
+                                   onclick="$.ui.Mask.show('{{ "Wait a while" | trans() }}');location.reload()">{{ text | trans() }}</a>
+                            </li>
                         {% else %}
                             <li>{{ link_to( text | trans(), route, true ) }}</li>
                         {% endif %}
@@ -78,11 +82,16 @@
 
             {% for lang, tit in languages %}
                 <li style="margin-top: 1px;" class="menu-right lang {{ lang }}" title="{{ tit }}"
-                    onclick="location.href='{{ url_for("_photogallery_change_locale", { "locale": lang }) }}'">&nbsp;</li>
+                    onclick="location.href='{{ url_for("_photogallery_change_locale", { "locale": lang }) }}'">
+                    &nbsp;</li>
             {% endfor %}
 
-            <li id="undo-changes" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "undo changes" | trans() }}</a></li>
-            <li id="update-view" style="display:none" class="menu-right"><a href="javascript:void(null)" onclick="">{{ "update view" | trans() }}</a></li>
+            <li id="undo-changes" style="display:none" class="menu-right"><a href="javascript:void(null)"
+                                                                             onclick="">{{ "undo changes" | trans() }}</a>
+            </li>
+            <li id="update-view" style="display:none" class="menu-right"><a href="javascript:void(null)"
+                                                                            onclick="">{{ "update view" | trans() }}</a>
+            </li>
 
 
 

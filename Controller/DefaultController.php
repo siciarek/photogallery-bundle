@@ -59,9 +59,8 @@ class DefaultController extends Controller
      * @Route("/{id}/{slug}.html", name = "_album", requirements = {"id"="^[1-9]\d*$", "slug"="^\S+$"})
      * @Template()
      */
-    public function photosAction($id, $slug)
+    public function imagesAction($id, $slug)
     {
-        $this->output["id"] = $id;
         return $this->output;
     }
 

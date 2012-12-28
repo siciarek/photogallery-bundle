@@ -19,6 +19,13 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
             length: 255
             nullable: true
 #            gedmo: [ translatable ]
+        slug:
+          type: string
+          length: 255
+          gedmo:
+            slug:
+              fields:
+                - title
         description:
             type: text
             length: 10000

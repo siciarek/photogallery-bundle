@@ -1,3 +1,52 @@
+function errorHandler(response) {
+    $.ui.Mask.hide();
+    errorBox(__("Unexpected Exception."));
+}
+
+function successHandler(response) {
+    var resp = {
+        success: false,
+        msg: response
+    };
+
+    if (typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
+        resp = response;
+    }
+
+    $.ui.Mask.hide();
+
+    if (resp.success === true) {
+        // TODO: no reload action
+        infoBox(resp.msg);
+
+//        $.ui.Mask.show(__("Wait a while"));
+//        location.reload();
+    }
+    else {
+        errorBox(__(resp.msg));
+    }
+}
+
+
+function formAction(form) {
+    var p = $(form).parents()[0];
+    var element = $(p).attr("id").replace(/^(\w+)\-\w+$/, "$1");
+    var messages = {
+        album:  "Saving album in progress",
+        images: "Saving images in progress"
+    };
+
+    $(form).ajaxSubmit({
+        error: errorHandler,
+        success: successHandler
+    });
+
+    $(p).dialog("close");
+
+    $.ui.Mask.show(__(messages[element]));
+
+}
+
 function processAction(action, element, id, message) {
 
     message = message || "Wait a while";
@@ -8,20 +57,21 @@ function processAction(action, element, id, message) {
         case "edit":
 
             switch (element) {
-                case "image":
-                    for (var i = 0; i < album.length; i++) {
-                        if (obj.id == id) {
-                            openAlbumForm(__("update image data"), obj);
-                            break;
-                        }
-                    }
-                    break;
 
                 case "album":
                     for (var i = 0; i < albums.length; i++) {
                         var obj = albums[i];
                         if (obj.id == id) {
-                            openAlbumForm(__("update album data"), obj);
+                            openAlbumForm(__("Edit album data"), obj);
+                            break;
+                        }
+                    }
+                    break;
+
+                case "image":
+                    for (var i = 0; i < album.length; i++) {
+                        if (obj.id == id) {
+                            openAlbumForm(__("Edit image data"), obj);
                             break;
                         }
                     }
@@ -55,31 +105,8 @@ function remoteAction(url, params) {
     $.ajax({
         url: url,
         data: params,
-        error: function (response) {
-            $.ui.Mask.hide();
-            errorBox("Unexpected Exception.");
-        },
-        success: function (response) {
-            var resp = {
-                success: false,
-                msg: response
-            };
-
-            if (typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
-                resp = response;
-            }
-
-            $.ui.Mask.hide();
-
-            if (resp.success === true) {
-                // TODO: no reload action
-                $.ui.Mask.show(__("Wait a while"));
-                location.reload();
-            }
-            else {
-                errorBox(__(resp.msg));
-            }
-        }
+        error: errorHandler,
+        success: successHandler
     });
 }
 
@@ -160,11 +187,4 @@ function confirmDeleteBox(id, element, url) {
 
         }
     });
-}
-
-function getActionButton(action, object, id) {
-    var button = "";
-    button += '<span title="' + __(action) + '" class="' + action + ' ' + object + ' action" id="element' + id + '">&nbsp;</span>';
-
-    return button;
 }

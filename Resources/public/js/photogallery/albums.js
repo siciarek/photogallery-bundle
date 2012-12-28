@@ -1,19 +1,6 @@
 
 
-function getAlbumToolbar(index) {
-    var album = albums[index];
-    var showHide = albums[index].is_visible === true ? "hide" : "show";
 
-    var toolbar = "";
-    toolbar += '<span class="toolbar">';
-
-    toolbar += getActionButton("edit",   "album", album.id);
-    toolbar += getActionButton(showHide, "album", album.id);
-    toolbar += getActionButton("delete", "album", album.id);
-
-    toolbar += '</span>';
-    return toolbar;
-}
 
 function loadAlbumPhotos(albums) {
 
@@ -32,7 +19,7 @@ function loadAlbumPhotos(albums) {
             var hidden = albums[i].is_visible === false ? " hidden" : "";
             var numberOfPhotos = __("number of photos") + ": " + albums[i].images.length;
             var cover = albums[i].cover !== null
-                ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, slug: "cover", format: format}, true)
+                ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, format: format}, true)
                 : defaultCover;
 
             if(cover === defaultCover)
@@ -107,28 +94,30 @@ function loadAlbumPhotos(albums) {
         }
 
         var id = $(this).attr("id").replace(/[a-z]*/i, '');
-        location.href = Routing.generate("_album", {id: id, slug: "album"}, true);
+
+        var slug = "album";
+
+        for(var i = 0; i < albums.length; i++) {
+            if(albums[i].id == id) {
+                if(albums[i].slug.length > 0) {
+                    slug = albums[i].slug;
+                }
+                break;
+            }
+        }
+
+        location.href = Routing.generate("_album", {id: id, slug: slug}, true);
     });
 }
 
 $(document).ready(function () {
 
-    $("div#albums").delegate("span.action", "click", function(event){
-        var cls = $(event.target).attr("class").split(" ");
-        var action = cls.shift();
-        var object = cls.shift();
-        var id = parseInt($(event.target).attr("id").replace(/\D+/, ''));
-
-        processAction(action, object, id);
-    });
 
     if (albums === null) {
 
         $.ajax({
             url: Routing.generate("_photogallery_api_album_list"),
-            error: function (response) {
-                errorBox("Unexpected Exception.");
-            },
+            error: errorHandler,
             success: function (response) {
                 $.ui.Mask.hide();
                 albums = response;

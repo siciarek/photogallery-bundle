@@ -27,6 +27,11 @@ class Album
     /**
      * @var string
      */
+    private $slug;
+
+    /**
+     * @var string
+     */
     private $description;
 
     /**
@@ -121,6 +126,29 @@ class Album
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     * @return Album
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string 
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 
     /**

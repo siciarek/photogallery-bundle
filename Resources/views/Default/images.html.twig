@@ -1,0 +1,40 @@
+{% extends "SiciarekPhotoGalleryBundle::public.layout.html.twig" %}
+{% block content %}
+
+    {% include 'SiciarekPhotoGalleryBundle::forms.html.twig' %}
+
+    <h1 id="subtitle">{{ config.title | trans() }}</h1>
+
+    <p class="info"></p>
+
+    <div id="images"></div>
+
+    <div id="image-preview" class="context-menu-trigger" style="display:none">
+        <div id="prev-image"></div>
+        <div id="next-image"></div>
+    </div>
+
+    <div id="status-bar" style="display:none">
+        <div class="content"></div>
+    </div>
+
+    <img style="display:none" id="image-buffer"/>
+
+    <script type="text/javascript">
+        // <![CDATA[
+
+        var title = "{{ config.title | trans() }}";
+        var defaultCover = "{{ config.default_cover }}";
+
+        $.ui.Mask.show(__("Wait a while"));
+
+        // ]]>
+    </script>
+
+
+    {% javascripts
+    '@SiciarekPhotoGalleryBundle/Resources/public/js/photogallery/images.js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

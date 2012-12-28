@@ -123,6 +123,7 @@ class ApiController extends Controller
         $title = $request->get("title");
         $description = $request->get("description");
         $description = trim($description);
+
         $title = trim($title);
         $description = empty($description) ? null : $description;
         $title = empty($title) ? null : $title;
@@ -480,8 +481,9 @@ class ApiController extends Controller
                 $images = $data[0]["images"];
             }
 
+            $cover_id = $album->getCover() === null ? 0 : $album->getCover()->getId();
             $frame = $this->frames["data"];
-            $frame["msg"] = sprintf("%s;;;%s", $album->getTitle(), $album->getDescription());
+            $frame["msg"] = sprintf("%d;;;%s;;;%s;;;%d;;;%d", $album->getId(), $album->getTitle(), $album->getDescription(), $album->getIsVisible(), $cover_id);
             $frame["data"] = $images;
             $frame["totalCount"] = count($frame["data"]);
         } catch (\Exception $e) {
