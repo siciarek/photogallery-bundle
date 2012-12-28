@@ -55,12 +55,12 @@
             {% for text, route in menu %}
 
                 {% if text == "create new album" %}
-                    <li><a title="{{ text | trans() }}"
+                    <li id="create-new-album-menu"><a title="{{ text | trans() }}"
                            href="javascript:void(null)"
                            onclick="openAlbumForm()">{{ text | trans() }}</a></li>
                 {% else %}
                     {% if text == "add images" %}
-                        <li><a title="{{ text | trans() }}"
+                        <li id="add-images-menu"><a title="{{ text | trans() }}"
                                href="javascript:void(null)"
                                onclick="openImagesForm()">{{ text | trans() }}</a></li>
                     {% else %}

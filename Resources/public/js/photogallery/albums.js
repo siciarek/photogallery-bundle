@@ -8,7 +8,7 @@ function loadAlbumPhotos(albums) {
 
     if (albums.length > 0) {
 
-        $("li#add-photos-menu").show();
+        $("li#add-images-menu").show();
 
         for (var i = 0; i < albums.length; i++) {
 

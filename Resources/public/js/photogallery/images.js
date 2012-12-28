@@ -248,7 +248,7 @@ $(document).ready(function () {
             $("p.info").html(album.description);
 
             $("li#create-new-album-menu").show();
-            $("li#add-photos-menu").show();
+            $("li#add-images-menu").show();
 
             if (images.length > 0) {
                 var format = "jpg";  // TODO: images[i].format;
@@ -403,6 +403,7 @@ $(document).ready(function () {
                     build: function ($trigger, e) {
 
                         var id = $($trigger).attr("id");
+
                         currentImage = id == "image-preview"
                             ? currentImage
                             : id.replace(/\D+/, "");
@@ -410,7 +411,7 @@ $(document).ready(function () {
                         var image = images[currentImage];
 
                         var items = {
-                            "edit": {name: "Edit", icon: "edit"},
+                            "edit": {name: __("Edit"), icon: "edit"},
                             "delete": {name: __("Delete"), icon: "delete"}
                         };
 
