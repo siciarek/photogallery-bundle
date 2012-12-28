@@ -17,10 +17,10 @@ function successHandler(response) {
 
     if (resp.success === true) {
         // TODO: no reload action
-        infoBox(resp.msg);
+//        infoBox(resp.msg);
 
-//        $.ui.Mask.show(__("Wait a while"));
-//        location.reload();
+        $.ui.Mask.show(__("Wait a while"));
+        location.reload();
     }
     else {
         errorBox(__(resp.msg));
@@ -140,7 +140,7 @@ function confirmDeleteBox(id, element, url) {
     var buttons = {};
 
     buttons[yes] = function (event) {
-        $.ui.Mask.show(__("Deleting in progress"));
+        $.ui.Mask.show(__("Deleting " + element + " in progress"));
         $("#confirmation-dialog").dialog("close");
         $("#image-preview").hide();
         remoteAction(url);

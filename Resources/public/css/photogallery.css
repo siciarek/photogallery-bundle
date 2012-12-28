@@ -152,8 +152,8 @@ html.photogallery div#content div#images div.image {
 
 html.photogallery div#content div#images div.image {
     margin-bottom: 0;
-    width: 200px;
-    height: 150px;
+    width: 216px;
+    height: 168px;
 }
 
 html.photogallery div#content div#albums div.image {
@@ -171,7 +171,7 @@ html.photogallery div#content .hidden {
 }
 
 html.photogallery div#content #images .hidden {
-    background-color: dimgray !important;
+    background-color: black !important;
 }
 
 html.photogallery div#content div#albums div.description {
@@ -502,7 +502,15 @@ html.photogallery div#status-bar .content span {
     background-image: url(/bundles/siciarekphotogallery/images/icons/node-image.png);
 }
 
-.context-menu-item:hover {
-    background-color: #0A246A;
-    color: white;
+.context-menu-item.icon-rotate-cw {
+    background-image: url(/bundles/siciarekphotogallery/images/icons/rotate-cw.png);
 }
+
+.context-menu-item.icon-rotate-ccw {
+    background-image: url(/bundles/siciarekphotogallery/images/icons/rotate-ccw.png);
+}
+
+/*.context-menu-item:hover {*/
+    /*background-color: #0A246A;*/
+    /*color: white;*/
+/*}*/

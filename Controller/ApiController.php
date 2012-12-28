@@ -216,6 +216,15 @@ class ApiController extends Controller
             $obj = $this->em->getRepository("SiciarekPhotoGalleryBundle:" . $elemname)->find($id);
             $obj->setIsVisible($visible);
 
+            if($visible === false and $element === "image") {
+                $temp = $obj->getAlbums();
+                $album = $temp[0];
+                if($album->getCover()->getId() === $obj->getId()) {
+                    $album->setCover(null);
+                    $this->em->persist($album);
+                }
+            }
+
             $this->em->persist($obj);
             $this->em->flush();
 
@@ -346,7 +355,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{album}/{image}/delete-photos.json", name = "_photogallery_api_change_cover", requirements = {"album"="^[1-9]\d*$", "image"="^[1-9]\d*$"})
+     * @Route("/{album}/{image}/change-album-cover.json", name = "_photogallery_api_change_album_cover", requirements = {"album"="^[1-9]\d*$", "image"="^[1-9]\d*$"})
      */
     public function changeCoverAction($album, $image)
     {

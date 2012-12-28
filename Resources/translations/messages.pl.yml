@@ -32,9 +32,13 @@ Next               : Następne
 Previous           : Poprzednie
 Delete             : Usuń
 Use as album cover : Użyj jako okładki albumu
-Publish            : Pokaż
+Edit               : Edytuj
+Show               : Pokaż
 Hide               : Ukryj
 Quit               : Zamknij menu
+Rotate             : Obróć
+CW                 : W prawo
+CCW                : W lewo
 
 # Toolbar:
 edit   : edytuj
@@ -60,13 +64,14 @@ Reset                      : Resetuj
 Save                       : Zapisz
 Cancel                     : Anuluj
 
+
 Choose album               : Wybierz album
 Saving album in progress   : Zapisywanie albumu w toku
 Saving images in progress  : Zapisywanie fotografii w toku
 Deleting album in progress : Usuwanie albumu w toku
 Deleting image in progress : Usuwanie fotografii w toku
 New images sequence is being saved : Zapisywanie nowej kolejności fotografii
-
+Changing album cover       : Zmiana okładki albumu
 number of chosen files     : liczba wybranych plików
 
 Requested album is not available.           : Żądany album nie jest dostępny.
