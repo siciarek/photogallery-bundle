@@ -17,19 +17,18 @@ function loadAlbumPhotos(albums) {
             var descId = "desc" + i;
             var title = albums[i].title;
             var hidden = albums[i].is_visible === false ? " hidden" : "";
-            var numberOfPhotos = __("number of photos") + ": " + albums[i].images.length;
+            var numberOfPhotos = albums[i].images.length > 0
+                ?  __("number of images") + ": " + albums[i].images.length
+                : __("no images");
             var cover = albums[i].cover !== null
                 ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, format: format}, true)
                 : defaultCover;
 
-            if(cover === defaultCover)
+            if(cover === defaultCover) {
                 albums[i].cover = {"src" : cover};
-            else
-                albums[i].cover["src"] = cover;
-
-            if (albums[i].images.length === 0) {
-                numberOfPhotos = __("no photos");
             }
+
+            albums[i].cover["src"] = cover;
 
             var description = albums[i].description !== null ? albums[i].description : "";
 

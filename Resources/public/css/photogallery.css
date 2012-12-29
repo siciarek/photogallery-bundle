@@ -46,7 +46,7 @@ html.photogallery div.create-new-element form .form-info {
     color: #666;
     margin-top: 10px;
     margin-bottom: 16px;
-    display: none;
+    /*display: none;*/
 }
 
 html.photogallery div.create-new-element span[id^="label-photos"] {

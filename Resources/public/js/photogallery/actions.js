@@ -44,8 +44,10 @@ function formAction(form) {
         images: "Saving images in progress"
     };
 
+    var id = parseInt($(form).find("input[name='id']").val());
+
     var landingpages = {
-        "album": Routing.generate("_albums"),
+        "album": id > 0 ? location.href : Routing.generate("_albums"),
         "image": location.href
     };
 

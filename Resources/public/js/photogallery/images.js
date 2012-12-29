@@ -391,7 +391,6 @@ $(document).ready(function () {
                                     break;
 
                                 default:
-                                    warningBox(action);
                                     break;
                             }
                         }
@@ -471,7 +470,7 @@ $(document).ready(function () {
             }
             else {
                 $.ui.Mask.hide();
-                $("#images").append('<p style="width: 640px;float:left;margin-top:70px;text-align:center;color:gray !important;">' + __("Current album contains no photos.") + '</p>');
+                $("#images").append('<p style="width: 640px;float:left;margin-top:70px;text-align:center;color:gray !important;">' + __("Album contains no photos.") + '</p>');
                 $("#images").append('<div style="clear:both"></div>');
             }
         }
