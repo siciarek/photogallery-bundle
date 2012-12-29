@@ -1,10 +1,6 @@
 // CHANGE IMAGES SEQUENCE:
 
-function changeAlbumCover(image_id) {
-    processAction("change-cover", "image", image_id, __("Changing album cover"));
-}
-
-function updateAlbum() {
+function updateView() {
     var order = [];
 
     $.ui.Mask.show(__("New photos sequence is being saved"));
@@ -20,27 +16,15 @@ function updateAlbum() {
     $.ajax({
         url: Routing.generate("_photogallery_api_reorder_images", { images: order.join(",") }),
         error: errorHandler,
-        success: function (response) {
-            var resp = {
-                success: false,
-                msg: response
-            };
-
-            if (typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
-                resp = response;
-            }
-
-            $.ui.Mask.hide();
-
-            if (resp.success === true) {
+        success: function (data, textStatus, jqXHR) {
+            var onsuccess = function (data) {
                 $("div#menu li#update-view").hide();
                 $("div#menu li#undo-changes").hide();
 
                 infoBox(__(resp.msg));
-            }
-            else {
-                errorBox(__(resp.msg));
-            }
+            };
+
+            successHandler(data, textStatus, jqXHR, onsuccess);
         }
     });
 }
@@ -305,7 +289,7 @@ $(document).ready(function () {
                 }, 1000);
 
                 $("div#menu li#update-view").click(function (event) {
-                    updateAlbum();
+                    updateView();
                 });
 
                 $("div#menu li#undo-changes").click(function (event) {
@@ -383,29 +367,40 @@ $(document).ready(function () {
                     selector: ".context-menu-trigger",
 
                     callback: function (action, options) {
+                        if (action.match(/^(copy|move)\-to/)) {
+                            var temp = action.split(";");
+                            var act = temp[0];
+                            var albumid = temp[1];
+                            var imageid = temp[2];
+                            processAction(act, "image", [albumid, imageid]);
+                        }
+                        else {
+                            switch (action) {
+                                case "rotate-cw":
+                                case "rotate-ccw":
 
-                        switch (action) {
-                            case "rotate-cw":
-                            case "rotate-ccw":
+                                    var direction = action.replace(/^\w+\-/, "");
+                                    infoBox(direction);
 
-                                var direction = action.replace(/^\w+\-/, "");
-                                infoBox(direction);
+                                    break;
+                                case "change-cover":
+                                case "show":
+                                case "hide":
+                                case "delete":
+                                    processAction(action, "image", images[currentImage].id);
+                                    break;
 
-                                break;
-                            case "change-cover":
-                            case "show":
-                            case "hide":
-                            case "delete":
-                                processAction(action, "image", images[currentImage].id);
-                                break;
-
-                            default:
-
-                                break;
+                                default:
+                                    warningBox(action);
+                                    break;
+                            }
                         }
                     },
 
                     build: function ($trigger, e) {
+
+                        var copyToAlbumMenuItems = {};
+                        var moveToAlbumMenuItems = {};
 
                         var id = $($trigger).attr("id");
 
@@ -420,18 +415,44 @@ $(document).ready(function () {
                             "delete": {name: __("Delete"), icon: "delete"}
                         };
 
-                        items["rotate"] = {
-                            name: __("Rotate"), icon: "rotate",
-                            items: {
-                                "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
-                                "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" }
+                        if (albums.length > 1) {
+                            $.each(albums, function (index, elem) {
+                                if (elem.id != album.id) {
+                                    copyToAlbumMenuItems["copy-to;" + elem.id + ";" + image.id] = { name: elem.title + '&nbsp;&nbsp;' };
+                                    moveToAlbumMenuItems["move-to;" + elem.id + ";" + image.id] = { name: elem.title + '&nbsp;&nbsp;'};
+                                }
+                            });
+
+                            items["copy-to"] = {
+                                name: __("Copy to"),
+                                icon: "copy",
+                                items: copyToAlbumMenuItems
                             }
-                        };
+
+                            items["move-to"] = {
+                                name: __("Move to"),
+                                icon: "move",
+                                items: moveToAlbumMenuItems
+                            }
+                        }
+
+//                        items["rotate"] = {
+//                            name: __("Rotate"),
+//                            icon: "rotate",
+//                            items: {
+//                                "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
+//                                "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" }
+//                            }
+//                        };
 
                         if (image.is_visible === true) {
                             items["hide"] = {name: __("Hide"), icon: "hide"};
                             items["sep1"] = "---------";
-                            items["change-cover"] = {disabled: image.id == album.cover_id, name: __("Use as album cover") + '&nbsp;&nbsp;', icon: "change-cover"};
+                            items["change-cover"] = {
+                                disabled: image.id == album.cover_id,
+                                name: __("Use as album cover") + '&nbsp;&nbsp;',
+                                icon: "change-cover"
+                            };
                         }
                         else {
                             items["show"] = {name: __("Show"), icon: "show"};

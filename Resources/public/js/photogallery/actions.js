@@ -77,9 +77,40 @@ function processAction(action, element, id, message) {
     var callback = false;
 
     switch (action) {
+        case "move-to":
+        case "copy-to":
+            var album_id = parseInt(id[0]);
+            var image_id = parseInt(id[1]);
+
+            url = Routing.generate("_photogallery_api_copy_image", { album: album_id, image: image_id, action: action });
+
+            if (element === "image") {
+                callback =  action === "copy-to"
+                ? function (data) { infoBox(data.msg); }
+                : function (data) {
+                    $.each(images, function (index, element) {
+                        if (element.id === image_id) {
+                            var divid = "#img" + index;
+                            $(divid).remove();
+                            images[index] = null;
+                            currentImage = 0;
+                            bufferedImage = 1;
+                            return;
+                        }
+                    });
+                    infoBox(data.msg);
+                };
+            }
+            else
+            {
+                return;
+            }
+
+            break;
+
         case "change-cover":
             if (element === "image") {
-                url = Routing.generate("_photogallery_api_change_album_cover", { album: album.id, image: id }),
+                url = Routing.generate("_photogallery_api_change_album_cover", { album: album.id, image: id });
                 callback = function (data) {
                     $("#album-cover").css({
                         "background-image": "url(" + images[currentImage].thumbnail.src + ")"

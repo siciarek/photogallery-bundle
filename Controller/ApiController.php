@@ -208,6 +208,61 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/{image}/{album}/{action}.json", name = "_photogallery_api_copy_image", requirements = {"image"="^[1-9]\d*$", "album"="^[1-9]\d*$", "action"="^(copy|move)\-to$"})
+     * @Template()
+     */
+    public function copyImageAction($image, $album, $action)
+    {
+        $frame = array();
+
+        try {
+            $move = $action === "move-to";
+            $im = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image);
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
+            $copy = null;
+
+            if ($move === true) {
+                // Change album:
+                $im->setAlbum($album);
+                $this->em->persist($im);
+            } else {
+                $qb = $this->em->createQueryBuilder();
+                $qb->select("max(i.sequence_number) + 1 as c")
+                    ->from("SiciarekPhotoGalleryBundle:Image", "i")
+                    ->leftJoin("i.album", "a")
+                    ->andWhere("a.id = :aid")->setParameter("aid", $album->getId())
+                ;
+                $query = $qb->getQuery();
+                $sequence_number = $query->getSingleScalarResult();
+
+                $copy = new E\Image();
+                $copy->setIsVisible($im->getIsVisible());
+                $copy->setTitle($im->getTitle());
+                $copy->setDescription($im->getDescription());
+                $copy->setAlbum($album);
+                $copy->setFile($im->getFile());
+                $copy->setThumbnail($im->getThumbnail());
+                $copy->setSequenceNumber($sequence_number);
+
+                $this->em->persist($copy);
+            }
+
+            $this->em->flush();
+            $frame = $this->frames["ok"];
+            $frame["msg"] = sprintf("Image has been %s successfuly", $move === true ? "moved" : "copied");
+            $frame["data"] = array($image, $action, $album);
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        $json = json_encode($frame);
+
+        return $this->jsonResponse($json);
+    }
+
+    /**
      * @Route("/{id}/{action}-{element}.json", name = "_photogallery_api_show_hide_element", requirements = {"id"="^[1-9]\d*$", "action"="^(hide|show)$", "element"="^(album|image)$"})
      * @Template()
      */
@@ -413,12 +468,15 @@ class ApiController extends Controller
         $is_visible = $request->get("hidden", "off") !== "on";
         $album_id = intval($request->get("album", 0));
 
-        $qb = $this->em->createQueryBuilder();
-        $qb->select("max(a.sequence_number) as c")->from("SiciarekPhotoGalleryBundle:Image", "a");
-        $query = $qb->getQuery();
-        $sequence_number = $query->getSingleScalarResult();
 
         $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
+        $qb = $this->em->createQueryBuilder();
+        $qb->select("max(a.sequence_number) as c")
+            ->from("SiciarekPhotoGalleryBundle:Image", "a")
+            ->andWhere("a.album_id = :aid")->setParameter("album_id", $album->getId())
+        ;
+        $query = $qb->getQuery();
+        $sequence_number = $query->getSingleScalarResult();
 
         $files = Request::createFromGlobals()->files->get("photos");
 

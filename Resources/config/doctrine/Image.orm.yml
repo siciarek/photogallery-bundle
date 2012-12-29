@@ -40,10 +40,9 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             gedmo:
                 timestampable:
                     on: update
-    oneToOne:
+    manyToOne:
         thumbnail:
             targetEntity: Image
-    manyToOne:
         file:
             targetEntity: File
         album:
