@@ -37,7 +37,7 @@ function loadAlbumPhotos(albums) {
 
             $("#albums").append("<div class='description' id='" + descId + "'></div>");
 
-            $("#albums div.description#" + descId).append('<div class="image' + hidden + '" id="' + albumId + '"></div>');
+            $("#albums div.description#" + descId).append('<div class="image cover' + hidden + '" id="' + albumId + '"></div>');
 
             $("#" + albumId + "").css({
                 "background-image": "url(" + cover + ")"
@@ -86,14 +86,18 @@ function loadAlbumPhotos(albums) {
 
     $( "#albums" ).disableSelection();
 
-    $(".image").click(function (event) {
+    $(".description").click(function (event) {
+
+        if($(event.target).hasClass("action")) {
+            return;
+        }
 
         if(clickIsDisabled === true) {
             clickIsDisabled = false;
             return;
         }
 
-        var id = $(this).attr("id").replace(/[a-z]*/i, '');
+        var id = $(this).find("[id^='album']").attr("id").replace(/[a-z]*/i, '');
 
         var slug = "album";
 

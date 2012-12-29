@@ -30,31 +30,6 @@ class Image
     private $description;
 
     /**
-     * @var string
-     */
-    private $path;
-
-    /**
-     * @var string
-     */
-    private $mime_type;
-
-    /**
-     * @var integer
-     */
-    private $file_size;
-
-    /**
-     * @var integer
-     */
-    private $width;
-
-    /**
-     * @var integer
-     */
-    private $height;
-
-    /**
      * @var boolean
      */
     private $is_visible;
@@ -80,18 +55,16 @@ class Image
     private $thumbnail;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \Siciarek\PhotoGalleryBundle\Entity\File
      */
-    private $albums;
+    private $file;
 
     /**
-     * Constructor
+     * @var \Siciarek\PhotoGalleryBundle\Entity\Album
      */
-    public function __construct()
-    {
-        $this->albums = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
+    private $album;
+
+
     /**
      * Get id
      *
@@ -169,121 +142,6 @@ class Image
     public function getDescription()
     {
         return $this->description;
-    }
-
-    /**
-     * Set path
-     *
-     * @param string $path
-     * @return Image
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-    
-        return $this;
-    }
-
-    /**
-     * Get path
-     *
-     * @return string 
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set mime_type
-     *
-     * @param string $mimeType
-     * @return Image
-     */
-    public function setMimeType($mimeType)
-    {
-        $this->mime_type = $mimeType;
-    
-        return $this;
-    }
-
-    /**
-     * Get mime_type
-     *
-     * @return string 
-     */
-    public function getMimeType()
-    {
-        return $this->mime_type;
-    }
-
-    /**
-     * Set file_size
-     *
-     * @param integer $fileSize
-     * @return Image
-     */
-    public function setFileSize($fileSize)
-    {
-        $this->file_size = $fileSize;
-    
-        return $this;
-    }
-
-    /**
-     * Get file_size
-     *
-     * @return integer 
-     */
-    public function getFileSize()
-    {
-        return $this->file_size;
-    }
-
-    /**
-     * Set width
-     *
-     * @param integer $width
-     * @return Image
-     */
-    public function setWidth($width)
-    {
-        $this->width = $width;
-    
-        return $this;
-    }
-
-    /**
-     * Get width
-     *
-     * @return integer 
-     */
-    public function getWidth()
-    {
-        return $this->width;
-    }
-
-    /**
-     * Set height
-     *
-     * @param integer $height
-     * @return Image
-     */
-    public function setHeight($height)
-    {
-        $this->height = $height;
-    
-        return $this;
-    }
-
-    /**
-     * Get height
-     *
-     * @return integer 
-     */
-    public function getHeight()
-    {
-        return $this->height;
     }
 
     /**
@@ -402,37 +260,48 @@ class Image
     }
 
     /**
-     * Add albums
+     * Set file
      *
-     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $albums
+     * @param \Siciarek\PhotoGalleryBundle\Entity\File $file
      * @return Image
      */
-    public function addAlbum(\Siciarek\PhotoGalleryBundle\Entity\Album $albums)
+    public function setFile(\Siciarek\PhotoGalleryBundle\Entity\File $file = null)
     {
-        $albums->addImage($this);
-        $this->albums[] = $albums;
+        $this->file = $file;
     
         return $this;
     }
 
     /**
-     * Remove albums
+     * Get file
      *
-     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $albums
+     * @return \Siciarek\PhotoGalleryBundle\Entity\File 
      */
-    public function removeAlbum(\Siciarek\PhotoGalleryBundle\Entity\Album $albums)
+    public function getFile()
     {
-        $albums->removeImage($this);
-        $this->albums->removeElement($albums);
+        return $this->file;
     }
 
     /**
-     * Get albums
+     * Set album
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $album
+     * @return Image
      */
-    public function getAlbums()
+    public function setAlbum(\Siciarek\PhotoGalleryBundle\Entity\Album $album = null)
     {
-        return $this->albums;
+        $this->album = $album;
+    
+        return $this;
+    }
+
+    /**
+     * Get album
+     *
+     * @return \Siciarek\PhotoGalleryBundle\Entity\Album 
+     */
+    public function getAlbum()
+    {
+        return $this->album;
     }
 }

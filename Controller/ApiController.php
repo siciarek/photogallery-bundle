@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Doctrine\Common\Collections;
 
+use \Siciarek\PhotoGalleryBundle\Entity as E;
 use \Siciarek\PhotoGalleryBundle\Entity\Album;
 use \Siciarek\PhotoGalleryBundle\Entity\Image;
 
@@ -68,16 +69,16 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{id}/image/{slug}.{format}", name = "_photogallery_api_show_image", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$", "slug"="^[a-z0-9][a-z0-9\-]*[a-z0-9]$"}))
+     * @Route("/{id}/image.{format}", name = "_photogallery_api_show_image", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
      * @Template()
      */
-    public function showImageAction($id, $slug, $format)
+    public function showImageAction($id, $format)
     {
 
         $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($id);
 
-        $file = $this->config["uploads_directory"] . $image->getPath();
-        $mime_type = $image->getMimeType();
+        $file = $this->config["uploads_directory"] . $image->getFile()->getPath();
+        $mime_type = $image->getFile()->getMimeType();
 
         return $this->fileResponse($file, $mime_type);
     }
@@ -94,8 +95,8 @@ class ApiController extends Controller
         $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($id);
         $thumbnail = $image->getThumbnail();
 
-        $file = $config["uploads_directory"] . $thumbnail->getPath();
-        $mime_type = $thumbnail->getMimeType();
+        $file = $config["uploads_directory"] . $thumbnail->getFile()->getPath();
+        $mime_type = $thumbnail->getFile()->getMimeType();
 
         return $this->fileResponse($file, $mime_type);
     }
@@ -122,11 +123,12 @@ class ApiController extends Controller
         $id = intval($request->get("id"));
         $title = $request->get("title");
         $description = $request->get("description");
-        $description = trim($description);
 
         $title = trim($title);
+        $description = trim($description);
+        $title = empty($title) ? "New Album" : $title;
         $description = empty($description) ? null : $description;
-        $title = empty($title) ? null : $title;
+
         $is_visible = $request->get("hidden", "off") !== "on";
 
         $qb = $this->em->createQueryBuilder();
@@ -137,7 +139,7 @@ class ApiController extends Controller
         $album = new Album();
         $album->setSequenceNumber($sequence_number + 1);
 
-        if($id > 0) {
+        if ($id > 0) {
             $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
         }
 
@@ -171,17 +173,22 @@ class ApiController extends Controller
 
             $obj = $this->em->getRepository("SiciarekPhotoGalleryBundle:" . $elemname)->find($id);
 
-            if($element === "image") {
-                $albums = $obj->getAlbums();
+            if ($element === "image") {
+                $album = $obj->getAlbum();
 
-                foreach($albums as $album) {
-                    if ($album->getCover()->getId() === $obj->getId()) {
-                        $album->setCover(null);
+                if ($album->getCover() !== null and $album->getCover()->getId() === $obj->getId()) {
+                    $album->setCover(null);
 
-                        $this->em->persist($album);
-                        $this->em->flush();
-                    }
+                    $this->em->persist($album);
+                    $this->em->flush();
                 }
+            }
+
+            if ($element === "album") {
+                $obj->setCover(null);
+
+                $this->em->persist($obj);
+                $this->em->flush();
             }
 
             $this->em->remove($obj);
@@ -216,10 +223,10 @@ class ApiController extends Controller
             $obj = $this->em->getRepository("SiciarekPhotoGalleryBundle:" . $elemname)->find($id);
             $obj->setIsVisible($visible);
 
-            if($visible === false and $element === "image") {
-                $temp = $obj->getAlbums();
-                $album = $temp[0];
-                if($album->getCover()->getId() === $obj->getId()) {
+            if ($element === "image") {
+                $album = $obj->getAlbum();
+
+                if ($album->getCover() !== null and $album->getCover()->getId() === $obj->getId()) {
                     $album->setCover(null);
                     $this->em->persist($album);
                 }
@@ -230,7 +237,6 @@ class ApiController extends Controller
 
             $frame = $this->frames["ok"];
             $frame["msg"] = sprintf($elemname . " is now %s", $action === "show" ? "visible" : "hidden");
-
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
             $frame["msg"] = $e->getMessage();
@@ -297,14 +303,14 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{album}/{photos}/reorder-photos.json", name = "_photogallery_api_reorder_photos", requirements = {"album"="^[1-9]\d*$", "photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
+     * @Route("/{images}/reorder-images.json", name = "_photogallery_api_reorder_images", requirements = {"album"="^[1-9]\d*$", "images"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
      */
-    public function reorderImagesAction($album, $photos)
+    public function reorderImagesAction($images)
     {
         $frame = array();
 
         try {
-            $ids = explode(",", $photos);
+            $ids = explode(",", $images);
             $ids = array_unique($ids);
             $ids = array_map("intval", $ids);
 
@@ -314,13 +320,9 @@ class ApiController extends Controller
 
             $ids = array_map("intval", $ids);
 
-            $alb = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album);
-
             $qb = $this->em->createQueryBuilder();
-            $qb->select("i", "a")
+            $qb->select("i")
                 ->from("SiciarekPhotoGalleryBundle:Image", "i")
-                ->leftJoin("i.albums", "a")
-                ->andWhere("a.id = :aid")->setParameter("aid", $alb->getId())
                 ->andWhere("i.id in (:ids)")->setParameter("ids", $ids);
 
             $query = $qb->getQuery();
@@ -333,7 +335,7 @@ class ApiController extends Controller
                 $order[$id] = $imcount--;
             }
 
-            foreach($images as $image) {
+            foreach ($images as $image) {
                 $image->setSequenceNumber($order[$image->getId()]);
                 $this->em->persist($image);
             }
@@ -407,6 +409,7 @@ class ApiController extends Controller
         $title = trim($title);
         $description = empty($description) ? null : $description;
         $title = empty($title) ? null : $title;
+
         $is_visible = $request->get("hidden", "off") !== "on";
         $album_id = intval($request->get("album", 0));
 
@@ -438,8 +441,6 @@ class ApiController extends Controller
         $this->request = Request::createFromGlobals();
         $this->doctrine = $this->getDoctrine();
         $this->em = $this->doctrine->getEntityManager();
-
-        sleep(3);
 
         $qb = $this->em->createQueryBuilder();
 
@@ -478,10 +479,12 @@ class ApiController extends Controller
 
             if ($album->getImages()->count() > 0) {
                 $qb = $this->em->createQueryBuilder();
-                $qb->select("a", "i", "t")
+                $qb->select("a", "i", "t", "if", "tf")
                     ->from("SiciarekPhotoGalleryBundle:Album", "a")
                     ->leftJoin("a.images", "i")
-                    ->innerJoin("i.thumbnail", "t")
+                    ->leftJoin("i.file", "if")
+                    ->leftJoin("i.thumbnail", "t")
+                    ->leftJoin("t.file", "tf")
                     ->andWhere("a.id = :aid")->setParameter("aid", $id)
                     ->orderBy("i.sequence_number", "DESC");
                 ;
@@ -514,7 +517,6 @@ class ApiController extends Controller
         foreach ($album->getImages() as $im) {
             if ($im->getThumbnail() !== null) {
                 $album->setCover($im);
-                break;
             }
         }
 
@@ -535,15 +537,8 @@ class ApiController extends Controller
             $source_path = $file->getPathName();
 
             // Initial values:
-            $image_file_size = 0;
-            $image_width = 0;
-            $image_height = 0;
-            $image_mime_type = "application/octet-stream";
             $image_extension = "jpg";
-            $image_path = "/no/path/is/set";
-            $thumbnail_path = "/no/path/is/set";
 
-            $thumbnail_file_size = 0;
             $thumbnail_width = 200;
             $thumbnail_height = 150;
             $thumbnail_mime_type = "image/png";
@@ -554,13 +549,7 @@ class ApiController extends Controller
             $image->setDescription($description);
             $image->setIsVisible($is_visible);
             $image->setSequenceNumber(++$sequence_number);
-
-            $image->setWidth($image_width);
-            $image->setHeight($image_height);
-            $image->setMimeType($image_mime_type);
-            $image->setFileSize($image_file_size);
-            $image->addAlbum($album);
-            $image->setPath($image_path);
+            $image->setAlbum($album);
 
             $this->em->persist($image);
             $this->em->flush();
@@ -569,11 +558,8 @@ class ApiController extends Controller
             $thumbnail = new Image();
             $thumbnail->setIsVisible($image->getIsVisible());
             $thumbnail->setSequenceNumber(0);
-            $thumbnail->setWidth($thumbnail_width);
-            $thumbnail->setHeight($thumbnail_height);
-            $thumbnail->setMimeType($thumbnail_mime_type);
-            $thumbnail->setFileSize($thumbnail_file_size);
-            $thumbnail->setPath($thumbnail_path);
+
+
             $this->em->persist($thumbnail);
 
             $image->setThumbnail($thumbnail);
@@ -628,11 +614,17 @@ class ApiController extends Controller
             $image_height = $im->getSize()->getHeight();
             $image_mime_type = $file->getClientMimeType();
 
-            $image->setWidth($image_width);
-            $image->setHeight($image_height);
-            $image->setMimeType($image_mime_type);
-            $image->setFileSize($image_file_size);
-            $image->setPath($impath);
+            $imfile = new E\File();
+            $imfile->setWidth($image_width);
+            $imfile->setHeight($image_height);
+            $imfile->setMimeType($image_mime_type);
+            $imfile->setFileSize($image_file_size);
+            $imfile->setPath($impath);
+
+            $this->em->persist($imfile);
+            $this->em->flush();
+            $this->em->refresh($imfile);
+            $image->setFile($imfile);
 
             // Thumbnail:
 
@@ -644,11 +636,17 @@ class ApiController extends Controller
             $thumbnail_height = $th->getSize()->getHeight();
 
 
-            $thumbnail->setWidth($thumbnail_width);
-            $thumbnail->setHeight($thumbnail_height);
-            $thumbnail->setMimeType($thumbnail_mime_type);
-            $thumbnail->setFileSize($thumbnail_file_size);
-            $thumbnail->setPath($thumpath);
+            $thfile = new E\File();
+            $thfile->setWidth($thumbnail_width);
+            $thfile->setHeight($thumbnail_height);
+            $thfile->setMimeType($thumbnail_mime_type);
+            $thfile->setFileSize($thumbnail_file_size);
+            $thfile->setPath($thumpath);
+
+            $this->em->persist($thfile);
+            $this->em->flush();
+            $this->em->refresh($thfile);
+            $thumbnail->setFile($thfile);
 
             $this->em->persist($thumbnail);
             $this->em->persist($image);

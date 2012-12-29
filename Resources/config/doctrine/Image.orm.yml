@@ -24,23 +24,6 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             length: 10000
             nullable: true
 #            gedmo: [ translatable ]
-        path:
-            type: text
-            length: 10000
-            nullable: false
-        mime_type:
-            type: string
-            length: 255
-            nullable: false
-        file_size:
-            type: integer
-            nullable: false
-        width:
-            type: integer
-            nullable: false
-        height:
-            type: integer
-            nullable: false
         is_visible:
             type: boolean
             nullable: false
@@ -60,8 +43,14 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
     oneToOne:
         thumbnail:
             targetEntity: Image
-    manyToMany:
-        albums:
+    manyToOne:
+        file:
+            targetEntity: File
+        album:
             targetEntity: Album
-            mappedBy: images
-
+            inversedBy: images
+            joinColumn:
+                name: album_id
+                referencedColumnName: id
+                onDelete: CASCADE
+                onUpdate: CASCADE

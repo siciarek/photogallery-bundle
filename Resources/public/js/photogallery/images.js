@@ -1,14 +1,7 @@
 // CHANGE IMAGES SEQUENCE:
 
 function changeAlbumCover(image_id) {
-
-    $.ui.Mask.show(__("Changing album cover"));
-
-    $.ajax({
-        url: Routing.generate("_photogallery_api_change_album_cover", { album: album.id, image: image_id }),
-        error: errorHandler,
-        success: successHandler
-    });
+    processAction("change-cover", "image", image_id, __("Changing album cover"));
 }
 
 function updateAlbum() {
@@ -17,15 +10,15 @@ function updateAlbum() {
     $.ui.Mask.show(__("New photos sequence is being saved"));
 
     $(".image").each(function (index, element) {
-        var inx = $(element).attr("id").replace(/[a-z]*/i, '');
-        var id = images[inx].id;
-        order.push(id);
+        if ($(element).attr("id") !== "album-cover") {
+            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
+            var id = images[inx].id;
+            order.push(id);
+        }
     });
 
     $.ajax({
-        url: Routing.generate("_photogallery_api_reorder_photos", { album: album.id, photos: order.join(",") }),
-        done: function (response) {
-        },
+        url: Routing.generate("_photogallery_api_reorder_images", { images: order.join(",") }),
         error: errorHandler,
         success: function (response) {
             var resp = {
@@ -55,17 +48,25 @@ function updateAlbum() {
 function undoChanges() {
     var order = {};
     var count = 0;
+    var cover = null;
 
     $("div#menu li#update-view").hide();
     $("div#menu li#undo-changes").hide();
 
     $(".image").each(function (index, element) {
-        var inx = $(element).attr("id").replace(/[a-z]*/i, '');
-        order[inx] = element;
-        count++;
-    })
+        if ($(element).attr("id") === "album-cover") {
+            cover = element;
+        }
+        else {
+            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
+            order[inx] = element;
+            count++;
+        }
+    });
 
     $("#images").empty();
+
+    $("#images").append(cover);
 
     for (var i = 0; i < count; i++) {
         var element = order["" + i];
@@ -81,12 +82,12 @@ function displayCurrentImage(direction) {
 
     var image = images[currentImage];
     var format = "jpg";
-    var width = image.width + frame * 2;
-    var height = image.height + frame * 2;
+    var width = image.file.width + frame * 2;
+    var height = image.file.height + frame * 2;
 
     var arrowTop = height / 2 - $("#prev-image").height() / 2 - 10;
     var arrowLeft = -5;
-    var arrowRight = image.width - 4 * $("#prev-image").width() + 10 - arrowLeft + 2 * frame;
+    var arrowRight = image.file.width - 4 * $("#prev-image").width() + 10 - arrowLeft + 2 * frame;
 
     $("#prev-image").css({
         top: arrowTop,
@@ -131,7 +132,7 @@ function displayCurrentImage(direction) {
     bufferImage(currentImage, images, format, direction);
 
     $(".image-preview-dialog").css({
-        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: image.id, slug: "image", format: format}, true) + ")"
+        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: image.id, format: format}, true) + ")"
     });
 
     $("#image-preview").dialog(config);
@@ -161,15 +162,19 @@ function bufferImage(currentImage, album, format, direction) {
     var bufferedImage = currentImage;
 
     if (direction > 0) {
-        ++bufferedImage;
-        bufferedImage %= images.length;
+        do {
+            ++bufferedImage;
+            bufferedImage %= images.length;
+        } while (images[bufferedImage] === null);
     }
     else {
         bufferedImage = bufferedImage == 0 ? images.length : bufferedImage;
-        --bufferedImage;
+        do {
+            --bufferedImage;
+        } while (images[bufferedImage] === null);
     }
 
-    var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: images[bufferedImage].id, slug: "image", format: format}, true);
+    var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: images[bufferedImage].id, format: format}, true);
     $("#image-buffer").attr("src", bufferedImageSrc);
 }
 
@@ -208,10 +213,9 @@ $(document).ready(function () {
                 if (__(response.msg) === __("Requested album is not available.")) {
                     $.ui.Mask.show();
                     location.href = Routing.generate("_albums");
+                } else {
+                    errorBox(__(response.msg));
                 }
-
-                errorBox(__(response.msg));
-
                 return;
             }
 
@@ -243,12 +247,22 @@ $(document).ready(function () {
             };
 
             var toolbar = getAlbumToolbarObj(album);
+            var altit = album.title === "New Album" ? __(album.title) : album.title;
 
-            $("#subtitle").html('<span style="text-decoration:' + (album.is_visible ? "none" : "line-through") + '"' + (album.is_visible ? "" : ' class="hidden"') + '>' + album.title + " (" + response.totalCount + ")</span>" + toolbar);
+            $("#subtitle").html('<span '
+                + (album.is_visible ? "" : ' class="hidden"') + '>'
+                + altit + " (" + response.totalCount + ")</span>" + toolbar);
+
             $("p.info").html(album.description);
 
             $("li#create-new-album-menu").show();
             $("li#add-images-menu").show();
+
+            $("#images").append('<div class="image cover" id="album-cover"></div>');
+
+            $("#album-cover").css({
+                "background-image": "url(" + cover + ")"
+            });
 
             if (images.length > 0) {
                 var format = "jpg";  // TODO: images[i].format;
@@ -264,7 +278,7 @@ $(document).ready(function () {
 
                     if (images[i].is_visible === true) {
                         $("#" + imgId).css({
-                            "width": images[i].thumbnail.width
+                            "width": images[i].thumbnail.file.width
                         });
                     }
 
@@ -278,7 +292,8 @@ $(document).ready(function () {
                         var imgId = "img" + i;
 
                         $("#" + imgId).css({
-                            "background-image": "url(" + images[i].thumbnail["src"] + ")"
+                            "background-image": "url(" + images[i].thumbnail.src + ")",
+                            "border": "none"
                         });
 
                         if (images[i].is_visible === true) {
@@ -286,22 +301,8 @@ $(document).ready(function () {
                                 "background-color": "transparent"
                             });
                         }
-
-                        if (images[i].id != album.cover_id) {
-                            $("#" + imgId).css({
-                                "border": "none"
-                            });
-                        }
-                        else {
-                            $("#" + imgId).css({
-                                "border": "1px grey outset",
-                                "background-color": "#a47e3c",
-                                "width": "216px",
-                                "height": "166px"
-                            });
-                        }
                     }
-                }, 3000);
+                }, 1000);
 
                 $("div#menu li#update-view").click(function (event) {
                     updateAlbum();
@@ -318,10 +319,14 @@ $(document).ready(function () {
                     stop: function () {
                         var inorder = true;
 
+                        var inx = 0;
+
                         $(".image").each(function (index, element) {
-                            if (index != $(element).attr("id").replace(/[a-z]*/i, '')) {
-                                inorder = false;
-                                return;
+                            if ($(element).attr("id") !== "album-cover") {
+                                if (inx++ != $(element).attr("id").replace(/[a-z]*/i, '')) {
+                                    inorder = false;
+                                    return;
+                                }
                             }
                         });
 
@@ -343,7 +348,10 @@ $(document).ready(function () {
                         return;
                     }
 
-                    currentImage = $(this).attr("id").replace(/^img/, "");
+                    var imid = $(this).attr("id");
+
+                    currentImage = imid === "album-cover" ? 0 : $(this).attr("id").replace(/^img/, "");
+
                     displayCurrentImage(1);
                 });
 
@@ -385,13 +393,10 @@ $(document).ready(function () {
 
                                 break;
                             case "change-cover":
-                                changeAlbumCover(images[currentImage].id)
-                                break;
                             case "show":
                             case "hide":
                             case "delete":
                                 processAction(action, "image", images[currentImage].id);
-                                break;
                                 break;
 
                             default:
@@ -418,17 +423,15 @@ $(document).ready(function () {
                         items["rotate"] = {
                             name: __("Rotate"), icon: "rotate",
                             items: {
-                                "rotate-cw" : {name: __("CW"), icon: "rotate-cw" },
-                                "rotate-ccw" : {name: __("CCW"), icon: "rotate-ccw" }
+                                "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
+                                "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" }
                             }
                         };
 
                         if (image.is_visible === true) {
                             items["hide"] = {name: __("Hide"), icon: "hide"};
-                            if (image.id != album.cover_id) {
-                                items["sep1"] = "---------";
-                                items["change-cover"] = {name: __("Use as album cover") + '&nbsp;&nbsp;', icon: "change-cover"};
-                            }
+                            items["sep1"] = "---------";
+                            items["change-cover"] = {disabled: image.id == album.cover_id, name: __("Use as album cover") + '&nbsp;&nbsp;', icon: "change-cover"};
                         }
                         else {
                             items["show"] = {name: __("Show"), icon: "show"};
@@ -447,7 +450,8 @@ $(document).ready(function () {
             }
             else {
                 $.ui.Mask.hide();
-                $("#images").append('<p style="margin-top:100px;text-align:center;color:gray !important;">' + __("Current album contains no photos.") + '</p>');
+                $("#images").append('<p style="width: 640px;float:left;margin-top:70px;text-align:center;color:gray !important;">' + __("Current album contains no photos.") + '</p>');
+                $("#images").append('<div style="clear:both"></div>');
             }
         }
     });

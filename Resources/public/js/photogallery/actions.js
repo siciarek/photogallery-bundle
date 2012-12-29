@@ -1,44 +1,66 @@
+function defaultOnSuccessCallback(r) {
+    // TODO: no reload action
+    //  infoBox(r.msg);
+
+    $.ui.Mask.show(__("Wait a while"));
+    location.reload();
+}
+
 function errorHandler(response) {
     $.ui.Mask.hide();
     errorBox(__("Unexpected Exception."));
 }
 
-function successHandler(response) {
+function successHandler(data, textStatus, jqXHR, onsuccess) {
+
+    onsuccess = typeof onsuccess !== "function"
+        ? defaultOnSuccessCallback
+        : onsuccess;
+
     var resp = {
         success: false,
-        msg: response
+        msg: data
     };
 
-    if (typeof response.msg !== "undefined" && typeof response.success !== "undefined") {
-        resp = response;
+    if (typeof data.msg !== "undefined" && typeof data.success !== "undefined") {
+        resp = data;
     }
 
     $.ui.Mask.hide();
 
     if (resp.success === true) {
-        // TODO: no reload action
-//        infoBox(resp.msg);
-
-        $.ui.Mask.show(__("Wait a while"));
-        location.reload();
+        onsuccess(resp);
     }
     else {
         errorBox(__(resp.msg));
     }
 }
 
-
 function formAction(form) {
     var p = $(form).parents()[0];
     var element = $(p).attr("id").replace(/^(\w+)\-\w+$/, "$1");
     var messages = {
-        album:  "Saving album in progress",
+        album: "Saving album in progress",
         images: "Saving images in progress"
     };
 
+    var landingpages = {
+        "album": Routing.generate("_albums"),
+        "image": location.href
+    };
+
+    var landingpage = landingpages[element];
+
     $(form).ajaxSubmit({
         error: errorHandler,
-        success: successHandler
+        success: function (data, textStatus, jqXHR) {
+            var onsuccess = function (data) {
+                $.ui.Mask.show(__("Wait a while"));
+                location.href = landingpage;
+            };
+
+            successHandler(data, textStatus, jqXHR, onsuccess);
+        }
     });
 
     $(p).dialog("close");
@@ -52,8 +74,22 @@ function processAction(action, element, id, message) {
     message = message || "Wait a while";
     var url = null;
     var params = {};
+    var callback = false;
 
     switch (action) {
+        case "change-cover":
+            if (element === "image") {
+                url = Routing.generate("_photogallery_api_change_album_cover", { album: album.id, image: id }),
+                callback = function (data) {
+                    $("#album-cover").css({
+                        "background-image": "url(" + images[currentImage].thumbnail.src + ")"
+                    });
+                    album.cover_id = images[currentImage].id;
+                };
+                message = "Changing album cover";
+            }
+            break;
+
         case "edit":
 
             switch (element) {
@@ -83,11 +119,63 @@ function processAction(action, element, id, message) {
         case "show":
         case "hide":
             url = Routing.generate("_photogallery_api_show_hide_element", { id: id, action: action, element: element });
+
+            if (element === "image") {
+                callback = function (data) {
+                    $.each(images, function (index, element) {
+                        if (element.id === id) {
+                            var divid = "#img" + index;
+                            if (action === "show") {
+                                images[index].is_visible = true;
+                                $(divid).removeClass("hidden");
+                                $(divid).css("width", element.thumbnail.file.width);
+                                return;
+                            }
+                            images[index].is_visible = false;
+                            $(divid).addClass("hidden");
+                            $(divid).css("width", "216px");
+                            if ($(divid).css("background-image") === $("#album-cover").css("background-image")) {
+                                $("#album-cover").css("background-image", "url(" + defaultCover + ")");
+                            }
+
+                            return;
+                        }
+                    });
+                };
+            }
+
             break;
 
         case "delete":
             url = Routing.generate("_photogallery_api_delete_element", { id: id, element: element });
-            confirmDeleteBox(id, element, url);
+            var landingpages = {
+                "album": Routing.generate("_albums"),
+                "image": location.href
+            };
+
+            var landingpage = landingpages[element];
+
+            callback = function (data) {
+                $.ui.Mask.show();
+                location.href = landingpage;
+            };
+
+            if (element === "image") {
+                callback = function (data) {
+                    $.each(images, function (index, element) {
+                        if (element.id === id) {
+                            var divid = "#img" + index;
+                            $(divid).remove();
+                            images[index] = null;
+                            currentImage = 0;
+                            bufferedImage = 1;
+                            return;
+                        }
+                    });
+                };
+            }
+
+            confirmDeleteBox(id, element, url, callback);
             return;
 
         default:
@@ -95,41 +183,47 @@ function processAction(action, element, id, message) {
     }
 
     $.ui.Mask.show(__(message));
-    remoteAction(url, params);
+    remoteAction(url, params, callback);
 }
 
-function remoteAction(url, params) {
+function remoteAction(url, params, callback) {
 
     params = params || {};
+    callback = callback || false;
 
-    $.ajax({
+    var conf = {
         url: url,
         data: params,
         error: errorHandler,
-        success: successHandler
-    });
+        success: function (data, textStatus, jqXHR) {
+            successHandler(data, textStatus, jqXHR, callback);
+        }
+    };
+
+    $.ajax(conf);
 }
 
-function confirmDeleteBox(id, element, url) {
+function confirmDeleteBox(id, element, url, callback) {
 
     var msg = __("Are you sure you want to delete this " + element + "?");
 
     var yes = __("Delete");
     var no = __("Cancel");
     var dialogTitle = __(title);
+    var thumbnail = null;
 
-    if(element === "image") {
-        for(var i = 0; i < album.length; i++) {
-            if(album[i].id === id) {
-                thumbnail = album[i].thumbnail.src;
+    if (element === "image") {
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].id === id) {
+                thumbnail = images[i].thumbnail.src;
                 break;
             }
         }
     }
 
-    if(element === "album") {
-        for(var i = 0; i < albums.length; i++) {
-            if(albums[i].id === id) {
+    if (element === "album") {
+        for (var i = 0; i < albums.length; i++) {
+            if (albums[i].id === id) {
                 thumbnail = albums[i].cover.src;
                 dialogTitle = albums[i].title;
                 break;
@@ -143,7 +237,7 @@ function confirmDeleteBox(id, element, url) {
         $.ui.Mask.show(__("Deleting " + element + " in progress"));
         $("#confirmation-dialog").dialog("close");
         $("#image-preview").hide();
-        remoteAction(url);
+        remoteAction(url, {}, callback);
     };
 
     buttons[no] = function (event) {

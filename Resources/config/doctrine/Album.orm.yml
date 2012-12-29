@@ -50,14 +50,7 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
     oneToOne:
         cover:
             targetEntity: Image
-    manyToMany:
+    oneToMany:
         images:
             targetEntity: Image
-            joinTable:
-                name: photogallery_album_image
-                joinColumns:
-                    album_id:
-                        referencedColumnName: id
-                inverseJoinColumns:
-                    image_id:
-                        referencedColumnName: id
+            mappedBy: album

@@ -82,7 +82,7 @@ function openElementForm(title, element, data) {
 
             $("input[name='id']").val(data.id);
             $("input[name='title']").val(data.title);
-//            $("textarea[name='description']").val(data.description);
+            $("textarea[name='description']").val(data.description);
             $("input[name='hidden']").attr("checked", !data.is_visible);
 
         },

@@ -4,10 +4,12 @@ Photo Gallery TODO list:
     - Status bar with title, X/Y X current image, Y number of album images
 
 Current tasks:
-    - toolbar after album title on images page
-    - set validation on forms
-    - update translations
-    - prev/next arrows should appear only if mouseover event was triggered on #image-preview
+    - bind space as image-next trigger and left/right arrow to navigate
+    + cover as the first image
+    + toolbar after album title on images page
+    + set validation on forms
+    + update translations
+    + prev/next arrows should appear only if mouseover event was triggered on #image-preview
 
 
 
