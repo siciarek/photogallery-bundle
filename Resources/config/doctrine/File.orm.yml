@@ -1,0 +1,46 @@
+Siciarek\PhotoGalleryBundle\Entity\File:
+    type: entity
+    repositoryClass: Siciarek\PhotoGalleryBundle\Entity\FileRepository
+    table: photogallery_file
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        path:
+            type: text
+            length: 10000
+            nullable: false
+        name:
+            type: string
+            length: 255
+            nullable: true
+        mime_type:
+            type: string
+            length: 255
+            nullable: false
+        file_size:
+            type: integer
+            nullable: false
+        width:
+            type: integer
+            nullable: false
+        height:
+            type: integer
+            nullable: false
+        created_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updated_at:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+    oneToMany:
+        images:
+            targetEntity: Image
+            mappedBy: file
+
