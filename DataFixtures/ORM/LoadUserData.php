@@ -47,8 +47,9 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
             $obj->setFirstName($u["first_name"]);
             $obj->setLastName($u["last_name"]);
             $obj->setUsername($u["username"]);
-            $obj->setPassword($u["password"]);
+            $obj->setPlainPassword($u["password"]);
             $obj->setEmail($u["email"]);
+            $obj->setEnabled(true);
 
             $em->persist($obj);
         }

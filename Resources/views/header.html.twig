@@ -19,11 +19,9 @@
           href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"/>
 
     {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
-    {%
-    set authenticated = true
-    %}
+
     <script type="text/javascript">
-        var authenticated = {% if authenticated %}true{% else %}false{% endif %};
+        var authenticated = {% if app.user  %}true{% else %}false{% endif %};
     </script>
 
     {% include "SiciarekPhotoGalleryBundle::translations.html.twig" %}
@@ -57,14 +55,14 @@
             {% for text, route in menu %}
 
                 {% if text == "create new album" %}
-                    {% if authenticated %}
+                    {% if app.user %}
                         <li id="create-new-album-menu"><a title="{{ text | trans() }}"
                                                           href="javascript:void(null)"
                                                           onclick="openAlbumForm()">{{ text | trans() }}</a></li>
                     {% endif %}
                 {% else %}
                     {% if text == "add images" %}
-                        {% if authenticated %}
+                        {% if app.user %}
                             <li id="add-images-menu"><a title="{{ text | trans() }}"
                                                         href="javascript:void(null)"
                                                         onclick="openImagesForm()">{{ text | trans() }}</a></li>
@@ -99,12 +97,13 @@
                                                                             onclick="">{{ "update view" | trans() }}</a>
             </li>
 
-            {#{% if app.user %}#}
-            {#<li>{{ link_to('layout.logout'|trans({}, 'FOSUserBundle') | trans(), "fos_user_security_logout") }}</li>#}
-            {#<li class="user"><a>{{ "user" | trans() ~ ": " ~ app.user.firstname ~ " " ~ app.user.lastname }}</a></li>#}
-            {#{% else %}#}
-            {#<li>{{ link_to('layout.login'|trans({}, 'FOSUserBundle') | trans(), "fos_user_security_login") }}</li>#}
-            {#{% endif %}#}
+            {% if app.user %}
+                <li>{{ link_to('layout.logout'|trans({}, 'FOSUserBundle') | lower(), "fos_user_security_logout") }}</li>
+                <li class="user"><a>{{ "user" | trans() ~ ": " ~ app.user.firstname ~ " " ~ app.user.lastname }}</a>
+                </li>
+            {% else %}
+                <li>{{ link_to('layout.login'|trans({}, 'FOSUserBundle') | lower(), "fos_user_security_login") }}</li>
+            {% endif %}
 
         </ul>
     </div>

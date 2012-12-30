@@ -1,18 +1,19 @@
 <?php
 
 namespace Siciarek\PhotoGalleryBundle\Entity;
+use FOS\UserBundle\Entity\User as BaseUser;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * User
  */
-class User
+class User extends BaseUser
 {
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
