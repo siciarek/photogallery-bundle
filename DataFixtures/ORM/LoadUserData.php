@@ -1,7 +1,6 @@
 <?php
 
-// src/SesCrm/UserBundle/DataFixtures/ORM/LoadUserData.php
-namespace SesCrm\UserBundle\DataFixtures\ORM;
+namespace Siciarek\PhotoGaleryBundle\DataFixtures\ORM;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Persistence\ObjectManager;

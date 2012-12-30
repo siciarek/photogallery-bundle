@@ -218,8 +218,7 @@ class ApiController extends Controller
                 $qb->select("max(i.sequence_number) + 1 as c")
                     ->from("SiciarekPhotoGalleryBundle:Image", "i")
                     ->leftJoin("i.album", "a")
-                    ->andWhere("a.id = :aid")->setParameter("aid", $album->getId())
-                ;
+                    ->andWhere("a.id = :aid")->setParameter("aid", $album->getId());
                 $query = $qb->getQuery();
                 $sequence_number = $query->getSingleScalarResult();
 
@@ -433,44 +432,42 @@ class ApiController extends Controller
      */
     public function addNewPhotosAction(Request $request)
     {
+        $frame = array();
 
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
+        try {
 
-        $frame = array(
-            "success"   => true,
-            "type"      => "data",
-            "datetime"  => date("Y-m-d H:i:s"),
-            "msg"       => "Data",
-            "totalCount"=> 0,
-            "data"      => array(),
-        );
+            $title = $request->get("title");
+            $description = $request->get("description");
+            $description = trim($description);
+            $title = trim($title);
+            $description = empty($description) ? null : $description;
+            $title = empty($title) ? null : $title;
 
-        $title = $request->get("title");
-        $description = $request->get("description");
-        $description = trim($description);
-        $title = trim($title);
-        $description = empty($description) ? null : $description;
-        $title = empty($title) ? null : $title;
+            $is_visible = $request->get("hidden", "off") !== "on";
+            $album_id = intval($request->get("album", 0));
 
-        $is_visible = $request->get("hidden", "off") !== "on";
-        $album_id = intval($request->get("album", 0));
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
 
+            $qb = $this->em->createQueryBuilder();
+            $qb->select("max(i.sequence_number) + 1 as c")
+                ->from("SiciarekPhotoGalleryBundle:Image", "i")
+                ->leftJoin("i.album", "a")
+                ->andWhere("i.album = :al")->setParameter("al", $album);
+            $query = $qb->getQuery();
+            $sequence_number = $query->getSingleScalarResult();
 
-        $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
-        $qb = $this->em->createQueryBuilder();
-        $qb->select("max(a.sequence_number) as c")
-            ->from("SiciarekPhotoGalleryBundle:Image", "a")
-            ->andWhere("a.album_id = :aid")->setParameter("album_id", $album->getId())
-        ;
-        $query = $qb->getQuery();
-        $sequence_number = $query->getSingleScalarResult();
+            $files = Request::createFromGlobals()->files->get("photos");
 
-        $files = Request::createFromGlobals()->files->get("photos");
+            $this->createImages($files, $album, $title, $description, $is_visible, $sequence_number);
 
-        $this->createImages($files, $album, $title, $description, $is_visible, $sequence_number);
+            $frame = $this->frames["ok"];
+            $frame["msg"] = "Images has been added successfully";
 
-        $frame["data"]["album"] = $album->getId();
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
 
         $json = json_encode($frame);
 

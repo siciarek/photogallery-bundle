@@ -31,9 +31,7 @@
                 {% if key == "images" %}
                     <div class="form-field" style="width: 430px;">
                         <label for="album-{{ key }}">{{ "album" | trans() }}</label>
-                        <select name="album" id="album-{{ key }}" class="validalbum">
-                            <option value="0">{{ "Choose album" | trans() }}</option>
-                        </select>
+                        <select name="album" id="album-{{ key }}" class="validalbum"></select>
                     </div>
                 {% endif %}
 

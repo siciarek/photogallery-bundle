@@ -47,8 +47,8 @@ function formAction(form) {
     var id = parseInt($(form).find("input[name='id']").val());
 
     var landingpages = {
-        "album": id > 0 ? location.href : Routing.generate("_albums"),
-        "image": location.href
+        "album" : id > 0 ? location.href : Routing.generate("_albums"),
+        "images" : location.href
     };
 
     var landingpage = landingpages[element];
@@ -68,7 +68,6 @@ function formAction(form) {
     $(p).dialog("close");
 
     $.ui.Mask.show(__(messages[element]));
-
 }
 
 function processAction(action, element, id, message) {
@@ -138,9 +137,11 @@ function processAction(action, element, id, message) {
                     break;
 
                 case "image":
-                    for (var i = 0; i < album.length; i++) {
+                    for (var i = 0; i < images.length; i++) {
+                        var obj = images[i];
+                        console.log(obj);
                         if (obj.id == id) {
-                            openAlbumForm(__("Edit image data"), obj);
+                            openImagesForm(__("Edit image data"), obj);
                             break;
                         }
                     }

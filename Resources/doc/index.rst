@@ -26,45 +26,19 @@ Configuration notes:
         "siciarek/photogallery-bundle": "dev-master"
     }
 
-/app/config/security.yml  (change)
+/app/AppKernel.php (add)
 --------------------------------------------------------------------------------
 
-security:
-    providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username_email
 
-    encoders:
-        FOS\UserBundle\Model\UserInterface: sha512
-
-    firewalls:
-        main:
-            pattern: ^/
-            form_login:
-                provider: fos_userbundle
-                csrf_provider: form.csrf_provider
-            logout:       true
-            anonymous:    true
-            remember_me:
-                key:      "%secret%"
-                lifetime: 31536000  # 365 days in seconds
-                remember_me_parameter: _remember_me
-                path: /
-                domain: ~
-
-    access_control:
-        - { path: ^/login$,        role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register,      role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting,     role: IS_AUTHENTICATED_ANONYMOUSLY }
-
-        - { path: ^/$,             role: IS_AUTHENTICATED_ANONYMOUSLY }
-
-    role_hierarchy:
-        ROLE_USER:        IS_AUTHENTICATED_ANONYMOUSLY
-        ROLE_ADMIN:       ROLE_USER
+    $bundles[] = new FOS\UserBundle\FOSUserBundle();
+    $bundles[] = new FOS\JsRoutingBundle\FOSJsRoutingBundle();
+    $bundles[] = new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle();
+    $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+    $bundles[] = new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle();
+    $bundles[] = new Siciarek\PhotoGalleryBundle\SiciarekPhotoGalleryBundle();
 
 
-/app/config/config.yml (add)
+/app/config/config.yml (change)
 --------------------------------------------------------------------------------
 framework:
     # uncomment:
@@ -73,9 +47,11 @@ framework:
 assetic:
     debug:          "%kernel.debug%"
     use_controller: false
-    bundles:
-      - FOSUserBundle
-      - SiciarekPhotoGalleryBundle
+    bundles:        [ FOSUserBundle, SiciarekPhotoGalleryBundle ]
+
+
+/app/config/config.yml (add)
+--------------------------------------------------------------------------------
 
 fos_user:
     db_driver: orm
@@ -130,13 +106,55 @@ fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
 
-/app/AppKernel.php (add)
+/app/config/security.yml  (change)
 --------------------------------------------------------------------------------
 
+security:
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username_email
 
-    $bundles[] = new FOS\UserBundle\FOSUserBundle();
-    $bundles[] = new FOS\JsRoutingBundle\FOSJsRoutingBundle();
-    $bundles[] = new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle();
-    $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
-    $bundles[] = new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle();
-    $bundles[] = new Siciarek\PhotoGalleryBundle\SiciarekPhotoGalleryBundle();
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+
+    firewalls:
+        main:
+            pattern: ^/
+            form_login:
+                provider: fos_userbundle
+                csrf_provider: form.csrf_provider
+            logout:       true
+            anonymous:    true
+            remember_me:
+                key:      "%secret%"
+                lifetime: 31536000  # 365 days in seconds
+                remember_me_parameter: _remember_me
+                path: /
+                domain: ~
+
+    access_control:
+        - { path: ^/login$,        role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register,      role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting,     role: IS_AUTHENTICATED_ANONYMOUSLY }
+
+        - { path: ^/$,             role: IS_AUTHENTICATED_ANONYMOUSLY }
+
+    role_hierarchy:
+        ROLE_USER:        IS_AUTHENTICATED_ANONYMOUSLY
+        ROLE_ADMIN:       ROLE_USER
+
+
+run:
+--------------------------------------------------------------------------------
+
+php app/console cache:clear
+php app/console doctrine:schema:update --force
+php app/console assets:install web
+php app/console assetic:dump --no-debug
+cp -vR web/bundles/siciarekphotogallery/images web
+mkdir web\uploads
+cd vendor/siciarek/photogallery-bundle/Siciarek/PhotoGalleryBundle/
+git submodule init
+git submodule update
+cd ../../../../../
+php app/console cache:clear
