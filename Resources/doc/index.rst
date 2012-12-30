@@ -17,6 +17,8 @@ Configuration notes:
 --------------------------------------------------------------------------------
 
     "require": {
+        "doctrine/data-fixtures": "dev-master",
+        "doctrine/doctrine-fixtures-bundle": "dev-master",
         "stof/doctrine-extensions-bundle": "dev-master",
         "gedmo/doctrine-extensions": "dev-master",
         "stfalcon/tinymce-bundle": "dev-master",
@@ -131,8 +133,10 @@ fos_user_change_password:
 /app/AppKernel.php (add)
 --------------------------------------------------------------------------------
 
-    new FOS\UserBundle\FOSUserBundle(),
-    new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
-    new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
-    new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
-    new Siciarek\PhotoGalleryBundle\SiciarekPhotoGalleryBundle(),
+
+    $bundles[] = new FOS\UserBundle\FOSUserBundle();
+    $bundles[] = new FOS\JsRoutingBundle\FOSJsRoutingBundle();
+    $bundles[] = new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle();
+    $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+    $bundles[] = new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle();
+    $bundles[] = new Siciarek\PhotoGalleryBundle\SiciarekPhotoGalleryBundle();
