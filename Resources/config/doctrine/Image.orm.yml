@@ -41,7 +41,7 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
                 timestampable:
                     on: update
     oneToOne:
-        albumcov:
+        albumc:
             targetEntity: Album
             inversedBy: cover
             joinColumn:
