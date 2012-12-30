@@ -91,7 +91,7 @@ function processAction(action, element, id, message) {
                 ? function (data) { infoBox(data.msg); }
                 : function (data) {
                     $.each(images, function (index, element) {
-                        if (element.id === image_id) {
+                        if (element != null && element.id === image_id) {
                             var divid = "#img" + index;
                             $(divid).remove();
                             images[index] = null;
@@ -156,7 +156,7 @@ function processAction(action, element, id, message) {
             if (element === "image") {
                 callback = function (data) {
                     $.each(images, function (index, element) {
-                        if (element.id === id) {
+                        if (element != null && element.id === id) {
                             var divid = "#img" + index;
                             if (action === "show") {
                                 images[index].is_visible = true;
@@ -196,7 +196,8 @@ function processAction(action, element, id, message) {
             if (element === "image") {
                 callback = function (data) {
                     $.each(images, function (index, element) {
-                        if (element.id === id) {
+
+                        if (element != null && element.id === id) {
                             var divid = "#img" + index;
                             $(divid).remove();
                             images[index] = null;
@@ -247,7 +248,7 @@ function confirmDeleteBox(id, element, url, callback) {
 
     if (element === "image") {
         for (var i = 0; i < images.length; i++) {
-            if (images[i].id === id) {
+            if (images[i] != null && images[i].id === id) {
                 thumbnail = images[i].thumbnail.src;
                 break;
             }
@@ -256,7 +257,7 @@ function confirmDeleteBox(id, element, url, callback) {
 
     if (element === "album") {
         for (var i = 0; i < albums.length; i++) {
-            if (albums[i].id === id) {
+            if (albums[i] != null && albums[i].id === id) {
                 thumbnail = albums[i].cover.src;
                 dialogTitle = albums[i].title;
                 break;

@@ -288,9 +288,9 @@ $(document).ready(function () {
 
                 $("#image-preview").mouseover(function (event) {
                     previewout = false;
-                    $("#image-preview div#prev-image, #image-preview div#next-image").css({
-                        display: "inline-block"
-                    });
+                    setTimeout(function () {
+                        $("#image-preview div#prev-image, #image-preview div#next-image").css("display", "inline-block");
+                    }, 500);
                 });
 
                 $("#image-preview").mouseout(function (event) {
