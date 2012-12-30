@@ -1,64 +1,3 @@
-// CHANGE IMAGES SEQUENCE:
-
-function updateView() {
-    var order = [];
-
-    $.ui.Mask.show(__("New photos sequence is being saved"));
-
-    $(".image").each(function (index, element) {
-        if ($(element).attr("id") !== "album-cover") {
-            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
-            var id = images[inx].id;
-            order.push(id);
-        }
-    });
-
-    $.ajax({
-        url: Routing.generate("_photogallery_api_reorder_images", { images: order.join(",") }),
-        error: errorHandler,
-        success: function (data, textStatus, jqXHR) {
-            var onsuccess = function (data) {
-                $("div#menu li#update-view").hide();
-                $("div#menu li#undo-changes").hide();
-
-                infoBox(__(resp.msg));
-            };
-
-            successHandler(data, textStatus, jqXHR, onsuccess);
-        }
-    });
-}
-
-function undoChanges() {
-    var order = {};
-    var count = 0;
-    var cover = null;
-
-    $("div#menu li#update-view").hide();
-    $("div#menu li#undo-changes").hide();
-
-    $(".image").each(function (index, element) {
-        if ($(element).attr("id") === "album-cover") {
-            cover = element;
-        }
-        else {
-            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
-            order[inx] = element;
-            count++;
-        }
-    });
-
-    $("#images").empty();
-
-    $("#images").append(cover);
-
-    for (var i = 0; i < count; i++) {
-        var element = order["" + i];
-
-        $("#images").append(element);
-    }
-    $("#images").append('<div style="clear:both"></div>');
-}
 
 // DISPLAY LOGIC:
 
@@ -289,11 +228,11 @@ $(document).ready(function () {
                 }, 1000);
 
                 $("div#menu li#update-view").click(function (event) {
-                    updateView();
+                    reorderSequence(images, "images", ".image");
                 });
 
                 $("div#menu li#undo-changes").click(function (event) {
-                    undoChanges();
+                    undoChanges(".image", "#images");
                 });
 
                 $("#images").sortable({

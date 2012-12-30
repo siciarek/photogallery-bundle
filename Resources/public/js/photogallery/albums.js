@@ -1,7 +1,5 @@
 
 
-
-
 function loadAlbumPhotos(albums) {
 
     $("li#create-new-album-menu").show();
@@ -57,6 +55,14 @@ function loadAlbumPhotos(albums) {
     else {
         $("#albums").append('<p style="margin-top:100px;text-align:center;color:gray !important;">' + __("Gallery contains no albums.") + '</p>');
     }
+
+    $("div#menu li#update-view").click(function (event) {
+        reorderSequence(albums, "albums", ".description");
+    });
+
+    $("div#menu li#undo-changes").click(function (event) {
+        undoChanges(".description", "#albums");
+    });
 
     $("#albums").sortable({
         start: function() {

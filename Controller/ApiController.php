@@ -70,7 +70,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{id}/image.{format}", name = "_photogallery_api_show_image", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
-     * @Template()
      */
     public function showImageAction($id, $format)
     {
@@ -85,7 +84,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{id}/thumbnail.{format}", name = "_photogallery_api_show_thumbnail", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
-     * @Template()
      */
     public function showThumbnailAction($id, $format)
     {
@@ -103,7 +101,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/create-new-album.json", name = "_photogallery_api_create_new_album")
-     * @Template()
      */
     public function createNewAlbumAction(Request $request)
     {
@@ -162,7 +159,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{id}/delete-{element}.json", name = "_photogallery_api_delete_element", requirements = {"id"="^[1-9]\d*$", "element"="^(album|image)$"})
-     * @Template()
      */
     public function deleteElementAction($id, $element)
     {
@@ -209,7 +205,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{image}/{album}/{action}.json", name = "_photogallery_api_copy_image", requirements = {"image"="^[1-9]\d*$", "album"="^[1-9]\d*$", "action"="^(copy|move)\-to$"})
-     * @Template()
      */
     public function copyImageAction($image, $album, $action)
     {
@@ -264,7 +259,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{id}/{action}-{element}.json", name = "_photogallery_api_show_hide_element", requirements = {"id"="^[1-9]\d*$", "action"="^(hide|show)$", "element"="^(album|image)$"})
-     * @Template()
      */
     public function showHideElementAction($id, $action, $element)
     {
@@ -305,7 +299,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{album}/{photos}/delete-photos.json", name = "_photogallery_api_delete_photos", requirements = {"album"="^[1-9]\d*$", "photos"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
-     * @Template()
      */
     public function deletePhotosAction($album, $photos)
     {
@@ -358,14 +351,17 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{images}/reorder-images.json", name = "_photogallery_api_reorder_images", requirements = {"album"="^[1-9]\d*$", "images"="^\s*\d+\s*(,\s*(\d+)?)*\s*$"})
+     * @Route("/{elements}/reorder-{collection}.json", name = "_photogallery_api_reorder_sequence", requirements = {"elements"="^\s*\d+\s*(,\s*(\d+)?)*\s*$", "collection"="^(albums|images)$"})
      */
-    public function reorderImagesAction($images)
+    public function reorderAlbumsAction($elements, $collection)
     {
         $frame = array();
 
         try {
-            $ids = explode(",", $images);
+            $collection = ucfirst($collection);
+            $class = preg_replace('/s$/', "", $collection);
+
+            $ids = explode(",", $elements);
             $ids = array_unique($ids);
             $ids = array_map("intval", $ids);
 
@@ -376,29 +372,29 @@ class ApiController extends Controller
             $ids = array_map("intval", $ids);
 
             $qb = $this->em->createQueryBuilder();
-            $qb->select("i")
-                ->from("SiciarekPhotoGalleryBundle:Image", "i")
-                ->andWhere("i.id in (:ids)")->setParameter("ids", $ids);
+            $qb->select("o")
+                ->from("SiciarekPhotoGalleryBundle:" . $class, "o")
+                ->andWhere("o.id in (:ids)")->setParameter("ids", $ids);
 
             $query = $qb->getQuery();
-            $images = $query->getResult();
-            $imcount = count($images);
+            $objs = $query->getResult();
+            $objcount = count($objs);
 
             $order = array();
 
             foreach ($ids as $id) {
-                $order[$id] = $imcount--;
+                $order[$id] = $objcount--;
             }
 
-            foreach ($images as $image) {
-                $image->setSequenceNumber($order[$image->getId()]);
-                $this->em->persist($image);
+            foreach ($objs as $obj) {
+                $obj->setSequenceNumber($order[$obj->getId()]);
+                $this->em->persist($obj);
             }
 
             $this->em->flush();
 
             $frame = $this->frames["ok"];
-            $frame["msg"] = "Album has been updated successfully";
+            $frame["msg"] = $collection . " sequence has been updated successfully";
             $frame["data"] = $ids;
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
@@ -441,7 +437,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/add-photos.json", name = "_photogallery_api_add_new_photos")
-     * @Template()
      */
     public function addNewPhotosAction(Request $request)
     {
@@ -491,7 +486,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/album-list.json", name = "_photogallery_api_album_list")
-     * @Template()
      */
     public function albumListAction()
     {
@@ -520,7 +514,6 @@ class ApiController extends Controller
 
     /**
      * @Route("/{id}/album.json", name = "_photogallery_api_album", requirements = {"id"="^[1-9]\d*$"})
-     * @Template()
      */
     public function albumAction($id)
     {

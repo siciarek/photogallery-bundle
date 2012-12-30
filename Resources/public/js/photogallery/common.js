@@ -20,6 +20,70 @@ $(document).ready(function () {
 
 });
 
+
+function reorderSequence(elements, collection, cls) {
+
+    var order = [];
+
+    $.ui.Mask.show(__("New " + collection + " sequence is being saved"));
+
+    $(cls).each(function (index, element) {
+        if ($(element).attr("id") !== "album-cover") {
+            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
+            var id = elements[inx].id;
+            order.push(id);
+        }
+    });
+
+    $.ajax({
+        url: Routing.generate("_photogallery_api_reorder_sequence", { collection: collection, elements: order.join(",") }),
+        error: errorHandler,
+        success: function (data, textStatus, jqXHR) {
+            var onsuccess = function (data) {
+                $("div#menu li#update-view").hide();
+                $("div#menu li#undo-changes").hide();
+
+                infoBox(__(data.msg));
+            };
+
+            successHandler(data, textStatus, jqXHR, onsuccess);
+        }
+    });
+}
+
+function undoChanges(elem, container) {
+    var order = {};
+    var count = 0;
+    var cover = null;
+
+    $("div#menu li#update-view").hide();
+    $("div#menu li#undo-changes").hide();
+
+    $(elem).each(function (index, element) {
+        if ($(element).attr("id") === "album-cover") {
+            cover = element;
+        }
+        else {
+            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
+            order[inx] = element;
+            count++;
+        }
+    });
+
+    $(container).empty();
+
+    if(cover != null) {
+        $(container).append(cover);
+    }
+
+    for (var i = 0; i < count; i++) {
+        var element = order["" + i];
+
+        $(container).append(element);
+    }
+    $(container).append('<div style="clear:both"></div>');
+}
+
 function getActionButton(action, object, id) {
     var button = "";
     button += '<span title="' + __(action) + '" class="' + action + ' ' + object + ' action" id="element' + id + '">&nbsp;</span>';
