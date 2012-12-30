@@ -20,6 +20,10 @@
 
     {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
 
+    <script type="text/javascript">
+        var authenticated = true; // {% if app.user %}true{% else %}false{% endif %};
+    </script>
+
     {% include "SiciarekPhotoGalleryBundle::translations.html.twig" %}
 
     {% javascripts
@@ -42,10 +46,6 @@
 </head>
 <body>
 
-<script type="text/javascript">
-    //    var loader = jQuery.ui.Mask.new();
-</script>
-
 <div id="menu">
     <div>
         <ul>
@@ -55,14 +55,18 @@
             {% for text, route in menu %}
 
                 {% if text == "create new album" %}
-                    <li id="create-new-album-menu"><a title="{{ text | trans() }}"
-                           href="javascript:void(null)"
-                           onclick="openAlbumForm()">{{ text | trans() }}</a></li>
+                    {% if app.user %}
+                        <li id="create-new-album-menu"><a title="{{ text | trans() }}"
+                                                          href="javascript:void(null)"
+                                                          onclick="openAlbumForm()">{{ text | trans() }}</a></li>
+                    {% endif %}
                 {% else %}
                     {% if text == "add images" %}
-                        <li id="add-images-menu"><a title="{{ text | trans() }}"
-                               href="javascript:void(null)"
-                               onclick="openImagesForm()">{{ text | trans() }}</a></li>
+                        {% if app.user %}
+                            <li id="add-images-menu"><a title="{{ text | trans() }}"
+                                                        href="javascript:void(null)"
+                                                        onclick="openImagesForm()">{{ text | trans() }}</a></li>
+                        {% endif %}
                     {% else %}
                         {% if text == "refresh view" %}
                             <li><a title="{{ text | trans() }}"

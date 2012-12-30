@@ -100,6 +100,11 @@ function getAlbumToolbarObj(album) {
     var showHide = album.is_visible === true ? "hide" : "show";
 
     var toolbar = "";
+
+    if(authenticated === false) {
+        return "";
+    }
+
     toolbar += '<span class="toolbar">';
 
     toolbar += getActionButton("edit", "album", album.id);
@@ -125,22 +130,6 @@ function parseSize(size) {
     }
 
     return Math.round(size * 10) / 10 + " " + suffix[tier];
-}
-
-function enableButtons(buttons) {
-    buttons.each(function (index, elem) {
-        $(elem).button({
-            disabled: false
-        });
-    });
-}
-
-function disableButtons(buttons) {
-    buttons.each(function (index, elem) {
-        $(elem).button({
-            disabled: true
-        });
-    });
 }
 
 function getTitle(title, icon) {

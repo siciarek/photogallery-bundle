@@ -1,4 +1,3 @@
-
 // DISPLAY LOGIC:
 
 function displayCurrentImage(direction) {
@@ -227,43 +226,6 @@ $(document).ready(function () {
                     }
                 }, 1000);
 
-                $("div#menu li#update-view").click(function (event) {
-                    reorderSequence(images, "images", ".image");
-                });
-
-                $("div#menu li#undo-changes").click(function (event) {
-                    undoChanges(".image", "#images");
-                });
-
-                $("#images").sortable({
-                    start: function () {
-                        clickIsDisabled = true;
-                    },
-                    stop: function () {
-                        var inorder = true;
-
-                        var inx = 0;
-
-                        $(".image").each(function (index, element) {
-                            if ($(element).attr("id") !== "album-cover") {
-                                if (inx++ != $(element).attr("id").replace(/[a-z]*/i, '')) {
-                                    inorder = false;
-                                    return;
-                                }
-                            }
-                        });
-
-                        if (inorder === false) {
-                            $("div#menu li#update-view").show();
-                            $("div#menu li#undo-changes").show();
-                        }
-                        else {
-                            $("div#menu li#update-view").hide();
-                            $("div#menu li#undo-changes").hide();
-                        }
-                    }
-                });
-
                 $(".image").click(function (event) {
 
                     if (clickIsDisabled === true) {
@@ -288,9 +250,7 @@ $(document).ready(function () {
 
                 $("#image-preview").mouseover(function (event) {
                     previewout = false;
-                    setTimeout(function () {
-                        $("#image-preview div#prev-image, #image-preview div#next-image").css("display", "inline-block");
-                    }, 500);
+                    $("#image-preview div#prev-image, #image-preview div#next-image").css("display", "inline-block");
                 });
 
                 $("#image-preview").mouseout(function (event) {
@@ -302,77 +262,116 @@ $(document).ready(function () {
                     }, 500);
                 });
 
-                $.contextMenu({
-                    selector: ".context-menu-trigger",
+                if (authenticated === true) {
 
-                    callback: function (action, options) {
-                        if (action.match(/^(copy|move)\-to/)) {
-                            var temp = action.split(";");
-                            var act = temp[0];
-                            var albumid = temp[1];
-                            var imageid = temp[2];
-                            processAction(act, "image", [albumid, imageid]);
-                        }
-                        else {
-                            switch (action) {
-                                case "rotate-cw":
-                                case "rotate-ccw":
+                    $("div#menu li#update-view").click(function (event) {
+                        reorderSequence(images, "images", ".image");
+                    });
 
-                                    var direction = action.replace(/^\w+\-/, "");
-                                    infoBox(direction);
+                    $("div#menu li#undo-changes").click(function (event) {
+                        undoChanges(".image", "#images");
+                    });
 
-                                    break;
-                                case "change-cover":
-                                case "show":
-                                case "hide":
-                                case "delete":
-                                    processAction(action, "image", images[currentImage].id);
-                                    break;
+                    $("#images").sortable({
+                        start: function () {
+                            clickIsDisabled = true;
+                        },
+                        stop: function () {
+                            var inorder = true;
 
-                                default:
-                                    break;
-                            }
-                        }
-                    },
+                            var inx = 0;
 
-                    build: function ($trigger, e) {
-
-                        var copyToAlbumMenuItems = {};
-                        var moveToAlbumMenuItems = {};
-
-                        var id = $($trigger).attr("id");
-
-                        currentImage = id == "image-preview"
-                            ? currentImage
-                            : id.replace(/\D+/, "");
-
-                        var image = images[currentImage];
-
-                        var items = {
-                            "edit": {name: __("Edit"), icon: "edit"},
-                            "delete": {name: __("Delete"), icon: "delete"}
-                        };
-
-                        if (albums.length > 1) {
-                            $.each(albums, function (index, elem) {
-                                if (elem.id != album.id) {
-                                    copyToAlbumMenuItems["copy-to;" + elem.id + ";" + image.id] = { name: elem.title + '&nbsp;&nbsp;' };
-                                    moveToAlbumMenuItems["move-to;" + elem.id + ";" + image.id] = { name: elem.title + '&nbsp;&nbsp;'};
+                            $(".image").each(function (index, element) {
+                                if ($(element).attr("id") !== "album-cover") {
+                                    if (inx++ != $(element).attr("id").replace(/[a-z]*/i, '')) {
+                                        inorder = false;
+                                        return;
+                                    }
                                 }
                             });
 
-                            items["copy-to"] = {
-                                name: __("Copy to"),
-                                icon: "copy",
-                                items: copyToAlbumMenuItems
+                            if (inorder === false) {
+                                $("div#menu li#update-view").show();
+                                $("div#menu li#undo-changes").show();
                             }
-
-                            items["move-to"] = {
-                                name: __("Move to"),
-                                icon: "move",
-                                items: moveToAlbumMenuItems
+                            else {
+                                $("div#menu li#update-view").hide();
+                                $("div#menu li#undo-changes").hide();
                             }
                         }
+                    });
+
+                    $.contextMenu({
+                        selector: ".context-menu-trigger",
+
+                        callback: function (action, options) {
+                            if (action.match(/^(copy|move)\-to/)) {
+                                var temp = action.split(";");
+                                var act = temp[0];
+                                var albumid = temp[1];
+                                var imageid = temp[2];
+                                processAction(act, "image", [albumid, imageid]);
+                            }
+                            else {
+                                switch (action) {
+                                    case "rotate-cw":
+                                    case "rotate-ccw":
+
+                                        var direction = action.replace(/^\w+\-/, "");
+                                        infoBox(direction);
+
+                                        break;
+                                    case "change-cover":
+                                    case "show":
+                                    case "hide":
+                                    case "delete":
+                                        processAction(action, "image", images[currentImage].id);
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            }
+                        },
+
+                        build: function ($trigger, e) {
+
+                            var copyToAlbumMenuItems = {};
+                            var moveToAlbumMenuItems = {};
+
+                            var id = $($trigger).attr("id");
+
+                            currentImage = id == "image-preview"
+                                ? currentImage
+                                : id.replace(/\D+/, "");
+
+                            var image = images[currentImage];
+
+                            var items = {
+                                "edit": {name: __("Edit"), icon: "edit"},
+                                "delete": {name: __("Delete"), icon: "delete"}
+                            };
+
+                            if (albums.length > 1) {
+                                $.each(albums, function (index, elem) {
+                                    if (elem.id != album.id) {
+                                        copyToAlbumMenuItems["copy-to;" + elem.id + ";" + image.id] = { name: elem.title + '&nbsp;&nbsp;' };
+                                        moveToAlbumMenuItems["move-to;" + elem.id + ";" + image.id] = { name: elem.title + '&nbsp;&nbsp;'};
+                                    }
+                                });
+
+                                items["copy-to"] = {
+                                    name: __("Copy to"),
+                                    icon: "copy",
+                                    items: copyToAlbumMenuItems
+                                }
+
+                                items["move-to"] = {
+                                    name: __("Move to"),
+                                    icon: "move",
+                                    items: moveToAlbumMenuItems
+                                }
+                            }
 
 //                        items["rotate"] = {
 //                            name: __("Rotate"),
@@ -383,27 +382,28 @@ $(document).ready(function () {
 //                            }
 //                        };
 
-                        if (image.is_visible === true) {
-                            items["hide"] = {name: __("Hide"), icon: "hide"};
-                            items["sep1"] = "---------";
-                            items["change-cover"] = {
-                                disabled: image.id == album.cover_id,
-                                name: __("Use as album cover") + '&nbsp;&nbsp;',
-                                icon: "change-cover"
+                            if (image.is_visible === true) {
+                                items["hide"] = {name: __("Hide"), icon: "hide"};
+                                items["sep1"] = "---------";
+                                items["change-cover"] = {
+                                    disabled: image.id == album.cover_id,
+                                    name: __("Use as album cover") + '&nbsp;&nbsp;',
+                                    icon: "change-cover"
+                                };
+                            }
+                            else {
+                                items["show"] = {name: __("Show"), icon: "show"};
+                            }
+
+                            items["sep2"] = "---------";
+                            items["quit"] = {name: __("Quit"), icon: "quit"};
+
+                            return {
+                                items: items
                             };
                         }
-                        else {
-                            items["show"] = {name: __("Show"), icon: "show"};
-                        }
-
-                        items["sep2"] = "---------";
-                        items["quit"] = {name: __("Quit"), icon: "quit"};
-
-                        return {
-                            items: items
-                        };
-                    }
-                });
+                    });
+                }
 
                 bufferImage(0, album, format);
             }

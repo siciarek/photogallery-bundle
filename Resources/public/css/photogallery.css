@@ -157,13 +157,12 @@ html.photogallery div#content div#images div.image {
 }
 
 html.photogallery div#content div#albums div.image {
-
+    margin-right: 24px !important;
 }
 
 html.photogallery div#content div.cover {
     border: 1px grey outset !important;
     background-color: #a47e3c !important;
-    margin-right: 24px !important;
     width: 216px !important;
     height: 166px !important;
 }

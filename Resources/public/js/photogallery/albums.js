@@ -1,5 +1,3 @@
-
-
 function loadAlbumPhotos(albums) {
 
     $("li#create-new-album-menu").show();
@@ -16,14 +14,14 @@ function loadAlbumPhotos(albums) {
             var title = albums[i].title;
             var hidden = albums[i].is_visible === false ? " hidden" : "";
             var numberOfPhotos = albums[i].images.length > 0
-                ?  __("number of images") + ": " + albums[i].images.length
+                ? __("number of images") + ": " + albums[i].images.length
                 : __("no images");
             var cover = albums[i].cover !== null
                 ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, format: format}, true)
                 : defaultCover;
 
-            if(cover === defaultCover) {
-                albums[i].cover = {"src" : cover};
+            if (cover === defaultCover) {
+                albums[i].cover = {"src": cover};
             }
 
             albums[i].cover["src"] = cover;
@@ -56,48 +54,51 @@ function loadAlbumPhotos(albums) {
         $("#albums").append('<p style="margin-top:100px;text-align:center;color:gray !important;">' + __("Gallery contains no albums.") + '</p>');
     }
 
-    $("div#menu li#update-view").click(function (event) {
-        reorderSequence(albums, "albums", ".description");
-    });
+    if (authenticated === true) {
 
-    $("div#menu li#undo-changes").click(function (event) {
-        undoChanges(".description", "#albums");
-    });
+        $("div#menu li#update-view").click(function (event) {
+            reorderSequence(albums, "albums", ".description");
+        });
 
-    $("#albums").sortable({
-        start: function() {
-            clickIsDisabled = true;
-        },
-        stop: function() {
-            var inorder = true;
+        $("div#menu li#undo-changes").click(function (event) {
+            undoChanges(".description", "#albums");
+        });
 
-            $("#albums div.description").each(function(index, element) {
-                if(index != $(element).attr("id").replace(/[a-z]*/i, '')) {
-                    inorder = false;
-                    return;
+        $("#albums").sortable({
+            start: function () {
+                clickIsDisabled = true;
+            },
+            stop: function () {
+                var inorder = true;
+
+                $("#albums div.description").each(function (index, element) {
+                    if (index != $(element).attr("id").replace(/[a-z]*/i, '')) {
+                        inorder = false;
+                        return;
+                    }
+                });
+
+                if (inorder === false) {
+                    $("div#menu li#update-view").show();
+                    $("div#menu li#undo-changes").show();
                 }
-            });
-
-            if(inorder === false) {
-                $("div#menu li#update-view").show();
-                $("div#menu li#undo-changes").show();
+                else {
+                    $("div#menu li#update-view").hide();
+                    $("div#menu li#undo-changes").hide();
+                }
             }
-            else  {
-                $("div#menu li#update-view").hide();
-                $("div#menu li#undo-changes").hide();
-            }
-        }
-    });
+        });
+    }
 
-    $( "#albums" ).disableSelection();
+    $("#albums").disableSelection();
 
     $(".description").click(function (event) {
 
-        if($(event.target).hasClass("action")) {
+        if ($(event.target).hasClass("action")) {
             return;
         }
 
-        if(clickIsDisabled === true) {
+        if (clickIsDisabled === true) {
             clickIsDisabled = false;
             return;
         }
@@ -106,9 +107,9 @@ function loadAlbumPhotos(albums) {
 
         var slug = "album";
 
-        for(var i = 0; i < albums.length; i++) {
-            if(albums[i].id == id) {
-                if(albums[i].slug.length > 0) {
+        for (var i = 0; i < albums.length; i++) {
+            if (albums[i].id == id) {
+                if (albums[i].slug.length > 0) {
                     slug = albums[i].slug;
                 }
                 break;
@@ -121,7 +122,6 @@ function loadAlbumPhotos(albums) {
 
 $(document).ready(function () {
 
-
     if (albums === null) {
 
         $.ajax({
@@ -133,8 +133,7 @@ $(document).ready(function () {
             }
         });
     }
-    else
-    {
+    else {
         $.ui.Mask.hide();
     }
 
