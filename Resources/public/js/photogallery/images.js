@@ -273,6 +273,7 @@ $(document).ready(function () {
                     });
 
                     $("#images").sortable({
+                        items: "div:not(.cover)",
                         start: function () {
                             clickIsDisabled = true;
                         },

@@ -99,8 +99,7 @@
 
             {% if app.user %}
                 <li>{{ link_to('layout.logout'|trans({}, 'FOSUserBundle') | lower(), "fos_user_security_logout") }}</li>
-                <li class="user"><a>{{ "user" | trans() ~ ": " ~ app.user.firstname ~ " " ~ app.user.lastname }}</a>
-                </li>
+                {#<li><a>{{ "user" | trans() ~ ": " ~ app.user.firstname ~ " " ~ app.user.lastname }}</a></li>#}
             {% else %}
                 <li>{{ link_to('layout.login'|trans({}, 'FOSUserBundle') | lower(), "fos_user_security_login") }}</li>
             {% endif %}

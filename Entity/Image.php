@@ -332,4 +332,32 @@ class Image
     {
         return $this->albumcov;
     }
+    /**
+     * @var \Siciarek\PhotoGalleryBundle\Entity\Album
+     */
+    private $albumc;
+
+
+    /**
+     * Set albumc
+     *
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $albumc
+     * @return Image
+     */
+    public function setAlbumc(\Siciarek\PhotoGalleryBundle\Entity\Album $albumc = null)
+    {
+        $this->albumc = $albumc;
+    
+        return $this;
+    }
+
+    /**
+     * Get albumc
+     *
+     * @return \Siciarek\PhotoGalleryBundle\Entity\Album 
+     */
+    public function getAlbumc()
+    {
+        return $this->albumc;
+    }
 }
