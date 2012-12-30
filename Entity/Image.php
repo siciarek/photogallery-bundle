@@ -304,4 +304,32 @@ class Image
     {
         return $this->album;
     }
+    /**
+     * @var \Siciarek\PhotoGalleryBundle\Entity\Album
+     */
+    private $albumcov;
+
+
+    /**
+     * Set albumcov
+     *
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Album $albumcov
+     * @return Image
+     */
+    public function setAlbumcov(\Siciarek\PhotoGalleryBundle\Entity\Album $albumcov = null)
+    {
+        $this->albumcov = $albumcov;
+    
+        return $this;
+    }
+
+    /**
+     * Get albumcov
+     *
+     * @return \Siciarek\PhotoGalleryBundle\Entity\Album 
+     */
+    public function getAlbumcov()
+    {
+        return $this->albumcov;
+    }
 }

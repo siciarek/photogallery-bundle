@@ -50,6 +50,7 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
     oneToOne:
         cover:
             targetEntity: Image
+            mappedBy: albumcov
     oneToMany:
         images:
             targetEntity: Image

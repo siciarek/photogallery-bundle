@@ -180,13 +180,6 @@ class ApiController extends Controller
                 }
             }
 
-            if ($element === "album") {
-                $obj->setCover(null);
-
-                $this->em->persist($obj);
-                $this->em->flush();
-            }
-
             $this->em->remove($obj);
             $this->em->flush();
 
