@@ -1,5 +1,6 @@
 var albums = null;
 var album = {};
+var currentAlbumId = parseInt(location.href.replace(/^.*\/(\d+)\/[^\/]+$/, "$1"));
 var currentImage = 0;
 var images = [];
 var albumName = "Album";

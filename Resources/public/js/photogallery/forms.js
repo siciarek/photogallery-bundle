@@ -130,7 +130,7 @@ $(document).ready(function () {
             }
 
             for (var i = 0; i < albums.length; i++) {
-                var selected = typeof albumId != 'undefined' && albumId === albums[i].id || albums.length === 1
+                var selected = currentAlbumId > 0 && currentAlbumId === albums[i].id || albums.length === 1
                     ? ' selected="selected"'
                     : "";
                 $("select#album-images").append("<option value='" + albums[i].id + "'" + selected + ">" + albums[i].title + "</option>");

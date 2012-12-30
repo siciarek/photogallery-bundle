@@ -112,10 +112,9 @@ $(document).ready(function () {
         displayPrevImage();
     });
 
-    var albumid = parseInt(location.href.replace(/^.*\/(\d+)\/[^\/]+$/, "$1"));
 
     $.ajax({
-        url: Routing.generate("_photogallery_api_album", { id: albumid }),
+        url: Routing.generate("_photogallery_api_album", { id: currentAlbumId }),
         error: errorHandler,
         success: function (response) {
 
