@@ -125,15 +125,14 @@ $(document).ready(function () {
         success: function (response) {
             albums = response;
 
+            if(albums.length > 1) {
+                $("select#album-images").append('<option value="0">' + __("Choose album") + '</option>');
+            }
+
             for (var i = 0; i < albums.length; i++) {
                 var selected = typeof albumId != 'undefined' && albumId === albums[i].id || albums.length === 1
                     ? ' selected="selected"'
                     : "";
-
-                if(albums.length > 1) {
-                    $("select#album-images").append('<option value="0">' + __("Choose album") + '</option>');
-                }
-
                 $("select#album-images").append("<option value='" + albums[i].id + "'" + selected + ">" + albums[i].title + "</option>");
             }
         }
