@@ -414,6 +414,7 @@ class ApiController extends Controller
             $album->setCover($cover);
 
             $this->em->persist($album);
+            $this->em->persist($cover);
             $this->em->flush();
 
             $frame = $this->frames["ok"];
@@ -488,10 +489,11 @@ class ApiController extends Controller
 
         $qb = $this->em->createQueryBuilder();
 
-        $qb->select("a", "c", "i")
+        $qb->select("a", "i", "c", "t")
             ->from("SiciarekPhotoGalleryBundle:Album", "a")
             ->leftJoin("a.images", "i")
             ->leftJoin("a.cover", "c")
+            ->leftJoin("c.thumbnail", "t")
             ->addOrderBy("a.sequence_number", "DESC")
             ->addOrderBy("a.id", "DESC");
         ;

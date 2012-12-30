@@ -50,7 +50,11 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
     oneToOne:
         cover:
             targetEntity: Image
-            mappedBy: albumc
+            inversedBy: album
+            joinColumn:
+                name: cover_id
+                referencedColumnName: id
+                onDelete: SET NULL
     oneToMany:
         images:
             targetEntity: Image

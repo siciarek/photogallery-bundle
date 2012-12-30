@@ -40,15 +40,6 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
             gedmo:
                 timestampable:
                     on: update
-    oneToOne:
-        albumc:
-            targetEntity: Album
-            inversedBy: cover
-            joinColumn:
-                name: cover_id
-                referencedColumnName: id
-                onDelete: CASCADE
-                onUpdate: CASCADE
     manyToOne:
         thumbnail:
             targetEntity: Image
