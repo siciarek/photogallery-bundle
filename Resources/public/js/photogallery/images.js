@@ -249,7 +249,8 @@ $(document).ready(function () {
 
                 $("#image-preview").mouseover(function (event) {
                     previewout = false;
-                    $("#image-preview div#prev-image, #image-preview div#next-image").css("display", "inline-block");
+                    display = images.length > 1 ? "inline-block" : "none";
+                    $("#image-preview div#prev-image, #image-preview div#next-image").css("display", display);
                 });
 
                 $("#image-preview").mouseout(function (event) {
