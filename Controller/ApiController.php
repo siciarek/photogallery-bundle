@@ -2,6 +2,8 @@
 
 namespace Siciarek\PhotoGalleryBundle\Controller;
 
+ini_set("memory_limit", "256M");
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
