@@ -42,6 +42,7 @@ function openElementForm(title, element, data) {
     };
 
     buttons[cancel] = function (event) {
+        $("#" + element + "-form form").get(0).reset();
         $("#" + element + "-form").dialog("close");
     };
 
@@ -79,6 +80,23 @@ function openElementForm(title, element, data) {
                 }
             });
 
+            $("#label-photos-images").show();
+
+            $(".cabinet").css({
+                "display" : "none"
+            });
+
+            $(".form-colum.right").show();
+
+            if(element === "images" && data.id == 0) {
+                console.log("Validate file upload");
+                $("#photos-images").addClass("images");
+            }
+            else if(element === "images" && data.id > 0) {
+                console.log("Do not validate file upload");
+                $(".form-colum.right").hide();
+                $("#photos-images").removeClass("images");
+            }
 
             $("input[name='id']").val(data.id);
             $("input[name='title']").val(data.title);
@@ -88,6 +106,7 @@ function openElementForm(title, element, data) {
         },
 
         close: function () {
+            $("#photos-images").removeClass("images");
             $("#" + element + "-form form").get(0).reset();
             $("#files-to-upload-" + element + "").empty();
             var nofid = "#number-of-chosen-files-" + element + "";

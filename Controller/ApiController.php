@@ -150,7 +150,7 @@ class ApiController extends Controller
         $this->em->flush();
 
         $files = Request::createFromGlobals()->files->get("photos");
-        $this->createImages($files, $album, $title, $description, $is_visible);
+        $this->createImages($files, $album);
 
         $frame["data"]["album"] = $album->getId();
 
@@ -446,25 +446,45 @@ class ApiController extends Controller
             $description = empty($description) ? null : $description;
             $title = empty($title) ? null : $title;
 
-            $is_visible = $request->get("hidden", "off") !== "on";
             $album_id = intval($request->get("album", 0));
 
+            $is_visible = $request->get("hidden", "off") !== "on";
+            $image_id = intval($request->get("id", 0));
             $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
 
-            $qb = $this->em->createQueryBuilder();
-            $qb->select("max(i.sequence_number) + 1 as c")
-                ->from("SiciarekPhotoGalleryBundle:Image", "i")
-                ->leftJoin("i.album", "a")
-                ->andWhere("i.album = :al")->setParameter("al", $album);
-            $query = $qb->getQuery();
-            $sequence_number = $query->getSingleScalarResult();
-
-            $files = Request::createFromGlobals()->files->get("photos");
-
-            $this->createImages($files, $album, $title, $description, $is_visible, $sequence_number);
 
             $frame = $this->frames["ok"];
-            $frame["msg"] = "Images has been added successfully";
+
+            if ($image_id > 0) {
+                $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image_id);
+                $image->setTitle($title);
+                $image->setDescription($description);
+                $image->setIsVisible($image_id);
+
+                if($album_id !== $image->getAlbum()->getId()) {
+                    $image->setAlbum($album);
+                }
+
+                $this->em->persist($image);
+                $this->em->flush();
+
+                $frame["msg"] = "Image has been updated successfully";
+            } else {
+
+                $qb = $this->em->createQueryBuilder();
+                $qb->select("max(i.sequence_number) + 1 as c")
+                    ->from("SiciarekPhotoGalleryBundle:Image", "i")
+                    ->leftJoin("i.album", "a")
+                    ->andWhere("i.album = :al")->setParameter("al", $album);
+                $query = $qb->getQuery();
+                $sequence_number = $query->getSingleScalarResult();
+
+                $files = Request::createFromGlobals()->files->get("photos");
+
+                $this->createImages($files, $album, $sequence_number);
+
+                $frame["msg"] = "Images has been added successfully";
+            }
 
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
@@ -569,7 +589,7 @@ class ApiController extends Controller
         $this->em->flush();
     }
 
-    protected function createImages($files, $album, $title, $description, $is_visible, $seq_number = 0)
+    protected function createImages($files, $album, $seq_number = 0, $info = array())
     {
         $config = $this->container->getParameter("siciarek_photo_gallery.config");
         $sequence_number = $seq_number;
@@ -579,6 +599,19 @@ class ApiController extends Controller
         }
 
         foreach ($files as $file) {
+
+            $original_name = $file->getClientOriginalName();
+            $original_name = trim($original_name);
+            $original_name = preg_replace("|([^/]+)$|", "$1", $original_name);
+            $original_name = preg_replace("/\.\w+$/", "", $original_name);
+            $original_name = preg_replace("/\s+/", " ", $original_name);
+            $original_name = trim($original_name);
+            $original_name = empty($original_name) ? null : $original_name;
+
+            $title = array_key_exists("title", $info) ? $info["title"] : $original_name;
+            $description = array_key_exists("description", $info) ? $info["description"] : null;
+            $is_visible = array_key_exists("is_visible", $info) ? $info["is_visible"] : true;
+
             $source_path = $file->getPathName();
 
             // Initial values:

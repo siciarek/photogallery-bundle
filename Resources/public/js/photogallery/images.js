@@ -195,7 +195,7 @@ $(document).ready(function () {
 
                     images[i].thumbnail["src"] = thumbnail;
 
-                    $("#images").append('<div class="image context-menu-trigger' + hidden + '" id="' + imgId + '"></div>');
+                    $("#images").append('<div title="' + images[i].title + '" class="image context-menu-trigger' + hidden + '" id="' + imgId + '"></div>');
 
                     if (images[i].is_visible === true) {
                         $("#" + imgId).css({
@@ -323,6 +323,7 @@ $(document).ready(function () {
 
                                         break;
                                     case "change-cover":
+                                    case "edit":
                                     case "show":
                                     case "hide":
                                     case "delete":
