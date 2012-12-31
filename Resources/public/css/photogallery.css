@@ -110,7 +110,7 @@ html.photogallery div.create-new-element div.form-colum.right div.files-list {
     cursor: default;
 }
 
-html.photogallery div.create-new-element#images-form div.form-colum.right div.files-list li {
+html.photogallery div.create-new-element div.form-colum.right div.files-list li {
     padding: 2px 4px 2px 4px;
 }
 

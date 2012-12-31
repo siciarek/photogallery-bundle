@@ -37,6 +37,7 @@ function successHandler(data, textStatus, jqXHR, onsuccess) {
 }
 
 function formAction(form) {
+
     var p = $(form).parents()[0];
     var element = $(p).attr("id").replace(/^(\w+)\-\w+$/, "$1");
     var messages = {
@@ -58,6 +59,11 @@ function formAction(form) {
         success: function (data, textStatus, jqXHR) {
             var onsuccess = function (data) {
                 $.ui.Mask.show(__("Wait a while"));
+
+                if(typeof data.data.type !== "undefined" && data.data.type === "album") {
+                    landingpage = Routing.generate("_album", {id: data.data.id, slug: data.data.slug}, true);
+                }
+
                 location.href = landingpage;
             };
 
@@ -139,7 +145,7 @@ function processAction(action, element, id, message) {
                 case "image":
                     for (var i = 0; i < images.length; i++) {
                         var obj = images[i];
-                        console.log(obj);
+
                         if (obj.id == id) {
                             openImagesForm(__("Edit image data"), obj);
                             break;

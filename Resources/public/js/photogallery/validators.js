@@ -1,28 +1,20 @@
-$(document).ready(function () {
+(function ($, W, D) {
+    var JQUERY4U = {};
+
     $.validator.addMethod(
         "validalbum",
         function (value, element) {
-            currentAlbumId = value;
             return value > 0;
         },
         $.format(__("Album is required."))
     );
 
     $.validator.addMethod(
-        "images",
+        "validimages",
         function (value, element) {
             var suffix = $(element).attr("id").split("-").pop();
             var valid = value.length > 0;
             var files = $(element).prop("files");
-
-            if(valid === true) {
-                $.each(files, function(index, elem){
-                    if(elem.type.match(/^image\//) === null) {
-                        errorBox("File \"" + elem.name + "\" has unsupported format.");
-                        return false;
-                    }
-                });
-            }
 
             valid = suffix === "album" || valid
 
@@ -31,7 +23,18 @@ $(document).ready(function () {
                 return false;
             }
 
-            return true;
+
+            if(valid === true) {
+                $.each(files, function(index, elem){
+                    if(elem.type.match(/^image\//) === null) {
+                        errorBox("File \"" + elem.name + "\" has unsupported format.");
+                        valid = false;
+                        return;
+                    }
+                });
+            }
+
+            return valid;
         },
         $.format(__("At least one image is required."))
     );
@@ -56,4 +59,33 @@ $(document).ready(function () {
         },
         $.format(__("Title or description is required."))
     );
-});
+
+    JQUERY4U.UTIL =
+    {
+        setupFormValidation: function () {
+            //form validation rules
+            $("#images-base-form").validate({
+                rules: {
+                    album: {
+                        validalbum: true
+                    },
+                    "photos[]": {
+                        validimages: true
+                    }
+                },
+                messages: {
+
+                },
+                submitHandler: function (form) {
+                    alert("OK");
+                }
+            });
+        }
+    }
+
+    //when the dom has loaded setup form validation rules
+    $(D).ready(function ($) {
+        JQUERY4U.UTIL.setupFormValidation();
+    });
+
+})(jQuery, window, document);

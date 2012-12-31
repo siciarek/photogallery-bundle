@@ -18,6 +18,7 @@ function openElementForm(title, element, data) {
 
     data = data || {
         id: 0,
+        album_id: 0,
         title: "",
         descripion: "",
         is_visible: true
@@ -33,8 +34,7 @@ function openElementForm(title, element, data) {
         $("#" + element + "-form form").get(0).reset();
         $("#files-to-upload-" + element + "").empty();
         var nofid = "#number-of-chosen-files-" + element + "";
-        var nof = $(nofid).text().replace(/\d+/, 0);
-        $(nofid).html(nof);
+        $(nofid).html("");
     };
 
     buttons[save] = function (event) {
@@ -42,7 +42,6 @@ function openElementForm(title, element, data) {
     };
 
     buttons[cancel] = function (event) {
-        $("#" + element + "-form form").get(0).reset();
         $("#" + element + "-form").dialog("close");
     };
 
@@ -81,6 +80,7 @@ function openElementForm(title, element, data) {
             });
 
             $("#label-photos-images").show();
+//            $("#photos-images").enable();
 
             $(".cabinet").css({
                 "display": "none"
@@ -95,13 +95,10 @@ function openElementForm(title, element, data) {
 
             $(".form-colum.right div.form-field, .form-colum.right div.files-list").show();
 
-            if (element === "images" && data.id == 0) {
-                console.log("Validate file upload");
-                $("#photos-images").addClass("images");
-            }
-            else if (element === "images" && data.id > 0) {
+            if (element === "images" && data.id > 0) {
                 console.log("Do not validate file upload");
                 var thumbnail = defaultCover;
+                $("#photos-images").disable();
 
                 $.each(images, function (index, element) {
                     if (element.id == data.id) {
@@ -114,7 +111,6 @@ function openElementForm(title, element, data) {
                     "border": "1px solid silver"
                 });
                 $(".form-colum.right div.form-field, .form-colum.right div.files-list").hide();
-                $("#photos-images").removeClass("images");
             }
 
             $("input[name='id']").val(data.id);
@@ -125,12 +121,9 @@ function openElementForm(title, element, data) {
         },
 
         close: function () {
-            $("#photos-images").removeClass("images");
-            $("#" + element + "-form form").get(0).reset();
             $("#files-to-upload-" + element + "").empty();
             var nofid = "#number-of-chosen-files-" + element + "";
-            var nof = $(nofid).text().replace(/\d+/, 0);
-            $(nofid).html(nof);
+            $(nofid).html("");
         }
     }).show();
 }
@@ -155,21 +148,30 @@ function showFileDialog(label) {
 function setImageInfo(index, key) {
     currentImageInfoElement = key;
 
+    if (typeof imagesInfo[currentImageInfoElement] === "undefined") {
+        return true;
+    }
+
     var imgdata = imagesInfo[currentImageInfoElement];
 
     $("#images-form form input[name='title']").val(imgdata.title);
     $("#images-form form textarea[name='description']").val(imgdata.description);
     $("#images-form form input[name='publish']").attr("checked", imgdata.is_visible);
 
-    $("#files-to-upload-images").children().each(function(i, elem){
+    $("#files-to-upload-images").children().each(function (i, elem) {
         $(elem).removeClass("selected");
-        if(i === index) {
+        if (i === index) {
             $(elem).addClass("selected");
         }
     });
 }
 
 function updateImageInfo() {
+
+    if (typeof imagesInfo[currentImageInfoElement] === "undefined") {
+        return true;
+    }
+
     imagesInfo[currentImageInfoElement].is_visible =
         $("#images-form form input:checkbox[name='publish']:checked").val() === "on";
     imagesInfo[currentImageInfoElement].title = $("#images-form form input[name='title']").val();
@@ -234,30 +236,50 @@ $(document).ready(function () {
             return false;
         }
 
-        var files = $(this).prop("files");
-        var element = $(this).attr("id").replace(/^\w+\-/, "");
+        var filesField = $(this);
+        var files = filesField.prop("files");
+        var element = filesField.attr("id").replace(/^\w+\-/, "");
 
         $("#files-to-upload-" + element).empty();
         imagesInfo = {};
 
         var totalsize = 0;
 
-        $(files).each(function (index, elem) {
-            var imgkey = "" + index + elem.name;
-            var filesize = parseSize(elem.size);
-            totalsize += elem.size;
-            var imgtitle = parseImageTitle(elem.name);
-            $("#files-to-upload-" + element).append("<li onclick=\"setImageInfo(" + index + ", '" + imgkey + "')\">" + elem.name + " (" + filesize + ")" + "</li>");
-            imagesInfo[imgkey] = {
-                id: 0,
-                title: imgtitle,
-                description: null,
-                is_visible: true,
-                album_id: parseInt(currentAlbumId)
+        valid = true;
+
+        var invalidFileName = null;
+
+        $.each(files, function (index, elem) {
+            if (elem.type.match(/^image\//) === null) {
+                invalidFileName = elem.name;
+                filesField.val("");
+                valid = false;
+                return;
             }
         });
 
-        var nof = "(" + files.length + "/" + parseSize(totalsize) + ")";
-        $("#number-of-chosen-files-" + element).html(nof);
+        if (valid === false) {
+            errorBox("File \"" + invalidFileName + "\" has unsupported format.");
+        } else {
+
+            $(files).each(function (index, elem) {
+                var imgkey = "" + index + elem.name;
+                var filesize = parseSize(elem.size);
+                totalsize += elem.size;
+                var imgtitle = parseImageTitle(elem.name);
+
+                $("#files-to-upload-" + element).append("<li onclick=\"setImageInfo(" + index + ", '" + imgkey + "')\">" + elem.name + " (" + filesize + ")" + "</li>");
+                imagesInfo[imgkey] = {
+                    id: 0,
+                    title: imgtitle,
+                    description: null,
+                    is_visible: true,
+                    album_id: parseInt(currentAlbumId)
+                }
+            });
+
+            var nof = "(" + files.length + "/" + parseSize(totalsize) + ")";
+            $("#number-of-chosen-files-" + element).html(nof);
+        }
     });
 });

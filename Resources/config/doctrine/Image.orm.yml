@@ -48,6 +48,7 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
         album:
             targetEntity: Album
             inversedBy: images
+            cascade: [ persist ]
             joinColumn:
                 name: album_id
                 referencedColumnName: id

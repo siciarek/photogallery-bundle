@@ -17,13 +17,13 @@
 {% for key, data in forms %}
 
     <div id="{{ key }}-form" class="create-new-element">
-        <form class="{{ key }}-form" enctype="application/x-www-form-urlencoded" method="post"
+        <form id="{{ key }}-base-form" class="{{ key }}-form" enctype="application/x-www-form-urlencoded" method="post"
               action="{{ data.action }}">
 
             {#<div id="info-{{ key }}" class="form-info">{{ data.info | trans() }}</div>#}
 
             <input type="hidden" name="id"/>
-            <input type="hidden" name="imginfo" />
+            <input type="hidden" name="imginfo"/>
 
             {#LEFT COLUMN#}
 
@@ -32,15 +32,14 @@
                 {% if key == "images" %}
                     <div class="form-field" style="width: 430px;">
                         <label for="album-{{ key }}">{{ "album" | trans() }}</label>
-                        <select name="album" id="album-{{ key }}" class="validalbum"></select>
+                        <select name="album" id="album-{{ key }}"></select>
                     </div>
                 {% endif %}
 
                 <div class="form-field">
                     <label for="title-{{ key }}">{{ "title" | trans() }}</label>
                     <input style="width: 430px;" type="text" name="title"
-                           id="title-{{ key }}"
-                           class="{% if key == "album" %}titleordescription{% endif %}"/>
+                           id="title-{{ key }}"/>
                 </div>
 
                 <div class="form-field">
@@ -69,9 +68,7 @@
                     </label>
 
 
-                    <span id="number-of-chosen-files-{{ key }}"
-                          style="text-align: right;font-weight: bold;"> (0)
-                    </span>
+                    <span id="number-of-chosen-files-{{ key }}" style="font-weight: bold;"></span>
 
                     <span style="display:inline-block;width:8px;"></span>
 
@@ -97,3 +94,4 @@
     </div>
 
 {% endfor %}
+

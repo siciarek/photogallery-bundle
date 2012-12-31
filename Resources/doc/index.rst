@@ -152,7 +152,7 @@ php app/console doctrine:generate:entities SiciarekPhotoGalleryBundle --path=ven
 php app/console doctrine:database:drop --force
 php app/console doctrine:database:create
 php app/console doctrine:schema:update --force
-app/console doctrine:fixtures:load --no-interaction
+php app/console doctrine:fixtures:load --no-interaction
 php app/console assets:install web
 php app/console assetic:dump --no-debug
 cp -vR web/bundles/siciarekphotogallery/images web

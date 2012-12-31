@@ -5,21 +5,63 @@
 
     <pre>{{ settings | var_dump() }}</pre>
 
+
+
+    <!-- HTML form for validation demo -->
+    <form action="" method="post" id="register-form" novalidate="novalidate"><h2>User Registration</h2>
+
+        <div id="form-content">
+            <fieldset>
+                <input type="text" name="title">
+                <div class="fieldgroup"><label for="firstname">First Name</label> <input type="text" name="firstname">
+                </div>
+                <div class="fieldgroup"><label for="lastname">Last Name</label> <input type="text" name="lastname">
+                </div>
+                <div class="fieldgroup"><label for="email">Email</label> <input type="text" name="email"></div>
+                <div class="fieldgroup"><label for="password">Password</label> <input type="password" name="password">
+                </div>
+                <div class="fieldgroup"><p class="right">By clicking register you agree to our <a target="_blank"
+                                                                                                  href="/policy">policy</a>.
+                </p>                 <input type="submit" value="Register" class="submit"></div>
+            </fieldset>
+        </div>
+        <div class="fieldgroup"><p>Already registered? <a href="/login">Sign in</a>.</p></div>
+    </form>
+
+
     <script type="text/javascript">
-
-        var ob = {
-            first: [1,2,3],
-            second: {
-                a: "a",
-                b: "b"
-            }
-        };
-
-        console.log(ob);
-        console.log(JSON.stringify(ob));
-
         // <![CDATA[
+
+        (function ($, W, D) {
+            var JQUERY4U = {};
+
+            JQUERY4U.UTIL =
+            {
+                setupFormValidation: function () {
+                    //form validation rules
+                    $("#register-form").validate({
+                        rules: {
+                            title: "required"
+                        },
+                        messages: {
+                            title: "Title message",
+                        },
+                        submitHandler: function (form) {
+                            form.submit();
+                        }
+                    });
+                }
+            }
+
+            //when the dom has loaded setup form validation rules
+            $(D).ready(function ($) {
+                JQUERY4U.UTIL.setupFormValidation();
+            });
+
+        })(jQuery, window, document);
+
         $(document).ready(function () {
+
             $.cookie.defaults = {
                 expires: 365
             };

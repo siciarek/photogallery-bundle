@@ -9,6 +9,7 @@ var albumDescription = "";
 var clickIsDisabled = false;
 var frame = 8;
 var imagesInfo = {};
+var formIsValid = false;
 
 $(document).ready(function () {
 

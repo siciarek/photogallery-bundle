@@ -37,14 +37,14 @@ class ApiController extends Controller
         $this->em = $this->doctrine->getEntityManager();
 
         $this->frames = array(
-            "ok"      => array(
+            "info"      => array(
                 "success"   => true,
                 "type"      => "info",
                 "datetime"  => date("Y-m-d H:i:s"),
                 "msg"       => "OK",
                 "data"      => new \stdClass(),
             ),
-            "data"    => array(
+            "data"      => array(
                 "success"   => true,
                 "type"      => "data",
                 "datetime"  => date("Y-m-d H:i:s"),
@@ -52,15 +52,14 @@ class ApiController extends Controller
                 "totalCount"=> 0,
                 "data"      => array(),
             ),
-            "error"   => array(
+            "error"     => array(
                 "success"   => false,
                 "type"      => "error",
                 "datetime"  => date("Y-m-d H:i:s"),
                 "msg"       => "Error",
-                "totalCount"=> 0,
                 "data"      => new \stdClass(),
             ),
-            "warning" => array(
+            "warning"   => array(
                 "success"   => true,
                 "type"      => "warning",
                 "datetime"  => date("Y-m-d H:i:s"),
@@ -71,34 +70,18 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{id}/image.{format}", name = "_photogallery_api_show_image", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
+     * @Route("/{id}/{type}.{format}", name = "_photogallery_api_show_image",      defaults={"type"="image"},     requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
+     * @Route("/{id}/{type}.{format}", name = "_photogallery_api_show_thumbnail",  defaults={"type"="thumbnail"}, requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
      */
-    public function showImageAction($id, $format)
+    public function showImageAction($id, $type, $format)
     {
-
         $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($id);
 
-        $file = $this->config["uploads_directory"] . $image->getFile()->getPath();
-        $mime_type = $image->getFile()->getMimeType();
+        if ($type === "thumbnail") {
+            $image = $image->getThumbnail();
+        }
 
-        return $this->fileResponse($file, $mime_type);
-    }
-
-    /**
-     * @Route("/{id}/thumbnail.{format}", name = "_photogallery_api_show_thumbnail", requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
-     */
-    public function showThumbnailAction($id, $format)
-    {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
-        $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($id);
-        $thumbnail = $image->getThumbnail();
-
-        $file = $config["uploads_directory"] . $thumbnail->getFile()->getPath();
-        $mime_type = $thumbnail->getFile()->getMimeType();
-
-        return $this->fileResponse($file, $mime_type);
+        return $this->fileResponse($image->getFile());
     }
 
     /**
@@ -106,58 +89,138 @@ class ApiController extends Controller
      */
     public function createNewAlbumAction(Request $request)
     {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
+        $frame = array();
 
-        $frame = array(
-            "success"   => true,
-            "type"      => "data",
-            "datetime"  => date("Y-m-d H:i:s"),
-            "msg"       => "Data",
-            "totalCount"=> 0,
-            "data"      => array(),
-        );
+        try {
+            $this->em->getConnection()->beginTransaction();
 
-        $id = intval($request->get("id"));
-        $title = $request->get("title");
-        $description = $request->get("description");
+            $id = intval($request->get("id"));
+            $title = $request->get("title");
+            $description = $request->get("description");
 
-        $title = trim($title);
-        $description = trim($description);
-        $title = empty($title) ? "New Album" : $title;
-        $description = empty($description) ? null : $description;
+            $title = trim($title);
+            $description = trim($description);
+            $title = empty($title) ? "New Album" : $title;
+            $description = empty($description) ? null : $description;
 
-        $images_visible = $request->get("hidden", "off") !== "on";
-        $is_visible = $request->get("publish", "off") === "on";
+            $images_visible = $request->get("hidden", "off") !== "on";
+            $is_visible = $request->get("publish", "off") === "on";
 
-        $qb = $this->em->createQueryBuilder();
-        $qb->select("max(a.sequence_number)")->from("SiciarekPhotoGalleryBundle:Album", "a");
-        $query = $qb->getQuery();
-        $sequence_number = $query->getSingleScalarResult();
+            $qb = $this->em->createQueryBuilder();
+            $qb->select("max(a.sequence_number)")->from("SiciarekPhotoGalleryBundle:Album", "a");
+            $query = $qb->getQuery();
+            $sequence_number = $query->getSingleScalarResult();
 
-        $album = new Album();
-        $album->setSequenceNumber($sequence_number + 1);
+            $album = new Album();
+            $album->setSequenceNumber($sequence_number + 1);
 
-        if ($id > 0) {
-            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
+            if ($id > 0) {
+                $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
+            }
+
+            $album->setTitle($title);
+            $album->setDescription($description);
+            $album->setIsVisible($is_visible);
+
+            $files = Request::createFromGlobals()->files->get("photos");
+            $this->createImages($files, $album, $images_visible);
+
+            $frame = $this->frames["info"];
+
+            $frame["data"] = array(
+                "type" => "album",
+                "id"   => $album->getId(),
+                "slug" => $album->getSlug(),
+            );
+
+            $frame["msg"] = sprintf("Album has been %s successfully", $id > 0 ? "updated" : "created");
+
+            $this->em->persist($album);
+            $this->em->flush();
+
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollback();
+
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
         }
 
-        $album->setTitle($title);
-        $album->setDescription($description);
-        $album->setIsVisible($is_visible);
+        return $this->jsonResponse($frame);
+    }
 
-        $this->em->persist($album);
-        $this->em->flush();
+    /**
+     * @Route("/add-photos.json", name = "_photogallery_api_add_new_photos")
+     */
+    public function addNewPhotosAction(Request $request)
+    {
+        $frame = array();
 
-        $files = Request::createFromGlobals()->files->get("photos");
-        $this->createImages($files, $album, $images_visible);
+        try {
+            $this->em->getConnection()->beginTransaction();
 
-        $frame["data"]["album"] = $album->getId();
+            $title = $request->get("title");
+            $description = $request->get("description");
+            $description = trim($description);
+            $title = trim($title);
+            $description = empty($description) ? null : $description;
+            $title = empty($title) ? null : $title;
 
-        $json = json_encode($frame);
+            $album_id = intval($request->get("album", 0));
 
-        return $this->jsonResponse($json);
+            $is_visible = $request->get("publish", "off") === "on";
+
+            $imginfojson = $request->get("imginfo", "{}");
+            $imginfo = json_decode($imginfojson, true);
+
+            $image_id = intval($request->get("id", 0));
+            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
+
+
+            $frame = $this->frames["info"];
+
+            if ($image_id > 0) {
+                $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image_id);
+                $image->setTitle($title);
+                $image->setDescription($description);
+                $image->setIsVisible($is_visible);
+
+                if ($album_id !== $image->getAlbum()->getId()) {
+                    $image->setAlbum($album);
+                }
+
+                $this->em->persist($image);
+                $this->em->flush();
+
+                $frame["msg"] = "Image has been updated successfully";
+            } else {
+
+                $qb = $this->em->createQueryBuilder();
+                $qb->select("max(i.sequence_number) + 1 as c")
+                    ->from("SiciarekPhotoGalleryBundle:Image", "i")
+                    ->leftJoin("i.album", "a")
+                    ->andWhere("i.album = :al")->setParameter("al", $album);
+                $query = $qb->getQuery();
+                $sequence_number = $query->getSingleScalarResult();
+
+                $files = Request::createFromGlobals()->files->get("photos");
+
+                $this->createImages($files, $album, true, $sequence_number, $imginfo);
+
+                $frame["msg"] = "Images has been added successfully";
+            }
+
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollback();
+
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -186,7 +249,7 @@ class ApiController extends Controller
             $this->em->remove($obj);
             $this->em->flush();
 
-            $frame = $this->frames["ok"];
+            $frame = $this->frames["info"];
             $frame["msg"] = $elemname . " has been deleted successfuly";
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
@@ -194,9 +257,7 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -238,7 +299,7 @@ class ApiController extends Controller
             }
 
             $this->em->flush();
-            $frame = $this->frames["ok"];
+            $frame = $this->frames["info"];
             $frame["msg"] = sprintf("Image has been %s successfuly", $move === true ? "moved" : "copied");
             $frame["data"] = array($image, $action, $album);
         } catch (\Exception $e) {
@@ -247,9 +308,7 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -279,7 +338,7 @@ class ApiController extends Controller
             $this->em->persist($obj);
             $this->em->flush();
 
-            $frame = $this->frames["ok"];
+            $frame = $this->frames["info"];
             $frame["msg"] = sprintf($elemname . " is now %s", $action === "show" ? "visible" : "hidden");
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
@@ -287,9 +346,7 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -332,7 +389,7 @@ class ApiController extends Controller
             $this->em->persist($album);
             $this->em->flush();
 
-            $frame = $this->frames["ok"];
+            $frame = $this->frames["info"];
             $frame["data"] = $ids;
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
@@ -340,9 +397,7 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -388,7 +443,7 @@ class ApiController extends Controller
 
             $this->em->flush();
 
-            $frame = $this->frames["ok"];
+            $frame = $this->frames["info"];
             $frame["msg"] = $collection . " sequence has been updated successfully";
             $frame["data"] = $ids;
         } catch (\Exception $e) {
@@ -397,9 +452,7 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -418,7 +471,7 @@ class ApiController extends Controller
             $this->em->persist($cover);
             $this->em->flush();
 
-            $frame = $this->frames["ok"];
+            $frame = $this->frames["info"];
             $frame["msg"] = "Album cover has been changed successfully";
         } catch (\Exception $e) {
             $frame = $this->frames["error"];
@@ -426,80 +479,7 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
-    }
-
-    /**
-     * @Route("/add-photos.json", name = "_photogallery_api_add_new_photos")
-     */
-    public function addNewPhotosAction(Request $request)
-    {
-        $frame = array();
-
-        try {
-
-            $title = $request->get("title");
-            $description = $request->get("description");
-            $description = trim($description);
-            $title = trim($title);
-            $description = empty($description) ? null : $description;
-            $title = empty($title) ? null : $title;
-
-            $album_id = intval($request->get("album", 0));
-
-            $is_visible = $request->get("publish", "off") === "on";
-
-            $imginfojson = $request->get("imginfo", "{}");
-            $imginfo = json_decode($imginfojson, true);
-
-            $image_id = intval($request->get("id", 0));
-            $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
-
-
-            $frame = $this->frames["ok"];
-
-            if ($image_id > 0) {
-                $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image_id);
-                $image->setTitle($title);
-                $image->setDescription($description);
-                $image->setIsVisible($is_visible);
-
-                if($album_id !== $image->getAlbum()->getId()) {
-                    $image->setAlbum($album);
-                }
-
-                $this->em->persist($image);
-                $this->em->flush();
-
-                $frame["msg"] = "Image has been updated successfully";
-            } else {
-
-                $qb = $this->em->createQueryBuilder();
-                $qb->select("max(i.sequence_number) + 1 as c")
-                    ->from("SiciarekPhotoGalleryBundle:Image", "i")
-                    ->leftJoin("i.album", "a")
-                    ->andWhere("i.album = :al")->setParameter("al", $album);
-                $query = $qb->getQuery();
-                $sequence_number = $query->getSingleScalarResult();
-
-                $files = Request::createFromGlobals()->files->get("photos");
-
-                $this->createImages($files, $album, true, $sequence_number, $imginfo);
-
-                $frame["msg"] = "Images has been added successfully";
-            }
-
-        } catch (\Exception $e) {
-            $frame = $this->frames["error"];
-            $frame["msg"] = $e->getMessage();
-            $frame["data"] = $e->getTraceAsString();
-        }
-
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -507,11 +487,6 @@ class ApiController extends Controller
      */
     public function albumListAction()
     {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->request = Request::createFromGlobals();
-        $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
-
         $qb = $this->em->createQueryBuilder();
 
         $qb->select("a", "i", "c", "t")
@@ -526,9 +501,7 @@ class ApiController extends Controller
         $query = $qb->getQuery();
         $data = $query->getArrayResult();
 
-        $json = json_encode($data);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($data);
     }
 
     /**
@@ -574,10 +547,10 @@ class ApiController extends Controller
             $frame["data"] = $e->getTraceAsString();
         }
 
-        $json = json_encode($frame);
-
-        return $this->jsonResponse($json);
+        return $this->jsonResponse($frame);
     }
+
+    /* HELPER METHODS */
 
     protected function setAlbumCover($album)
     {
@@ -618,7 +591,7 @@ class ApiController extends Controller
             $original_name = trim($original_name);
             $original_name = empty($original_name) ? null : $original_name;
 
-            $info = array_key_exists($fkey, $fileinfo) ? $fileinfo[$fkey] : array();
+            $info = (is_array($fileinfo) and array_key_exists($fkey, $fileinfo)) ? $fileinfo[$fkey] : array();
 
             $title = array_key_exists("title", $info) ? $info["title"] : $original_name;
             $description = array_key_exists("description", $info) ? $info["description"] : null;
@@ -749,19 +722,25 @@ class ApiController extends Controller
         }
     }
 
-    protected function fileResponse($path, $mime_type)
+    protected function fileResponse($file)
     {
+        $path = $this->config["uploads_directory"] . $file->getPath();
+        $content_type = $file->getMimeType();
+        $content_length = $file->getFileSize();
+
         $response = new Response();
-        $response->headers->set('Content-Type', $mime_type);
-        $response->headers->set('Content-Length', filesize($path));
+        $response->headers->set('Content-Type', $content_type);
+        $response->headers->set('Content-Length', $content_length);
 
         readfile($path);
 
         return $response;
     }
 
-    protected function jsonResponse($json)
+    protected function jsonResponse($frame)
     {
+        $json = json_encode($frame);
+
         $response = new Response();
         $response->headers->set('Content-Type', "application/json");
         $response->headers->set('Content-Length', strlen($json));
