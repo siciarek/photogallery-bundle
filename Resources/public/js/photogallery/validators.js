@@ -2,6 +2,7 @@ $(document).ready(function () {
     $.validator.addMethod(
         "validalbum",
         function (value, element) {
+            currentAlbumId = value;
             return value > 0;
         },
         $.format(__("Album is required."))

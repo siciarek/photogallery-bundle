@@ -6,6 +6,18 @@
     <pre>{{ settings | var_dump() }}</pre>
 
     <script type="text/javascript">
+
+        var ob = {
+            first: [1,2,3],
+            second: {
+                a: "a",
+                b: "b"
+            }
+        };
+
+        console.log(ob);
+        console.log(json_parse(ob));
+
         // <![CDATA[
         $(document).ready(function () {
             $.cookie.defaults = {

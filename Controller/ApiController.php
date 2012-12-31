@@ -128,7 +128,8 @@ class ApiController extends Controller
         $title = empty($title) ? "New Album" : $title;
         $description = empty($description) ? null : $description;
 
-        $is_visible = $request->get("hidden", "off") !== "on";
+        $images_visible = $request->get("hidden", "off") !== "on";
+        $is_visible = $request->get("publish", "off") === "on";
 
         $qb = $this->em->createQueryBuilder();
         $qb->select("max(a.sequence_number)")->from("SiciarekPhotoGalleryBundle:Album", "a");
@@ -150,7 +151,7 @@ class ApiController extends Controller
         $this->em->flush();
 
         $files = Request::createFromGlobals()->files->get("photos");
-        $this->createImages($files, $album);
+        $this->createImages($files, $album, $images_visible);
 
         $frame["data"]["album"] = $album->getId();
 
@@ -448,7 +449,11 @@ class ApiController extends Controller
 
             $album_id = intval($request->get("album", 0));
 
-            $is_visible = $request->get("hidden", "off") !== "on";
+            $is_visible = $request->get("publish", "off") === "on";
+
+            $imginfojson = $request->get("imginfo", "{}");
+            $imginfo = json_decode($imginfojson, true);
+
             $image_id = intval($request->get("id", 0));
             $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($album_id);
 
@@ -459,7 +464,7 @@ class ApiController extends Controller
                 $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image_id);
                 $image->setTitle($title);
                 $image->setDescription($description);
-                $image->setIsVisible($image_id);
+                $image->setIsVisible($is_visible);
 
                 if($album_id !== $image->getAlbum()->getId()) {
                     $image->setAlbum($album);
@@ -481,7 +486,7 @@ class ApiController extends Controller
 
                 $files = Request::createFromGlobals()->files->get("photos");
 
-                $this->createImages($files, $album, $sequence_number);
+                $this->createImages($files, $album, true, $sequence_number, $imginfo);
 
                 $frame["msg"] = "Images has been added successfully";
             }
@@ -589,7 +594,7 @@ class ApiController extends Controller
         $this->em->flush();
     }
 
-    protected function createImages($files, $album, $seq_number = 0, $info = array())
+    protected function createImages($files, $album, $images_visible = true, $seq_number = 0, $fileinfo = array())
     {
         $config = $this->container->getParameter("siciarek_photo_gallery.config");
         $sequence_number = $seq_number;
@@ -598,9 +603,14 @@ class ApiController extends Controller
             return;
         }
 
+        $index = 0;
+
         foreach ($files as $file) {
 
             $original_name = $file->getClientOriginalName();
+
+            $fkey = ($index++) . $original_name;
+
             $original_name = trim($original_name);
             $original_name = preg_replace("|([^/]+)$|", "$1", $original_name);
             $original_name = preg_replace("/\.\w+$/", "", $original_name);
@@ -608,9 +618,12 @@ class ApiController extends Controller
             $original_name = trim($original_name);
             $original_name = empty($original_name) ? null : $original_name;
 
-            $title = array_key_exists("title", $info) ? $info["title"] : $original_name;
+            $info = array_key_exists($fkey, $fileinfo) ? $fileinfo[$fkey] : array();
+
+            $title = array_key_exists("title", $info) ? "x" . $info["title"] : $original_name;
             $description = array_key_exists("description", $info) ? $info["description"] : null;
-            $is_visible = array_key_exists("is_visible", $info) ? $info["is_visible"] : true;
+            $is_visible = array_key_exists("is_visible", $info) ? $info["is_visible"] : $images_visible;
+            $album_id = array_key_exists("album_id", $info) ? $info["album_id"] : $album->getId();
 
             $source_path = $file->getPathName();
 

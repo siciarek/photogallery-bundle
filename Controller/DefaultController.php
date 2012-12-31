@@ -79,6 +79,6 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->output;
+        return $this->redirect($this->generateUrl("_albums")); // $this->output;
     }
 }

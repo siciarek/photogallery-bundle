@@ -2,11 +2,13 @@ var albums = null;
 var album = {};
 var currentAlbumId = parseInt(location.href.replace(/^.*\/(\d+)\/[^\/]+$/, "$1"));
 var currentImage = 0;
+var currentImageInfoElement = null;
 var images = [];
 var albumName = "Album";
 var albumDescription = "";
 var clickIsDisabled = false;
 var frame = 8;
+var imagesInfo = {};
 
 $(document).ready(function () {
 
@@ -20,7 +22,6 @@ $(document).ready(function () {
     });
 
 });
-
 
 function reorderSequence(elements, collection, cls) {
 
@@ -73,7 +74,7 @@ function undoChanges(elem, container) {
 
     $(container).empty();
 
-    if(cover != null) {
+    if (cover != null) {
         $(container).append(cover);
     }
 
@@ -102,7 +103,7 @@ function getAlbumToolbarObj(album) {
 
     var toolbar = "";
 
-    if(authenticated === false) {
+    if (authenticated === false) {
         return "";
     }
 
@@ -131,6 +132,16 @@ function parseSize(size) {
     }
 
     return Math.round(size * 10) / 10 + " " + suffix[tier];
+}
+
+function parseImageTitle(filename) {
+    var original_name = filename
+    original_name = original_name.replace(/([^\/]+)$/, "$1", original_name);
+    original_name = original_name.replace(/\.\w+$/, "", original_name);
+    original_name = original_name.replace(/\s+/, " ", original_name);
+    original_name = original_name.length == 0 ? "" : original_name;
+
+    return "X" + original_name;
 }
 
 function getTitle(title, icon) {

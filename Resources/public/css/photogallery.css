@@ -107,6 +107,20 @@ html.photogallery div.create-new-element div.form-colum.right div.files-list {
     height: 250px;
     overflow: auto;
     border: 1px solid silver;
+    cursor: default;
+}
+
+html.photogallery div.create-new-element#images-form div.form-colum.right div.files-list li {
+    padding: 2px 4px 2px 4px;
+}
+
+html.photogallery div.create-new-element#images-form div.form-colum.right div.files-list li:hover,
+html.photogallery div.create-new-element#images-form div.form-colum.right div.files-list li.selected {
+    background-color: lightblue;
+}
+
+html.photogallery div.create-new-element#images-form div.form-colum.right div.files-list li.selected {
+    font-weight: bold;
 }
 
 html.photogallery div.create-new-element select,

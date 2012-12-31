@@ -50,7 +50,7 @@ function openElementForm(title, element, data) {
         title: getTitle(title, "image"),
         dialogClass: "photogallery-form",
         width: 850,
-        height: 500,
+        height: 530,
         closeOnEscape: true,
         draggable: true,
         modal: true,
@@ -83,25 +83,44 @@ function openElementForm(title, element, data) {
             $("#label-photos-images").show();
 
             $(".cabinet").css({
-                "display" : "none"
+                "display": "none"
             });
 
-            $(".form-colum.right").show();
+            $(".form-colum.right").css({
+                "background-image": "none",
+                "background-repeat": "no-repeat",
+                "background-position": "center",
+                "border": "none"
+            });
 
-            if(element === "images" && data.id == 0) {
+            $(".form-colum.right div.form-field, .form-colum.right div.files-list").show();
+
+            if (element === "images" && data.id == 0) {
                 console.log("Validate file upload");
                 $("#photos-images").addClass("images");
             }
-            else if(element === "images" && data.id > 0) {
+            else if (element === "images" && data.id > 0) {
                 console.log("Do not validate file upload");
-                $(".form-colum.right").hide();
+                var thumbnail = defaultCover;
+
+                $.each(images, function (index, element) {
+                    if (element.id == data.id) {
+                        thumbnail = element.thumbnail.src;
+                    }
+                });
+
+                $(".form-colum.right").css({
+                    "background-image": "url(" + thumbnail + ")",
+                    "border": "1px solid silver"
+                });
+                $(".form-colum.right div.form-field, .form-colum.right div.files-list").hide();
                 $("#photos-images").removeClass("images");
             }
 
             $("input[name='id']").val(data.id);
             $("input[name='title']").val(data.title);
             $("textarea[name='description']").val(data.description);
-            $("input[name='hidden']").attr("checked", !data.is_visible);
+            $("input[name='publish']").attr("checked", data.is_visible);
 
         },
 
@@ -133,6 +152,30 @@ function showFileDialog(label) {
     $(id).trigger("click");
 }
 
+function setImageInfo(index, key) {
+    currentImageInfoElement = key;
+
+    var imgdata = imagesInfo[currentImageInfoElement];
+
+    $("#images-form form input[name='title']").val(imgdata.title);
+    $("#images-form form textarea[name='description']").val(imgdata.description);
+    $("#images-form form input[name='publish']").attr("checked", imgdata.is_visible);
+
+    $("#files-to-upload-images").children().each(function(i, elem){
+        $(elem).removeClass("selected");
+        if(i === index) {
+            $(elem).addClass("selected");
+        }
+    });
+}
+
+function updateImageInfo() {
+    imagesInfo[currentImageInfoElement].is_visible =
+        $("#images-form form input:checkbox[name='publish']:checked").val() === "on";
+    imagesInfo[currentImageInfoElement].title = $("#images-form form input[name='title']").val();
+    imagesInfo[currentImageInfoElement].description = $("#images-form form textarea[name='description']").val();
+}
+
 $(document).ready(function () {
 
     $.ajax({
@@ -144,7 +187,7 @@ $(document).ready(function () {
         success: function (response) {
             albums = response;
 
-            if(albums.length > 1) {
+            if (albums.length > 1) {
                 $("select#album-images").append('<option value="0">' + __("Choose album") + '</option>');
             }
 
@@ -177,20 +220,40 @@ $(document).ready(function () {
         submitHandler: formAction
     });
 
+    $("#images-form form input:checkbox[name='publish']").click(updateImageInfo);
+    $("#images-form form input[name='title'], #images-form form textarea[name='description']").change(updateImageInfo);
+
     $("form  input[id^=photos]").change(function (event) {
 
+        if (currentAlbumId == 0) {
+            errorBox(__("Album is required."));
+            return false;
+        }
+
         var files = $(this).prop("files");
-        var sufix = $(this).attr("id").replace(/^\w+\-/, "");
+        var element = $(this).attr("id").replace(/^\w+\-/, "");
 
-        var nof = $("#number-of-chosen-files-" + sufix).text().replace(/\d+/, files.length);
-        $("#number-of-chosen-files-" + sufix).html(nof);
+        $("#files-to-upload-" + element).empty();
+        imagesInfo = {};
 
-        $("#files-to-upload-" + sufix).empty();
+        var totalsize = 0;
 
         $(files).each(function (index, elem) {
+            var imgkey = "" + index + elem.name;
             var filesize = parseSize(elem.size);
-            $("#files-to-upload-" + sufix).append("<li>" + elem.name + " (" + filesize + ")" + "</li>");
+            totalsize += elem.size;
+            var imgtitle = parseImageTitle(elem.name);
+            $("#files-to-upload-" + element).append("<li onclick=\"setImageInfo(" + index + ", '" + imgkey + "')\">" + elem.name + " (" + filesize + ")" + "</li>");
+            imagesInfo[imgkey] = {
+                id: 0,
+                title: imgtitle,
+                description: null,
+                is_visible: true,
+                album_id: parseInt(currentAlbumId)
+            }
         });
-    });
 
+        var nof = "(" + files.length + "/" + parseSize(totalsize) + ")";
+        $("#number-of-chosen-files-" + element).html(nof);
+    });
 });

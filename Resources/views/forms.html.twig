@@ -23,6 +23,7 @@
             {#<div id="info-{{ key }}" class="form-info">{{ data.info | trans() }}</div>#}
 
             <input type="hidden" name="id"/>
+            <input type="hidden" name="info" />
 
             {#LEFT COLUMN#}
 
@@ -47,33 +48,46 @@
                     <textarea name="description" id="description-{{ key }}"></textarea>
                 </div>
 
+                <div class="form-field">
+                    <label style="display:inline-block"
+                           for="publish-{{ key }}">{{ "publish" | trans() }}</label>
+                    <input type="checkbox" checked="checked" name="publish" id="publish-{{ key }}"/>
+                </div>
+
             </div>
 
             {#RIGHT COLUMN#}
 
-            <div class="form-colum right">
+            <div class="form-colum right" style="min-width:350px; min-height:350px;">
 
                 <div class="form-field">
-                    <span id="label-photos-{{ key }}" onclick="showFileDialog(this)">{{ "add images" | trans() }}</span>
+                    <span id="label-photos-{{ key }}" onclick="showFileDialog(this)">{{ "add" | trans() }}</span>
 
                     <label class="cabinet">
                         <input size="1" multiple="multiple"
                                type="file" name="photos[]" id="photos-{{ key }}"/>
                     </label>
 
+
+                    <span id="number-of-chosen-files-{{ key }}"
+                          style="text-align: right;font-weight: bold;"> (0)
+                    </span>
+
                     <span style="display:inline-block;width:8px;"></span>
 
-                    <label style="display:inline-block"
-                           for="hidden-{{ key }}">{{ "hidden" | trans() }}</label>
-                    <input type="checkbox" name="hidden" id="hidden-{{ key }}"/>
+                    {% if key == "album" %}
+                        <label style="display:inline-block"
+                               for="hidden-{{ key }}">{{ "hidden" | trans() }}</label>
+                        <input type="checkbox" name="hidden" id="hidden-{{ key }}"/>
+
+                    {% endif %}
+
                 </div>
                 <div class="files-list">
                     <ul id="files-to-upload-{{ key }}" style="padding:8px;">
                     </ul>
                 </div>
-                <div id="number-of-chosen-files-{{ key }}" class="form-info"
-                     style="text-align:left">{{ "number of chosen files" | trans() }}: 0
-                </div>
+
 
             </div>
 

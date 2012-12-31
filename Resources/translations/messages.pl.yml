@@ -59,9 +59,10 @@ Edit image data            : Edytuj dane fotografii
 choose album               : wybierz album
 title                      : tytuł
 description                : opis
+publish                    : publikuj
 hidden                     : ukryte
-do not publish             : nie publikuj
 add images                 : dodaj fotografie
+add                        : dodaj
 
 Reset                      : Resetuj
 Save                       : Zapisz
