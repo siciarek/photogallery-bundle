@@ -6,6 +6,8 @@
  * Time: 16:04
  * To change this template use File | Settings | File Templates.
  */
+namespace Siciarek\PhotoGalleryBundle\Composer;
+
 class ScriptHandler
 {
     public static function installSubmodules($event)
