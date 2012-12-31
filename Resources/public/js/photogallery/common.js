@@ -141,7 +141,7 @@ function parseImageTitle(filename) {
     original_name = original_name.replace(/\s+/, " ", original_name);
     original_name = original_name.length == 0 ? "" : original_name;
 
-    return "X" + original_name;
+    return original_name;
 }
 
 function getTitle(title, icon) {

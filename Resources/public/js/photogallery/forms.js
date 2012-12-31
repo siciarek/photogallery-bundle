@@ -174,6 +174,10 @@ function updateImageInfo() {
         $("#images-form form input:checkbox[name='publish']:checked").val() === "on";
     imagesInfo[currentImageInfoElement].title = $("#images-form form input[name='title']").val();
     imagesInfo[currentImageInfoElement].description = $("#images-form form textarea[name='description']").val();
+
+    var json = JSON.stringify(imagesInfo);
+
+    $("#images-form form input[name='imginfo']").val(json);
 }
 
 $(document).ready(function () {

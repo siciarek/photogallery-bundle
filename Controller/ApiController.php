@@ -620,7 +620,7 @@ class ApiController extends Controller
 
             $info = array_key_exists($fkey, $fileinfo) ? $fileinfo[$fkey] : array();
 
-            $title = array_key_exists("title", $info) ? "x" . $info["title"] : $original_name;
+            $title = array_key_exists("title", $info) ? $info["title"] : $original_name;
             $description = array_key_exists("description", $info) ? $info["description"] : null;
             $is_visible = array_key_exists("is_visible", $info) ? $info["is_visible"] : $images_visible;
             $album_id = array_key_exists("album_id", $info) ? $info["album_id"] : $album->getId();
