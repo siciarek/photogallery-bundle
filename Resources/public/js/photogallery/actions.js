@@ -57,11 +57,11 @@ function formAction(form) {
     $(form).ajaxSubmit({
         error: errorHandler,
         success: function (data, textStatus, jqXHR) {
-            var onsuccess = function (data) {
+            var onsuccess = function (response) {
                 $.ui.Mask.show(__("Wait a while"));
 
-                if(typeof data.data.type !== "undefined" && data.data.type === "album") {
-                    landingpage = Routing.generate("_album", {id: data.data.id, slug: data.data.slug}, true);
+                if(typeof response.data.type !== "undefined" && response.data.type === "album") {
+                    landingpage = Routing.generate("_album", {id: response.data.id, slug: response.data.slug}, true);
                 }
 
                 location.href = landingpage;

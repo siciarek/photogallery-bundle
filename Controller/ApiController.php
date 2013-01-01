@@ -127,6 +127,10 @@ class ApiController extends Controller
 
             $frame = $this->frames["info"];
 
+
+            $this->em->persist($album);
+            $this->em->flush();
+
             $frame["data"] = array(
                 "type" => "album",
                 "id"   => $album->getId(),
@@ -134,9 +138,6 @@ class ApiController extends Controller
             );
 
             $frame["msg"] = sprintf("Album has been %s successfully", $id > 0 ? "updated" : "created");
-
-            $this->em->persist($album);
-            $this->em->flush();
 
             $this->em->getConnection()->commit();
         } catch (\Exception $e) {

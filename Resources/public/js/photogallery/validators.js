@@ -19,7 +19,7 @@
             valid = suffix === "album" || valid
 
             if (valid === false) {
-                errorBox(__("cAt least one image is required."));
+                errorBox(__("At least one image is required."));
                 return false;
             }
 
