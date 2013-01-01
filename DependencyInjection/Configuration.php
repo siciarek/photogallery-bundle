@@ -35,6 +35,9 @@ class Configuration implements ConfigurationInterface
             ->scalarNode("default_cover")
             ->defaultValue($defaults["default_cover"])
             ->end()
+            ->scalarNode("watermark")
+            ->defaultValue($defaults["watermark"])
+            ->end()
             ->scalarNode("uploads_directory")
             ->defaultValue($defaults["uploads_directory"])
             ->end()
@@ -62,6 +65,7 @@ class Configuration implements ConfigurationInterface
             "title"             => "Photo Gallery",
             "homepage"          => "_photogallery_homepage",
             "style"             => "/bundles/siciarekphotogallery/css/photogallery.css",
+            "watermark"         => "%kernel.root_dir%/../web/bundles/siciarekphotogallery/images/watermark.png",
             "default_cover"     => "/bundles/siciarekphotogallery/images/default-cover.png",
             "uploads_directory" => "%kernel.root_dir%/../web/uploads/photogallery",
             "thumbnails"        => array(

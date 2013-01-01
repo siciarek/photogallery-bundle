@@ -3,6 +3,7 @@
 namespace Siciarek\PhotoGalleryBundle\Controller;
 
 ini_set("memory_limit", "256M");
+ini_set('gd.jpeg_ignore_warning', 1);
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -72,6 +73,7 @@ class ApiController extends Controller
     /**
      * @Route("/{id}/{type}.{format}", name = "_photogallery_api_show_image",      defaults={"type"="image"},     requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
      * @Route("/{id}/{type}.{format}", name = "_photogallery_api_show_thumbnail",  defaults={"type"="thumbnail"}, requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
+     * @Route("/{id}/{type}.{format}", name = "_photogallery_api_show_original",   defaults={"type"="original"},  requirements = {"id"="^[1-9]\d*$", "format"="^(jpe?g|gif|png|svg)$"}))
      */
     public function showImageAction($id, $type, $format)
     {
@@ -81,7 +83,9 @@ class ApiController extends Controller
             $image = $image->getThumbnail();
         }
 
-        return $this->fileResponse($image->getFile());
+        $file = $image->getFile();
+
+        return $this->fileResponse($file, $type);
     }
 
     /**
@@ -666,6 +670,7 @@ class ApiController extends Controller
             $image_path = $config["uploads_directory"] . $impath;
             $thumbnail_path = $config["uploads_directory"] . $thumpath;
 
+
             // Image file adjustment:
 
             $img_width = 640;
@@ -727,6 +732,16 @@ class ApiController extends Controller
             $this->em->persist($thumbnail);
             $this->em->persist($image);
             $this->em->flush();
+
+
+            // Add watermark:
+
+            $this->addWatermark($original_path);
+            $this->addWatermark($image_path);
+
+            $imfile->setFileSize(filesize($image_path));
+            $this->em->persist($image);
+            $this->em->flush();
         }
 
         if ($album->getCover() === null) {
@@ -734,11 +749,41 @@ class ApiController extends Controller
         }
     }
 
-    protected function fileResponse($file)
+    protected function addWatermark($image_path, $alpha = 10)
+    {
+        $watermark_path = $this->config["watermark"];
+
+        if (file_exists($watermark_path) and is_readable($watermark_path)) {
+
+            $watermark = imagecreatefrompng($watermark_path);
+            $watermark_width = (int)imagesx($watermark);
+            $watermark_height = (int)imagesy($watermark);
+
+            $src_image = imagecreatefromjpeg($image_path);
+            $src_image_width = (int)imagesx($src_image);
+            $src_image_height = (int)imagesy($src_image);
+            imagealphablending($src_image,true);
+
+            $dest_x = intval(($src_image_width - $watermark_width) / 2);
+            $dest_y = intval(($src_image_height - $watermark_height) / 2);
+
+            imagecopymerge($src_image, $watermark, $dest_x, $dest_y, 0, 0, $watermark_width, $watermark_height, $alpha);
+            imagejpeg($src_image, $image_path, 100);
+            imagedestroy($watermark);
+            imagedestroy($src_image);
+        }
+    }
+
+    protected function fileResponse($file, $type = null)
     {
         $path = $this->config["uploads_directory"] . $file->getPath();
         $content_type = $file->getMimeType();
         $content_length = $file->getFileSize();
+
+        if ($type === "original") {
+            $path = preg_replace('|/images/|', '/originals/', $path);
+            $content_length = filesize($path);
+        }
 
         $response = new Response();
         $response->headers->set('Content-Type', $content_type);
