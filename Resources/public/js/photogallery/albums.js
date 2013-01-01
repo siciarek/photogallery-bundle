@@ -121,21 +121,6 @@ function loadAlbumPhotos(albums) {
 }
 
 $(document).ready(function () {
-
-    if (albums === null) {
-
-        $.ajax({
-            url: Routing.generate("_photogallery_api_album_list"),
-            error: errorHandler,
-            success: function (response) {
-                $.ui.Mask.hide();
-                albums = response;
-            }
-        });
-    }
-    else {
-        $.ui.Mask.hide();
-    }
-
+    $.ui.Mask.hide();
     loadAlbumPhotos(albums)
 });

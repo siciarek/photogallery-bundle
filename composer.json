@@ -37,14 +37,6 @@
             "Siciarek\\PhotoGalleryBundle": ""
         }
     },
-    "scripts": {
-        "post-install-cmd": [
-            "Siciarek\\PhotoGalleryBundle\\Composer\\ScriptHandler::installSubmodules"
-        ],
-        "post-update-cmd": [
-            "Siciarek\\PhotoGalleryBundle\\Composer\\ScriptHandler::updateSubmodules"
-        ]
-    },
     "minimum-stability": "dev",
     "target-dir": "Siciarek/PhotoGalleryBundle"
 }

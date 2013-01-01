@@ -135,7 +135,7 @@ function processAction(action, element, id, message) {
                 case "album":
                     for (var i = 0; i < albums.length; i++) {
                         var obj = albums[i];
-                        if (obj.id == id) {
+                        if (obj !== null && obj.id == id) {
                             openAlbumForm(__("Edit album data"), obj);
                             break;
                         }
@@ -146,7 +146,7 @@ function processAction(action, element, id, message) {
                     for (var i = 0; i < images.length; i++) {
                         var obj = images[i];
 
-                        if (obj.id == id) {
+                        if (obj !== null && obj.id == id) {
                             openImagesForm(__("Edit image data"), obj);
                             break;
                         }

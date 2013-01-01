@@ -18,15 +18,14 @@
 
             valid = suffix === "album" || valid
 
-            if(valid === false) {
-                errorBox(__("At least one image is required."));
+            if (valid === false) {
+                errorBox(__("cAt least one image is required."));
                 return false;
             }
 
-
-            if(valid === true) {
-                $.each(files, function(index, elem){
-                    if(elem.type.match(/^image\//) === null) {
+            if (valid === true) {
+                $.each(files, function (index, elem) {
+                    if (elem.type.match(/^image\//) === null) {
                         errorBox("File \"" + elem.name + "\" has unsupported format.");
                         valid = false;
                         return;
@@ -40,7 +39,7 @@
     );
 
     $.validator.addMethod(
-        "titleordescription",
+        "validtitleordescription",
         function (value, element) {
             var suffix = $(element).attr("id").split("-").pop();
             var titleid = "title-" + suffix;
@@ -59,33 +58,5 @@
         },
         $.format(__("Title or description is required."))
     );
-
-    JQUERY4U.UTIL =
-    {
-        setupFormValidation: function () {
-            //form validation rules
-            $("#images-base-form").validate({
-                rules: {
-                    album: {
-                        validalbum: true
-                    },
-                    "photos[]": {
-                        validimages: true
-                    }
-                },
-                messages: {
-
-                },
-                submitHandler: function (form) {
-                    alert("OK");
-                }
-            });
-        }
-    }
-
-    //when the dom has loaded setup form validation rules
-    $(D).ready(function ($) {
-        JQUERY4U.UTIL.setupFormValidation();
-    });
 
 })(jQuery, window, document);

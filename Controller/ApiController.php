@@ -487,21 +487,34 @@ class ApiController extends Controller
      */
     public function albumListAction()
     {
-        $qb = $this->em->createQueryBuilder();
+        $frame = array();
 
-        $qb->select("a", "i", "c", "t")
-            ->from("SiciarekPhotoGalleryBundle:Album", "a")
-            ->leftJoin("a.images", "i")
-            ->leftJoin("a.cover", "c")
-            ->leftJoin("c.thumbnail", "t")
-            ->addOrderBy("a.sequence_number", "DESC")
-            ->addOrderBy("a.id", "DESC");
-        ;
+        try {
+            $qb = $this->em->createQueryBuilder();
 
-        $query = $qb->getQuery();
-        $data = $query->getArrayResult();
+            $qb->select("a", "i", "c", "t")
+                ->from("SiciarekPhotoGalleryBundle:Album", "a")
+                ->leftJoin("a.images", "i")
+                ->leftJoin("a.cover", "c")
+                ->leftJoin("c.thumbnail", "t")
+                ->addOrderBy("a.sequence_number", "DESC")
+                ->addOrderBy("a.id", "DESC");
+            ;
+            $query = $qb->getQuery();
+            $data = $query->getArrayResult();
 
-        return $this->jsonResponse($data);
+            $frame = $this->frames["data"];
+
+            $frame["msg"] = "Album list";
+            $frame["data"] = $data;
+            $frame["totalCount"] = count($data);
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        return $this->jsonResponse($frame);
     }
 
     /**
@@ -509,8 +522,6 @@ class ApiController extends Controller
      */
     public function albumAction($id)
     {
-        $config = $this->container->getParameter("siciarek_photo_gallery.config");
-
         try {
             $album = $this->em->getRepository("SiciarekPhotoGalleryBundle:Album")->find($id);
 

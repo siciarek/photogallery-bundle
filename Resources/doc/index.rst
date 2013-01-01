@@ -26,6 +26,16 @@ Configuration notes:
         "siciarek/photogallery-bundle": "dev-master"
     }
 
+    "scripts": {
+        "post-install-cmd": [
+            "Siciarek\\PhotoGalleryBundle\\Composer\\ScriptHandler::installSubmodules"
+        ],
+        "post-update-cmd": [
+            "Siciarek\\PhotoGalleryBundle\\Composer\\ScriptHandler::updateSubmodules"
+        ]
+    },
+
+
 /app/AppKernel.php (add)
 --------------------------------------------------------------------------------
 

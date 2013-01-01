@@ -80,7 +80,6 @@ function openElementForm(title, element, data) {
             });
 
             $("#label-photos-images").show();
-//            $("#photos-images").enable();
 
             $(".cabinet").css({
                 "display": "none"
@@ -94,12 +93,12 @@ function openElementForm(title, element, data) {
             });
 
             $(".form-colum.right div.form-field, .form-colum.right div.files-list").show();
+            $("input[id^=photos]").removeAttr("disabled");
 
             if (element === "images" && data.id > 0) {
                 console.log("Do not validate file upload");
                 var thumbnail = defaultCover;
-                $("#photos-images").disable();
-
+                $("input[id^=photos]").attr("disabled", "disabled");
                 $.each(images, function (index, element) {
                     if (element.id == data.id) {
                         thumbnail = element.thumbnail.src;
@@ -117,7 +116,6 @@ function openElementForm(title, element, data) {
             $("input[name='title']").val(data.title);
             $("textarea[name='description']").val(data.description);
             $("input[name='publish']").attr("checked", data.is_visible);
-
         },
 
         close: function () {
@@ -187,22 +185,26 @@ $(document).ready(function () {
     $.ajax({
         url: Routing.generate("_photogallery_api_album_list"),
         async: false,
-        error: function (response) {
-            errorBox("Unexpected Exception.");
-        },
-        success: function (response) {
-            albums = response;
+        error: errorHandler,
 
-            if (albums.length > 1) {
-                $("select#album-images").append('<option value="0">' + __("Choose album") + '</option>');
-            }
+        success: function (data, textStatus, jqXHR) {
 
-            for (var i = 0; i < albums.length; i++) {
-                var selected = currentAlbumId > 0 && currentAlbumId === albums[i].id || albums.length === 1
-                    ? ' selected="selected"'
-                    : "";
-                $("select#album-images").append("<option value='" + albums[i].id + "'" + selected + ">" + albums[i].title + "</option>");
-            }
+            var onsuccess = function (response) {
+                albums = response.data;
+
+                if (albums.length > 1) {
+                    $("select#album-images").append('<option value="0">' + __("Choose album") + '</option>');
+                }
+
+                for (var i = 0; i < albums.length; i++) {
+                    var selected = currentAlbumId > 0 && currentAlbumId === albums[i].id || albums.length === 1
+                        ? ' selected="selected"'
+                        : "";
+                    $("select#album-images").append("<option value='" + albums[i].id + "'" + selected + ">" + albums[i].title + "</option>");
+                }
+            };
+
+            successHandler(data, textStatus, jqXHR, onsuccess);
         }
     });
 
@@ -218,11 +220,36 @@ $(document).ready(function () {
         });
     });
 
-    $("#album-form form").validate({
+    $("#images-base-form").validate({
+        rules: {
+            album: {
+                validalbum: true
+            },
+            "photos[]": {
+                validimages: true
+            }
+        },
+        messages: {
+
+        },
         submitHandler: formAction
     });
 
-    $("#images-form form").validate({
+    $("#album-base-form").validate({
+        rules: {
+            title: {
+                validtitleordescription: true
+            },
+            description: {
+                validtitleordescription: true
+            },
+            "photos[]": {
+                validimages: true
+            }
+        },
+        messages: {
+
+        },
         submitHandler: formAction
     });
 
