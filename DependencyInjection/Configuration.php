@@ -32,11 +32,14 @@ class Configuration implements ConfigurationInterface
             ->scalarNode("style")
             ->defaultValue($defaults["style"])
             ->end()
-            ->scalarNode("default_cover")
-            ->defaultValue($defaults["default_cover"])
-            ->end()
             ->scalarNode("watermark")
             ->defaultValue($defaults["watermark"])
+            ->end()
+            ->scalarNode("image_not_found")
+            ->defaultValue($defaults["image_not_found"])
+            ->end()
+            ->scalarNode("default_cover")
+            ->defaultValue($defaults["default_cover"])
             ->end()
             ->scalarNode("uploads_directory")
             ->defaultValue($defaults["uploads_directory"])
@@ -65,7 +68,8 @@ class Configuration implements ConfigurationInterface
             "title"             => "Photo Gallery",
             "homepage"          => "_photogallery_homepage",
             "style"             => "/bundles/siciarekphotogallery/css/photogallery.css",
-            "watermark"         => "%kernel.root_dir%/../web/bundles/siciarekphotogallery/images/watermark.png",
+            "watermark"         => "%kernel.root_dir%/../vendor/siciarek/photogallery-bundle/Siciarek/PhotoGalleryBundle/Resources/public/images/watermark.png",
+            "image_not_found"   => "%kernel.root_dir%/../vendor/siciarek/photogallery-bundle/Siciarek/PhotoGalleryBundle/Resources/public/images/image-not-found.png",
             "default_cover"     => "/bundles/siciarekphotogallery/images/default-cover.png",
             "uploads_directory" => "%kernel.root_dir%/../web/uploads/photogallery",
             "thumbnails"        => array(

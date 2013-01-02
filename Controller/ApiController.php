@@ -144,13 +144,12 @@ class ApiController extends Controller
 
         $image = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->findOneBy($params);
 
-        if ($type === "thumbnail") {
+        if ($image !== null and $type === "thumbnail") {
             $image = $image->getThumbnail();
         }
 
-        $file = $image->getFile();
 
-        return $this->fileResponse($file, $type);
+        return $this->fileResponse($image, $type);
     }
 
     /* PRIVATE ACTIONS: */
@@ -574,20 +573,21 @@ class ApiController extends Controller
 
     /* HELPER METHODS: */
 
-    protected function getCreator($create = true) {
+    protected function getCreator($create = true)
+    {
         $first_name = $this->getUser()->getFirstName();
         $last_name = $this->getUser()->getLastName();
         $email = $this->getUser()->getEmail();
 
         $params = array(
             "first_name" => $first_name,
-            "last_name" => $last_name,
-            "email" => $email,
+            "last_name"  => $last_name,
+            "email"      => $email,
         );
 
         $creator = $this->em->getRepository("SiciarekPhotoGalleryBundle:Creator")->findOneBy($params);
 
-        if($create === true and $creator === null) {
+        if ($create === true and $creator === null) {
             $creator = new E\Creator();
             $creator->setFirstName($first_name);
             $creator->setLastName($last_name);
@@ -821,14 +821,23 @@ class ApiController extends Controller
         }
     }
 
-    protected function fileResponse($file, $type = null)
+    protected function fileResponse($image, $type = null)
     {
-        $path = $this->config["uploads_directory"] . $file->getPath();
-        $content_type = $file->getMimeType();
-        $content_length = $file->getFileSize();
 
-        if ($type === "original") {
-            $path = preg_replace('|/images/|', '/originals/', $path);
+
+        if ($image !== null) {
+            $file = $image->getFile();
+            $path = $this->config["uploads_directory"] . $file->getPath();
+            $content_type = $file->getMimeType();
+            $content_length = $file->getFileSize();
+
+            if ($type === "original") {
+                $path = preg_replace('|/images/|', '/originals/', $path);
+                $content_length = filesize($path);
+            }
+        } else {
+            $path = $this->config["image_not_found"];
+            $content_type = "image/png";
             $content_length = filesize($path);
         }
 
