@@ -823,8 +823,6 @@ class ApiController extends Controller
 
     protected function fileResponse($image, $type = null)
     {
-
-
         if ($image !== null) {
             $file = $image->getFile();
             $path = $this->config["uploads_directory"] . $file->getPath();
@@ -833,12 +831,23 @@ class ApiController extends Controller
 
             if ($type === "original") {
                 $path = preg_replace('|/images/|', '/originals/', $path);
-                $content_length = filesize($path);
             }
         } else {
             $path = $this->config["image_not_found"];
             $content_type = "image/png";
             $content_length = filesize($path);
+        }
+
+        if(!file_exists($path) or !is_readable($path)) {
+            $path = $this->config["image_not_found"];
+            $content_type = "image/png";
+            $content_length = filesize($path);
+        }
+        else
+        {
+            if ($type === "original") {
+                $content_length = filesize($path);
+            }
         }
 
         $response = new Response();
