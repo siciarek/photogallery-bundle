@@ -31,12 +31,21 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
     {
         $users = array(
             array(
-                "first_name" => "Jacek",
-                "last_name"  => "Siciarek",
-                "username"   => "jsiciarek",
-                "password"   => "helloworld",
-                "email"      => "siciarek@gmail.com",
-            )
+                "first_name"  => "Jacek",
+                "last_name"   => "Siciarek",
+                "username"    => "jsiciarek",
+                "password"    => "helloworld",
+                "email"       => "siciarek@gmail.com",
+                "description" => "PhotoGalleryBundle Lead Developer.",
+            ),
+            array(
+                "first_name"  => "Czesław",
+                "last_name"   => "Olak",
+                "username"    => "colak",
+                "password"    => "helloworld",
+                "email"       => "siciarek@hotmail.com",
+                "description" => "Mayor of Świecie.",
+            ),
         );
 
         foreach ($users as $u) {
@@ -48,6 +57,7 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
             $obj->setUsername($u["username"]);
             $obj->setPlainPassword($u["password"]);
             $obj->setEmail($u["email"]);
+            $obj->setDescription($u["description"]);
             $obj->setEnabled(true);
 
             $em->persist($obj);

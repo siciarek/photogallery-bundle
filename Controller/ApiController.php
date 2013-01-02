@@ -608,6 +608,11 @@ class ApiController extends Controller
         if ($this->getUser() === null and $this->getCreator(false) !== null) {
             throw $exception;
         }
+
+        $user = $this->getUser();
+        $user->setLoggedAt(new \DateTime());
+        $this->em->persist($user);
+        $this->em->flush();
     }
 
     protected function setAlbumCover($album)
