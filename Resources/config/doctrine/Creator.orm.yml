@@ -1,0 +1,39 @@
+Siciarek\PhotoGalleryBundle\Entity\Creator:
+    type: entity
+    table: photogallery_creator
+    repositoryClass: Siciarek\PhotoGalleryBundle\Entity\CreatorRepository
+    fields:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+        first_name:
+          type: string
+          length: 64
+        last_name:
+          type: string
+          length: 64
+        email:
+          type: string
+          length: 255
+        description:
+          type: string
+          nullable: true
+        logged_at:
+          type: datetime
+          nullable: true
+        created_at:
+          type: datetime
+          gedmo:
+            timestampable:
+              on: create
+        updated_at:
+          type: datetime
+          gedmo:
+            timestampable:
+              on: update
+    oneToMany:
+        albums:
+            targetEntity: Album
+            mappedBy: creator

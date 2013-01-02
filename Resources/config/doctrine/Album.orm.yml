@@ -59,3 +59,13 @@ Siciarek\PhotoGalleryBundle\Entity\Album:
         images:
             targetEntity: Image
             mappedBy: album
+    manyToOne:
+        creator:
+            targetEntity: Creator
+            inversedBy: albums
+            cascade: [ persist ]
+            joinColumn:
+                name: creator_id
+                referencedColumnName: id
+                onDelete: CASCADE
+                onUpdate: CASCADE

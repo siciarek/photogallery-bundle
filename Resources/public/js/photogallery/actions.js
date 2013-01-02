@@ -206,10 +206,16 @@ function processAction(action, element, id, message) {
 
                         if (element != null && element.id === id) {
                             var divid = "#img" + index;
+
+                            if ($(divid).css("background-image") === $("#album-cover").css("background-image")) {
+                                $("#album-cover").css("background-image", "url(" + defaultCover + ")");
+                            }
+
                             $(divid).remove();
                             images[index] = null;
                             currentImage = 0;
                             bufferedImage = 1;
+
                             return;
                         }
                     });

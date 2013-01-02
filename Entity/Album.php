@@ -321,4 +321,32 @@ class Album
     {
         return $this->images;
     }
+    /**
+     * @var \Siciarek\PhotoGalleryBundle\Entity\Creator
+     */
+    private $creator;
+
+
+    /**
+     * Set creator
+     *
+     * @param \Siciarek\PhotoGalleryBundle\Entity\Creator $creator
+     * @return Album
+     */
+    public function setCreator(\Siciarek\PhotoGalleryBundle\Entity\Creator $creator = null)
+    {
+        $this->creator = $creator;
+    
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \Siciarek\PhotoGalleryBundle\Entity\Creator 
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
 }
