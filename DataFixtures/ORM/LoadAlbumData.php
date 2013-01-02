@@ -31,7 +31,7 @@ class LoadAlbumData extends AbstractFixture implements OrderedFixtureInterface, 
     {
         $albums = array(
             "jsiciarek" => array(
-                "The Fly", "The Sea", "My Adventure"
+                "The Fly", "The Sea", "My Adventure", "Hot & Cold", "Stars Fell on Alabama", "Who Let the Dogs Out?",
             ),
             "colak"     => array(
                 "Lemon Dance", "Strange Butterfly", "Cooking and Fun",

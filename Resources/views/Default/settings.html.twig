@@ -3,62 +3,21 @@
 
     <h1 id="subtitle">{{ "User settings" | trans() }}</h1>
 
-    <pre>{{ settings | var_dump() }}</pre>
-
-
-
-    <!-- HTML form for validation demo -->
-    <form action="" method="post" id="register-form" novalidate="novalidate"><h2>User Registration</h2>
-
-        <div id="form-content">
-            <fieldset>
-                <input type="text" name="title">
-                <div class="fieldgroup"><label for="firstname">First Name</label> <input type="text" name="firstname">
-                </div>
-                <div class="fieldgroup"><label for="lastname">Last Name</label> <input type="text" name="lastname">
-                </div>
-                <div class="fieldgroup"><label for="email">Email</label> <input type="text" name="email"></div>
-                <div class="fieldgroup"><label for="password">Password</label> <input type="password" name="password">
-                </div>
-                <div class="fieldgroup"><p class="right">By clicking register you agree to our <a target="_blank"
-                                                                                                  href="/policy">policy</a>.
-                </p>                 <input type="submit" value="Register" class="submit"></div>
-            </fieldset>
-        </div>
-        <div class="fieldgroup"><p>Already registered? <a href="/login">Sign in</a>.</p></div>
-    </form>
-
+    {#<pre>{{ settings | var_dump() }}</pre>#}
 
     <script type="text/javascript">
-        // <![CDATA[
 
-        (function ($, W, D) {
-            var JQUERY4U = {};
+        var array = [1,2,3,4,5,6,7,8,9];
 
-            JQUERY4U.UTIL =
-            {
-                setupFormValidation: function () {
-                    //form validation rules
-                    $("#register-form").validate({
-                        rules: {
-                            title: "required"
-                        },
-                        messages: {
-                            title: "Title message",
-                        },
-                        submitHandler: function (form) {
-                            form.submit();
-                        }
-                    });
-                }
-            }
+        console.log(array);
 
-            //when the dom has loaded setup form validation rules
-            $(D).ready(function ($) {
-                JQUERY4U.UTIL.setupFormValidation();
-            });
+        delete array[3];
 
-        })(jQuery, window, document);
+        console.log(array);
+
+        array.splice (0, 1);
+
+        console.log(array);
 
         $(document).ready(function () {
 

@@ -1,5 +1,75 @@
 // DISPLAY LOGIC:
 
+function renderAlbumHeader() {
+    var toolbar = getAlbumToolbarObj(album);
+    var altit = album.title === "New Album" ? __(album.title) : album.title;
+
+    $("#subtitle").html('<span '
+        + (album.is_visible ? "" : ' class="hidden"') + '>'
+        + altit + " (" + albums.length + ")</span>" + toolbar);
+
+    $("p.info").html(album.description);
+
+}
+
+function renderImagesView(delay) {
+
+    delay = delay || 0;
+
+    $("#images").empty();
+
+    $("#images").append('<div style="background-color:#a47e3c !important" class="image cover" id="album-cover"></div>');
+
+    if(album.is_visible === false) {
+        $("#album-cover").addClass("hidden");
+    }
+
+    $("#album-cover").css({
+        "background-image": "url(" + album.cover.src + ")"
+    });
+
+    if (images.length > 0) {
+        var format = "jpg";  // TODO: images[i].format;
+
+        for (var i = 0; i < images.length; i++) {
+            var imgId = "img" + i;
+            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: images[i].id, format: format});
+            var hidden = images[i].is_visible === false ? " hidden" : "";
+
+            images[i].thumbnail["src"] = thumbnail;
+
+            $("#images").append('<div title="' + images[i].title + '" class="image context-menu-trigger' + hidden + '" id="' + imgId + '"></div>');
+
+            if (images[i].is_visible === true) {
+                $("#" + imgId).css({
+                    "width": images[i].thumbnail.file.width
+                });
+            }
+
+            if (i == images.length - 1) {
+                $("#images").append('<div style="clear:both"></div>');
+            }
+        }
+
+        setTimeout(function () {
+            for (var i = images.length - 1; i >= 0; i--) {
+                var imgId = "img" + i;
+
+                $("#" + imgId).css({
+                    "background-image": "url(" + images[i].thumbnail.src + ")",
+                    "border": "none"
+                });
+
+                if (images[i].is_visible === true) {
+                    $("#" + imgId).css({
+                        "background-color": "transparent"
+                    });
+                }
+            }
+        }, delay);
+    }
+}
+
 function displayCurrentImage(direction) {
 
     var image = images[currentImage];
@@ -112,7 +182,6 @@ $(document).ready(function () {
         displayPrevImage();
     });
 
-
     $.ajax({
         url: Routing.generate("_photogallery_api_album", { id: currentAlbumId }),
         error: errorHandler,
@@ -165,68 +234,21 @@ $(document).ready(function () {
                 title: temp[1],
                 description: temp[2],
                 is_visible: temp[3] > 0,
+                cover: {src: cover},
                 cover_id: cover_id
             };
 
-            var toolbar = getAlbumToolbarObj(album);
-            var altit = album.title === "New Album" ? __(album.title) : album.title;
-
-            $("#subtitle").html('<span '
-                + (album.is_visible ? "" : ' class="hidden"') + '>'
-                + altit + " (" + response.totalCount + ")</span>" + toolbar);
-
-            $("p.info").html(album.description);
 
             $("li#create-new-album-menu").show();
             $("li#add-images-menu").show();
 
-            $("#images").append('<div class="image cover" id="album-cover"></div>');
+            renderAlbumHeader();
 
-            $("#album-cover").css({
-                "background-image": "url(" + cover + ")"
-            });
+            renderImagesView(1000);
 
             if (images.length > 0) {
-                var format = "jpg";  // TODO: images[i].format;
 
-                for (var i = 0; i < images.length; i++) {
-                    var imgId = "img" + i;
-                    var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: images[i].id, format: format});
-                    var hidden = images[i].is_visible === false ? " hidden" : "";
-
-                    images[i].thumbnail["src"] = thumbnail;
-
-                    $("#images").append('<div title="' + images[i].title + '" class="image context-menu-trigger' + hidden + '" id="' + imgId + '"></div>');
-
-                    if (images[i].is_visible === true) {
-                        $("#" + imgId).css({
-                            "width": images[i].thumbnail.file.width
-                        });
-                    }
-
-                    if (i == images.length - 1) {
-                        $("#images").append('<div style="clear:both"></div>');
-                    }
-                }
-
-                setTimeout(function () {
-                    for (var i = images.length - 1; i >= 0; i--) {
-                        var imgId = "img" + i;
-
-                        $("#" + imgId).css({
-                            "background-image": "url(" + images[i].thumbnail.src + ")",
-                            "border": "none"
-                        });
-
-                        if (images[i].is_visible === true) {
-                            $("#" + imgId).css({
-                                "background-color": "transparent"
-                            });
-                        }
-                    }
-                }, 1000);
-
-                $(".image").click(function (event) {
+                $("#images").delegate(".image", "click", function (event) {
 
                     if (clickIsDisabled === true) {
                         clickIsDisabled = false;
@@ -269,8 +291,8 @@ $(document).ready(function () {
                         reorderSequence(images, "images", ".image");
                     });
 
-                    $("div#menu li#undo-changes").click(function (event) {
-                        undoChanges(".image", "#images");
+                    $("div#menu li#reset-view").click(function (event) {
+                        resetView("images");
                     });
 
                     $("#images").sortable({
@@ -294,11 +316,11 @@ $(document).ready(function () {
 
                             if (inorder === false) {
                                 $("div#menu li#update-view").show();
-                                $("div#menu li#undo-changes").show();
+                                $("div#menu li#reset-view").show();
                             }
                             else {
                                 $("div#menu li#update-view").hide();
-                                $("div#menu li#undo-changes").hide();
+                                $("div#menu li#reset-view").hide();
                             }
                         }
                     });
@@ -416,5 +438,7 @@ $(document).ready(function () {
                 $("#images").append('<div style="clear:both"></div>');
             }
         }
-    });
-});
+    })
+    ;
+})
+;

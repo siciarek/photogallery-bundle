@@ -48,8 +48,8 @@ function formAction(form) {
     var id = parseInt($(form).find("input[name='id']").val());
 
     var landingpages = {
-        "album" : id > 0 ? location.href : Routing.generate("_albums"),
-        "images" : location.href
+        "album": id > 0 ? location.href : Routing.generate("_albums"),
+        "images": location.href
     };
 
     var landingpage = landingpages[element];
@@ -60,7 +60,7 @@ function formAction(form) {
             var onsuccess = function (response) {
                 $.ui.Mask.show(__("Wait a while"));
 
-                if(typeof response.data.type !== "undefined" && response.data.type === "album") {
+                if (typeof response.data.type !== "undefined" && response.data.type === "album") {
                     landingpage = Routing.generate("_album", {id: response.data.id, slug: response.data.slug}, true);
                 }
 
@@ -92,14 +92,16 @@ function processAction(action, element, id, message) {
             url = Routing.generate("_photogallery_api_copy_image", { album: album_id, image: image_id, action: action });
 
             if (element === "image") {
-                callback =  action === "copy-to"
-                ? function (data) { infoBox(data.msg); }
-                : function (data) {
+                callback = function (data) {
+                    if(action === "move-to")
                     $.each(images, function (index, element) {
                         if (element != null && element.id === image_id) {
-                            var divid = "#img" + index;
-                            $(divid).remove();
-                            images[index] = null;
+                            if(images[index].id === album.cover_id) {
+                                album.cover.src = defaultCover;
+                                album.cover_id = 0;
+                            }
+                            images.splice(index, 1);
+                            renderImagesView();
                             currentImage = 0;
                             bufferedImage = 1;
                             return;
@@ -108,8 +110,7 @@ function processAction(action, element, id, message) {
                     infoBox(data.msg);
                 };
             }
-            else
-            {
+            else {
                 return;
             }
 
@@ -160,67 +161,76 @@ function processAction(action, element, id, message) {
         case "hide":
             url = Routing.generate("_photogallery_api_show_hide_element", { id: id, action: action, element: element });
 
-            if (element === "image") {
-                callback = function (data) {
+            callback = function (data) {
+                if (element === "image") {
                     $.each(images, function (index, element) {
                         if (element != null && element.id === id) {
-                            var divid = "#img" + index;
-                            if (action === "show") {
-                                images[index].is_visible = true;
-                                $(divid).removeClass("hidden");
-                                $(divid).css("width", element.thumbnail.file.width);
-                                return;
+                            images[index].is_visible = action === "show";
+                            if(images[index].id === album.cover.id) {
+                                album.cover.src = defaultCover
                             }
-                            images[index].is_visible = false;
-                            $(divid).addClass("hidden");
-                            $(divid).css("width", "216px");
-                            if ($(divid).css("background-image") === $("#album-cover").css("background-image")) {
-                                $("#album-cover").css("background-image", "url(" + defaultCover + ")");
-                            }
-
+                            renderImagesView();
                             return;
                         }
                     });
-                };
-            }
+                } else {
+                    var landingpage = Routing.generate("_albums", true);
+
+                    // Check if action was called in albums or images context:
+                    if (location.href.indexOf(landingpage, location.href.length - landingpage.length) !== -1) {
+                        $.each(albums, function (index, element) {
+                            if (element != null && element.id === id) {
+                                albums[index].is_visible = action === "show";
+                                renderAlbumsView();
+                                return;
+                            }
+                        });
+                    } else {
+                        album.is_visible = action === "show";
+                        renderAlbumHeader();
+
+                        if (album.is_visible) {
+                            $("#album-cover").removeClass("hidden");
+                        }
+                        else {
+                            $("#album-cover").addClass("hidden");
+                        }
+                    }
+                }
+            };
 
             break;
 
         case "delete":
             url = Routing.generate("_photogallery_api_delete_element", { id: id, element: element });
-            var landingpages = {
-                "album": Routing.generate("_albums"),
-                "image": location.href
-            };
-
-            var landingpage = landingpages[element];
 
             callback = function (data) {
-                $.ui.Mask.show();
-                location.href = landingpage;
-            };
-
-            if (element === "image") {
-                callback = function (data) {
+                if (element === "image") {
                     $.each(images, function (index, element) {
-
                         if (element != null && element.id === id) {
-                            var divid = "#img" + index;
-
-                            if ($(divid).css("background-image") === $("#album-cover").css("background-image")) {
-                                $("#album-cover").css("background-image", "url(" + defaultCover + ")");
-                            }
-
-                            $(divid).remove();
-                            images[index] = null;
-                            currentImage = 0;
-                            bufferedImage = 1;
-
+                            images.splice(index, 1);
+                            renderImagesView();
                             return;
                         }
                     });
-                };
-            }
+                } else {
+                    var landingpage = Routing.generate("_albums", true);
+
+                    // Check if action was called in albums or images context:
+                    if (location.href.indexOf(landingpage, location.href.length - landingpage.length) !== -1) {
+                        $.each(albums, function (index, element) {
+                            if (element != null && element.id === id) {
+                                albums.splice(index, 1);
+                                renderAlbumsView();
+                                return;
+                            }
+                        });
+                    } else {
+                        $.ui.Mask.show();
+                        location.href = landingpage;
+                    }
+                }
+            };
 
             confirmDeleteBox(id, element, url, callback);
             return;

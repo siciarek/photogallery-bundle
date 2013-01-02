@@ -27,14 +27,18 @@ $(document).ready(function () {
 function reorderSequence(elements, collection, cls) {
 
     var order = [];
+    var temp = [];
 
     $.ui.Mask.show(__("New " + collection + " sequence is being saved"));
 
     $(cls).each(function (index, element) {
         if ($(element).attr("id") !== "album-cover") {
             var inx = $(element).attr("id").replace(/[a-z]*/i, '');
-            var id = elements[inx].id;
-            order.push(id);
+            if (elements[inx] != null) {
+                var id = elements[inx].id;
+                order.push(id);
+                temp.push(elements[inx]);
+            }
         }
     });
 
@@ -43,8 +47,16 @@ function reorderSequence(elements, collection, cls) {
         error: errorHandler,
         success: function (data, textStatus, jqXHR) {
             var onsuccess = function (data) {
-                $("div#menu li#update-view").hide();
-                $("div#menu li#undo-changes").hide();
+
+                if(collection === "images") {
+                    images = temp;
+                }
+                else
+                {
+                    albums = temp;
+                }
+
+                resetView(collection);
 
                 infoBox(__(data.msg));
             };
@@ -54,37 +66,17 @@ function reorderSequence(elements, collection, cls) {
     });
 }
 
-function undoChanges(elem, container) {
-    var order = {};
-    var count = 0;
-    var cover = null;
+function resetView(collection) {
 
     $("div#menu li#update-view").hide();
-    $("div#menu li#undo-changes").hide();
+    $("div#menu li#reset-view").hide();
 
-    $(elem).each(function (index, element) {
-        if ($(element).attr("id") === "album-cover") {
-            cover = element;
-        }
-        else {
-            var inx = $(element).attr("id").replace(/[a-z]*/i, '');
-            order[inx] = element;
-            count++;
-        }
-    });
-
-    $(container).empty();
-
-    if (cover != null) {
-        $(container).append(cover);
+    if (collection === "albums") {
+        renderAlbumsView();
     }
-
-    for (var i = 0; i < count; i++) {
-        var element = order["" + i];
-
-        $(container).append(element);
+    else {
+        renderImagesView();
     }
-    $(container).append('<div style="clear:both"></div>');
 }
 
 function getActionButton(action, object, id) {

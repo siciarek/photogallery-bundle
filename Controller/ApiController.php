@@ -366,8 +366,18 @@ class ApiController extends Controller
 
             if ($move === true) {
                 // Change album:
+
+                $imalbum = $im->getAlbum();
+
+                if($imalbum->getCover()->getId() === $im->getId()) {
+                    $imalbum->setCover(null);
+                }
+
                 $im->setAlbum($album);
+                $this->em->persist($imalbum);
                 $this->em->persist($im);
+
+
             } else {
                 $qb = $this->em->createQueryBuilder();
                 $qb->select("max(i.sequence_number) + 1 as c")
@@ -375,7 +385,7 @@ class ApiController extends Controller
                     ->leftJoin("i.album", "a")
                     ->andWhere("a.id = :aid")->setParameter("aid", $album->getId());
                 $query = $qb->getQuery();
-                $sequence_number = $query->getSingleScalarResult();
+                $sequence_number = intval($query->getSingleScalarResult());
 
                 $copy = new E\Image();
                 $copy->setIsVisible($im->getIsVisible());
