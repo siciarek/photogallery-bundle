@@ -8,31 +8,35 @@ Siciarek\PhotoGalleryBundle\Entity\Creator:
             id: true
             generator:
                 strategy: AUTO
-        first_name:
-          type: string
-          length: 64
-        last_name:
-          type: string
-          length: 64
+        username:
+            type: string
+            length: 255
+            nullable: false
         email:
-          type: string
-          length: 255
+            type: string
+            length: 255
+            nullable: false
+        first_name:
+            type: string
+            length: 255
+            nullable: true
+        last_name:
+            type: string
+            length: 255
+            nullable: true
         description:
-          type: string
-          nullable: true
-        logged_at:
-          type: datetime
-          nullable: true
+            type: string
+            nullable: true
         created_at:
-          type: datetime
-          gedmo:
-            timestampable:
-              on: create
+            type: datetime
+            gedmo:
+              timestampable:
+                  on: create
         updated_at:
-          type: datetime
-          gedmo:
-            timestampable:
-              on: update
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
     oneToMany:
         albums:
             targetEntity: Album

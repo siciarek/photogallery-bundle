@@ -575,13 +575,12 @@ class ApiController extends Controller
 
     protected function getCreator($create = true)
     {
-        $first_name = $this->getUser()->getFirstName();
-        $last_name = $this->getUser()->getLastName();
-        $email = $this->getUser()->getEmail();
+        $user = $this->getUser();
+        $username = $user->getUsernameCanonical();
+        $email = $user->getEmailCanonical();
 
         $params = array(
-            "first_name" => $first_name,
-            "last_name"  => $last_name,
+            "username" => $username,
             "email"      => $email,
         );
 
@@ -589,8 +588,7 @@ class ApiController extends Controller
 
         if ($create === true and $creator === null) {
             $creator = new E\Creator();
-            $creator->setFirstName($first_name);
-            $creator->setLastName($last_name);
+            $creator->setUsername($username);
             $creator->setEmail($email);
 
             $this->em->persist($creator);

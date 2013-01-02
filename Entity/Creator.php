@@ -265,4 +265,32 @@ class Creator
     {
         return $this->email;
     }
+    /**
+     * @var string
+     */
+    private $username;
+
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     * @return Creator
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    
+        return $this;
+    }
+
+    /**
+     * Get username
+     *
+     * @return string 
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
 }
