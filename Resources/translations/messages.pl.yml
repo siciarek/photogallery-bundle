@@ -80,6 +80,7 @@ number of chosen files     : liczba wybranych plików
 
 Access denied.             : Brak uprawnień do wykonania tej czynności.
 Requested album is not available.           : Żądany album nie jest dostępny.
+Album is not available in edit mode.        : Album niedostępny w trybie edycji.
 Are you sure you want to delete this image? : Czy na pewno chcesz usunąć tę fotografię?
 Choose at least one image. Title and description are optional.                     : Wybierz przynajmniej jedną fotografię. Tytuł lub opis jest opcjonalny.
 New album requires title or description. Adding at least one image is recommended. : Nowy album wymaga podania tytułu lub opisu. Zalecane jest również dodanie przynajmniej jednej fotografii.

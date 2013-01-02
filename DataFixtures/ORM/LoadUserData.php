@@ -61,6 +61,8 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
             $obj->setEnabled(true);
 
             $em->persist($obj);
+
+            $this->setReference($u["username"], $obj);
         }
 
         $em->flush();

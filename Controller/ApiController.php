@@ -43,8 +43,9 @@ class ApiController extends Controller
         try {
             $qb = $this->em->createQueryBuilder();
 
-            $qb->select("a", "i", "c", "t")
+            $qb->select("a", "i", "c", "t", "cr")
                 ->from("SiciarekPhotoGalleryBundle:Album", "a")
+                ->leftJoin("a.creator", "cr")
                 ->leftJoin("a.images", "i")
                 ->leftJoin("a.cover", "c")
                 ->leftJoin("c.thumbnail", "t")
@@ -54,6 +55,8 @@ class ApiController extends Controller
 
             if ($this->getUser() === null) {
                 $qb->andWhere("a.is_visible = 1");
+            } else {
+                $qb->andWhere("cr.username = :usrname")->setParameter("usrname", $this->getUser()->getUsername());
             }
 
             $query = $qb->getQuery();
@@ -92,13 +95,18 @@ class ApiController extends Controller
                 throw new \Exception("Requested album is not available.");
             }
 
+            if($this->getUser() !== null and $album->getCreator()->getUsername() !== $this->getUser()->getUsername()) {
+                throw new \Exception("Album is not available in edit mode.");
+            }
+
             $images = array();
 
             if ($album->getImages()->count() > 0) {
                 $qb = $this->em->createQueryBuilder();
-                $qb->select("a", "i", "t", "if", "tf")
+                $qb->select("a", "i", "t", "if", "tf", "cr")
                     ->from("SiciarekPhotoGalleryBundle:Album", "a")
                     ->leftJoin("a.images", "i")
+                    ->leftJoin("a.creator", "cr")
                     ->leftJoin("i.file", "if")
                     ->leftJoin("i.thumbnail", "t")
                     ->leftJoin("t.file", "tf")
@@ -108,7 +116,10 @@ class ApiController extends Controller
 
                 if ($this->getUser() === null) {
                     $qb->andWhere("i.is_visible = 1");
+                } else {
+                    $qb->andWhere("cr.username = :usrname")->setParameter("usrname", $this->getUser()->getUsername());
                 }
+
 
                 $query = $qb->getQuery();
                 $data = $query->getArrayResult();
@@ -580,7 +591,7 @@ class ApiController extends Controller
         $email = $user->getEmailCanonical();
 
         $params = array(
-            "username" => $username,
+            "username"   => $username,
             "email"      => $email,
         );
 
@@ -836,13 +847,11 @@ class ApiController extends Controller
             $content_length = filesize($path);
         }
 
-        if(!file_exists($path) or !is_readable($path)) {
+        if (!file_exists($path) or !is_readable($path)) {
             $path = $this->config["image_not_found"];
             $content_type = "image/png";
             $content_length = filesize($path);
-        }
-        else
-        {
+        } else {
             if ($type === "original") {
                 $content_length = filesize($path);
             }

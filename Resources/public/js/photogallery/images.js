@@ -131,8 +131,9 @@ $(document).ready(function () {
 
             if (resp.success === false) {
 
-                if (__(response.msg) === __("Requested album is not available.")) {
-                    $.ui.Mask.show();
+                if (__(response.msg) === __("Requested album is not available.") || __(response.msg) === __("Album is not available in edit mode.")) {
+
+                    $.ui.Mask.show(__(response.msg) + ' ' + __("Wait a while"));
                     location.href = Routing.generate("_albums");
                 } else {
                     errorBox(__(response.msg));
