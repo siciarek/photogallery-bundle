@@ -104,6 +104,7 @@ html.photogallery div.create-new-element div.form-colum.right {
 }
 
 html.photogallery div.create-new-element div.form-colum.right div.files-list {
+    width: 350px;
     height: 250px;
     overflow: auto;
     border: 1px solid silver;
@@ -112,6 +113,7 @@ html.photogallery div.create-new-element div.form-colum.right div.files-list {
 
 html.photogallery div.create-new-element div.form-colum.right div.files-list li {
     padding: 2px 4px 2px 4px;
+    white-space: nowrap;
 }
 
 html.photogallery div.create-new-element#images-form div.form-colum.right div.files-list li:hover,
@@ -537,6 +539,6 @@ html.photogallery div#status-bar .content span {
 }
 
 /*.context-menu-item:hover {*/
-    /*background-color: #0A246A;*/
-    /*color: white;*/
+/*background-color: #0A246A;*/
+/*color: white;*/
 /*}*/

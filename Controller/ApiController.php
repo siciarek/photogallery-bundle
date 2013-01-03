@@ -669,6 +669,7 @@ class ApiController extends Controller
             $original_name = trim($original_name);
             $original_name = preg_replace("|([^/]+)$|", "$1", $original_name);
             $original_name = preg_replace("/\.\w+$/", "", $original_name);
+            $original_name = preg_replace("/_/", " ", $original_name);
             $original_name = preg_replace("/\s+/", " ", $original_name);
             $original_name = trim($original_name);
             $original_name = empty($original_name) ? null : $original_name;

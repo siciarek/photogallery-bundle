@@ -127,7 +127,9 @@ function parseImageTitle(filename) {
     var original_name = filename
     original_name = original_name.replace(/([^\/]+)$/, "$1", original_name);
     original_name = original_name.replace(/\.\w+$/, "", original_name);
-    original_name = original_name.replace(/\s+/, " ", original_name);
+    original_name = original_name.replace(/_/g, " ", original_name);
+    original_name = original_name.replace(/\s+/g, " ", original_name);
+    original_name = $.trim(original_name);
     original_name = original_name.length == 0 ? "" : original_name;
 
     return original_name;
