@@ -226,6 +226,7 @@ function processAction(action, element, id, message) {
                         if (element != null && element.id === id) {
                             images.splice(index, 1);
                             renderImagesView();
+                            renderAlbumHeader();
                             return;
                         }
                     });

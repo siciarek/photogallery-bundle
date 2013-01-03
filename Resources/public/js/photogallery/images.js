@@ -17,6 +17,13 @@ function renderAlbumHeader() {
 
     $("p.info").html(album.description);
 
+    if(images.length === 0) {
+        album.cover_id = 0;
+        album.cover.src = defaultCover;
+        $("#album-cover").css({
+            "background-image": "url(" + album.cover.src + ")"
+        });
+    }
 }
 
 function renderImagesView(delay) {
