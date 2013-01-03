@@ -127,7 +127,23 @@ function processAction(action, element, id, message) {
                 };
                 message = "Changing album cover";
             }
+            else
+            {
+                return
+            }
             break;
+
+        case "add-images":
+            if (element === "album") {
+                openImagesForm(__("Images"), {
+                    id: 0,
+                    album_id: id,
+                    title: "",
+                    descripion: "",
+                    is_visible: true
+                });
+            }
+            return
 
         case "edit":
 
@@ -236,7 +252,7 @@ function processAction(action, element, id, message) {
             return;
 
         default:
-            break;
+            return;
     }
 
     $.ui.Mask.show(__(message));

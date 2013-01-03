@@ -205,7 +205,7 @@ html.photogallery div#content div#albums div.description {
     cursor: pointer;
 }
 
-html.photogallery div#content div#albums div.description p.number-of-photos {
+html.photogallery div#content p.number-of-photos {
     color: #AAAAAA !important;
     font-style: normal;
 }
@@ -250,6 +250,10 @@ html.photogallery div#content span.toolbar span.hide {
 
 html.photogallery div#content span.toolbar span.show {
     background-image: url(/bundles/siciarekphotogallery/images/icons/show.png);
+}
+
+html.photogallery div#content span.toolbar span.add-images {
+    background-image: url(/bundles/siciarekphotogallery/images/icons/add-image.gif);
 }
 
 html.photogallery div.create-new-element div.form-field {

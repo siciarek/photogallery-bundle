@@ -1,12 +1,19 @@
 // DISPLAY LOGIC:
 
 function renderAlbumHeader() {
-    var toolbar = getAlbumToolbarObj(album);
+    var toolbar = getAlbumToolbar(album);
     var altit = album.title === "New Album" ? __(album.title) : album.title;
-
+    var numberOfPhotos = images.length > 0
+        ? __("number of images") + ": " +  images.length
+        : __("no images");
     $("#subtitle").html('<span '
         + (album.is_visible ? "" : ' class="hidden"') + '>'
-        + altit + " (" + albums.length + ")</span>" + toolbar);
+        + altit + "</span>");
+
+    $("p.number-of-photos").html(numberOfPhotos + getAlbumToolbar(album));
+    $("p.number-of-photos").css({
+        "margin-left" : "8px"
+    });
 
     $("p.info").html(album.description);
 

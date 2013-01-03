@@ -35,7 +35,7 @@ function renderAlbumsView() {
             $(descdiv).append('<h2 class="' + hidden + '">' + title + '</h2>');
         }
 
-        $(descdiv).append('<p class="number-of-photos">' + numberOfPhotos + getAlbumToolbarObj(album) + "</p>");
+        $(descdiv).append('<p class="number-of-photos">' + numberOfPhotos + getAlbumToolbar(album) + "</p>");
 
         if (description !== "") {
             $(descdiv).append('<p class="' + hidden + '">' + description + '</p>');

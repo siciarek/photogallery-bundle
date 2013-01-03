@@ -14,6 +14,8 @@
 //    tinyMCE.execCommand('mceRemoveControl', false, 'email_body');
 //}
 
+var imagesFormValidator = null;
+
 function openElementForm(title, element, data) {
 
     data = data || {
@@ -31,7 +33,7 @@ function openElementForm(title, element, data) {
     var buttons = {};
 
     buttons[reset] = function (event) {
-        $("#" + element + "-form form").get(0).reset();
+        imagesFormValidator.resetForm();
         $("#files-to-upload-" + element + "").empty();
         var nofid = "#number-of-chosen-files-" + element + "";
         $(nofid).html("");
@@ -112,6 +114,14 @@ function openElementForm(title, element, data) {
                 $(".form-colum.right div.form-field, .form-colum.right div.files-list").hide();
             }
 
+            $("select[name='album']").val(data.album_id);
+
+            if(data.album_id === 0) {
+                $("#" + element + "-form form").get(0).reset();
+                $("label.error").hide();
+                $(".error").removeClass("error");
+            }
+
             $("input[name='id']").val(data.id);
             $("input[name='title']").val(data.title);
             $("textarea[name='description']").val(data.description);
@@ -119,6 +129,7 @@ function openElementForm(title, element, data) {
         },
 
         close: function () {
+            imagesFormValidator.resetForm();
             $("#files-to-upload-" + element + "").empty();
             var nofid = "#number-of-chosen-files-" + element + "";
             $(nofid).html("");
@@ -220,7 +231,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#images-base-form").validate({
+    imagesFormValidator = $("#images-base-form").validate({
         rules: {
             album: {
                 validalbum: true

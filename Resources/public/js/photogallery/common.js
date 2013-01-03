@@ -86,12 +86,7 @@ function getActionButton(action, object, id) {
     return button;
 }
 
-function getAlbumToolbar(index) {
-    var album = albums[index];
-    return getAlbumToolbarObj(album);
-}
-
-function getAlbumToolbarObj(album) {
+function getAlbumToolbar(album) {
     var showHide = album.is_visible === true ? "hide" : "show";
 
     var toolbar = "";
@@ -102,6 +97,7 @@ function getAlbumToolbarObj(album) {
 
     toolbar += '<span class="toolbar">';
 
+    toolbar += getActionButton("add-images", "album", album.id);
     toolbar += getActionButton("edit", "album", album.id);
     toolbar += getActionButton(showHide, "album", album.id);
     toolbar += getActionButton("delete", "album", album.id);
