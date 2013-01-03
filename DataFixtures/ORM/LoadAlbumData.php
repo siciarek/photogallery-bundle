@@ -13,22 +13,19 @@ use Siciarek\PhotoGalleryBundle\Entity as E;
 use PDO;
 
 
-class LoadAlbumData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class LoadAlbumData extends BaseFixture
 {
-    private static $devel = true;
-
     public function getOrder()
     {
         return 2;
     }
 
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
     public function load(ObjectManager $em)
     {
+        if(self::$go === false) {
+            return;
+        }
+
         $albums = array(
             "jsiciarek" => array(
                 "The Fly", "The Sea", "My Adventure", "Hot & Cold", "Stars Fell on Alabama", "Who Let the Dogs Out?",

@@ -43,6 +43,13 @@ Siciarek\PhotoGalleryBundle\Entity\Image:
     manyToOne:
         thumbnail:
             targetEntity: Image
+            inversedBy: images
+            cascade: [ persist ]
+            joinColumn:
+                name: thumbnail_id
+                referencedColumnName: id
+                onDelete: CASCADE
+                onUpdate: CASCADE
         file:
             targetEntity: File
         album:

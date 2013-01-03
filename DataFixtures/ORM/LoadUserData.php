@@ -13,22 +13,19 @@ use Siciarek\PhotoGalleryBundle\Entity as E;
 use PDO;
 
 
-class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
+class LoadUserData extends BaseFixture
 {
-    private static $devel = true;
-
     public function getOrder()
     {
         return 1;
     }
 
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
-
     public function load(ObjectManager $em)
     {
+        if(self::$go === false) {
+            return;
+        }
+
         $users = array(
             array(
                 "first_name"  => "Jacek",
