@@ -84,6 +84,56 @@ function processAction(action, element, id, message) {
     var callback = false;
 
     switch (action) {
+        case "rotate":
+            if (element === "image") {
+                var image = parseInt(id[0]);
+                var direction = id[1];
+                url = Routing.generate("_photogallery_api_rotate_image", { image: image, direction: direction });
+                clickIsDisabled = true;
+                callback = function defaultOnSuccessCallback(r) {
+                    $.each(images, function (index, element) {
+                        if (element != null && element.id === image) {
+                            clickIsDisabled = true;
+
+                            var width = images[index].thumbnail.file.width;
+                            var height = images[index].thumbnail.file.height;
+
+                            images[index].thumbnail.file.width = height;
+                            images[index].thumbnail.file.height = width;
+
+                            var h = images[index].file.height;
+                            var w = images[index].file.width;
+
+                            images[index].file.height = w;
+                            images[index].file.width = h;
+
+                            var thbgurl = Routing.generate("_photogallery_api_show_thumbnail", {refresh: Math.random(), id: image, format: "jpg"});
+                            images[index].thumbnail.src = thbgurl;
+
+                            $("#img" + index).css({
+                                "background-image": "url(" + thbgurl + ")",
+                                "width": images[index].thumbnail.file.width
+                            });
+
+                            if (images[index].id === album.cover_id) {
+                                $("#album-cover").css({
+                                    "background-image": "url(" + thbgurl + ")"
+                                });
+                            }
+
+                            // TODO: image preview action
+
+                            return;
+                        }
+                    });
+                };
+
+            } else {
+                return;
+            }
+
+            break;
+
         case "move-to":
         case "copy-to":
             var album_id = parseInt(id[0]);
@@ -93,20 +143,20 @@ function processAction(action, element, id, message) {
 
             if (element === "image") {
                 callback = function (data) {
-                    if(action === "move-to")
-                    $.each(images, function (index, element) {
-                        if (element != null && element.id === image_id) {
-                            if(images[index].id === album.cover_id) {
-                                album.cover.src = defaultCover;
-                                album.cover_id = 0;
+                    if (action === "move-to")
+                        $.each(images, function (index, element) {
+                            if (element != null && element.id === image_id) {
+                                if (images[index].id === album.cover_id) {
+                                    album.cover.src = defaultCover;
+                                    album.cover_id = 0;
+                                }
+                                images.splice(index, 1);
+                                renderImagesView();
+                                currentImage = 0;
+                                bufferedImage = 1;
+                                return;
                             }
-                            images.splice(index, 1);
-                            renderImagesView();
-                            currentImage = 0;
-                            bufferedImage = 1;
-                            return;
-                        }
-                    });
+                        });
                     infoBox(data.msg);
                 };
             }
@@ -127,8 +177,7 @@ function processAction(action, element, id, message) {
                 };
                 message = "Changing album cover";
             }
-            else
-            {
+            else {
                 return
             }
             break;
@@ -182,7 +231,7 @@ function processAction(action, element, id, message) {
                     $.each(images, function (index, element) {
                         if (element != null && element.id === id) {
                             images[index].is_visible = action === "show";
-                            if(images[index].id === album.cover.id) {
+                            if (images[index].id === album.cover.id) {
                                 album.cover.src = defaultCover
                             }
                             renderImagesView();

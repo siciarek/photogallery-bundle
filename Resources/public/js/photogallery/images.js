@@ -4,7 +4,7 @@ function renderAlbumHeader() {
     var toolbar = getAlbumToolbar(album);
     var altit = album.title === "New Album" ? __(album.title) : album.title;
     var numberOfPhotos = images.length > 0
-        ? __("number of images") + ": " +  images.length
+        ? __("number of images") + ": " + images.length
         : __("no images");
     $("#subtitle").html('<span '
         + (album.is_visible ? "" : ' class="hidden"') + '>'
@@ -12,12 +12,12 @@ function renderAlbumHeader() {
 
     $("p.number-of-photos").html(numberOfPhotos + getAlbumToolbar(album));
     $("p.number-of-photos").css({
-        "margin-left" : "8px"
+        "margin-left": "8px"
     });
 
     $("p.info").html(album.description);
 
-    if(images.length === 0) {
+    if (images.length === 0) {
         album.cover_id = 0;
         album.cover.src = defaultCover;
         $("#album-cover").css({
@@ -26,15 +26,16 @@ function renderAlbumHeader() {
     }
 }
 
-function renderImagesView(delay) {
+function renderImagesView(delay, nocache) {
 
     delay = delay || 0;
+    nocache = nocache || 0;
 
     $("#images").empty();
 
     $("#images").append('<div style="background-color:#a47e3c !important" class="image cover" id="album-cover"></div>');
 
-    if(album.is_visible === false) {
+    if (album.is_visible === false) {
         $("#album-cover").addClass("hidden");
     }
 
@@ -69,8 +70,12 @@ function renderImagesView(delay) {
             for (var i = images.length - 1; i >= 0; i--) {
                 var imgId = "img" + i;
 
+                var bgurl = images[i].thumbnail.src;
+
+                bgurl += nocache == 1 ? "?" + Math.random() : "";
+
                 $("#" + imgId).css({
-                    "background-image": "url(" + images[i].thumbnail.src + ")",
+                    "background-image": "url(" + bgurl + ")",
                     "border": "none"
                 });
 
@@ -84,7 +89,9 @@ function renderImagesView(delay) {
     }
 }
 
-function displayCurrentImage(direction) {
+function displayCurrentImage(direction, nocache) {
+
+    nocache = nocache || 0;
 
     var image = images[currentImage];
     var format = "jpg";
@@ -119,7 +126,7 @@ function displayCurrentImage(direction) {
                 $("#image-preview").dialog("close");
             });
 
-            displayCurrentImage(1);
+            displayCurrentImage(1, nocache);
 
             var statusBarDescription = "&#9745; " + album.title + " (" + (1 * currentImage + 1) + "/" + (images.length) + ")";
 
@@ -137,8 +144,14 @@ function displayCurrentImage(direction) {
 
     bufferImage(currentImage, images, format, direction);
 
+    var parms = {id: image.id, format: format};
+
+    if (nocache == 1) {
+        parms["refresh"] = 1;
+    }
+
     $(".image-preview-dialog").css({
-        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", {id: image.id, format: format}, true) + ")"
+        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", parms, true) + ")"
     });
 
     $("#image-preview").dialog(config);
@@ -252,7 +265,6 @@ $(document).ready(function () {
                 cover_id: cover_id
             };
 
-
             $("li#create-new-album-menu").show();
             $("li#add-images-menu").show();
 
@@ -354,10 +366,8 @@ $(document).ready(function () {
                                 switch (action) {
                                     case "rotate-cw":
                                     case "rotate-ccw":
-
                                         var direction = action.replace(/^\w+\-/, "");
-                                        infoBox(direction);
-
+                                        processAction("rotate", "image", [images[currentImage].id, direction]);
                                         break;
                                     case "change-cover":
                                     case "edit":
@@ -412,14 +422,16 @@ $(document).ready(function () {
                                 }
                             }
 
-//                        items["rotate"] = {
-//                            name: __("Rotate"),
-//                            icon: "rotate",
-//                            items: {
-//                                "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
-//                                "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" }
-//                            }
-//                        };
+                            if (id != "image-preview") {
+                                items["rotate"] = {
+                                    name: __("Rotate"),
+                                    icon: "rotate",
+                                    items: {
+                                        "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
+                                        "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" }
+                                    }
+                                };
+                            }
 
                             if (image.is_visible === true) {
                                 items["hide"] = {name: __("Hide"), icon: "hide"};

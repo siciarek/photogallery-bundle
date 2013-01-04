@@ -413,6 +413,42 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/{image}/rotate-{direction}.json", name = "_photogallery_api_rotate_image", requirements = {"image"="^[1-9]\d*$", "direction"="^(cw|ccw)$"})
+     */
+    public function rotateImageAction($image, $direction)
+    {
+        $frame = array();
+
+        try {
+            $this->checkAccess();
+
+            $service = "image.filter.rotate." . $direction;
+
+            $img = $this->em->getRepository("SiciarekPhotoGalleryBundle:Image")->find($image);
+            $imfile = $img->getFile();
+            $thfile = $img->getThumbnail()->getFile();
+
+            $this->get($service)->xapply($thfile);
+            $this->em->persist($thfile);
+
+            $this->get($service)->xapply($imfile);
+            $this->em->persist($imfile);
+
+            $this->em->flush();
+
+            $frame = $this->frames["info"];
+            $frame["msg"] = "Image has been modified successfuly";
+            $frame["data"] = array($image, $direction);
+        } catch (\Exception $e) {
+            $frame = $this->frames["error"];
+            $frame["msg"] = $e->getMessage();
+            $frame["data"] = $e->getTraceAsString();
+        }
+
+        return $this->jsonResponse($frame);
+    }
+
+    /**
      * @Route("/{id}/{action}-{element}.json", name = "_photogallery_api_show_hide_element", requirements = {"id"="^[1-9]\d*$", "action"="^(hide|show)$", "element"="^(album|image)$"})
      */
     public function showHideElementAction($id, $action, $element)
@@ -688,8 +724,8 @@ class ApiController extends Controller
 
             $thumbnail_width = 200;
             $thumbnail_height = 150;
-            $thumbnail_mime_type = "image/png";
-            $thumbnail_extension = "png";
+            $thumbnail_mime_type = "image/jpg";
+            $thumbnail_extension = "jpg";
 
             $image = new Image();
             $image->setTitle($title);
@@ -803,8 +839,8 @@ class ApiController extends Controller
 
             // Add watermark:
 
-            $this->addWatermark($original_path);
-            $this->addWatermark($image_path);
+            $this->watermark->apply($original_path);
+            $this->watermark->apply($image_path);
 
             $imfile->setFileSize(filesize($image_path));
             $this->em->persist($image);
@@ -816,30 +852,7 @@ class ApiController extends Controller
         }
     }
 
-    protected function addWatermark($image_path, $alpha = 10)
-    {
-        $watermark_path = $this->config["watermark"];
 
-        if (file_exists($watermark_path) and is_readable($watermark_path)) {
-
-            $watermark = imagecreatefrompng($watermark_path);
-            $watermark_width = (int)imagesx($watermark);
-            $watermark_height = (int)imagesy($watermark);
-
-            $src_image = imagecreatefromjpeg($image_path);
-            $src_image_width = (int)imagesx($src_image);
-            $src_image_height = (int)imagesy($src_image);
-            imagealphablending($src_image, true);
-
-            $dest_x = intval(($src_image_width - $watermark_width) / 2);
-            $dest_y = intval(($src_image_height - $watermark_height) / 2);
-
-            imagecopymerge($src_image, $watermark, $dest_x, $dest_y, 0, 0, $watermark_width, $watermark_height, $alpha);
-            imagejpeg($src_image, $image_path, 100);
-            imagedestroy($watermark);
-            imagedestroy($src_image);
-        }
-    }
 
     protected function fileResponse($image, $type = null)
     {
@@ -897,6 +910,7 @@ class ApiController extends Controller
     public function preExecute()
     {
         $this->config = $this->container->getParameter("siciarek_photo_gallery.config");
+        $this->watermark = $this->get("image.filter.watermark");
         $this->doctrine = $this->getDoctrine();
         $this->em = $this->doctrine->getEntityManager();
 
@@ -931,5 +945,6 @@ class ApiController extends Controller
                 "data"      => new \stdClass(),
             ),
         );
+
     }
 }

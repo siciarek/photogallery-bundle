@@ -7,14 +7,32 @@
     <parameters>
         <parameter key="twig.extension.class">Siciarek\PhotoGalleryBundle\Twig\Extension\BundleExtension</parameter>
         <parameter key="app.listener.class">Siciarek\PhotoGalleryBundle\Listener\SiciarekPhotoGalleryListener</parameter>
+        <parameter key="image.watermark.class">Siciarek\PhotoGalleryBundle\Service\Watermark</parameter>
+        <parameter key="image.rotate.class">Siciarek\PhotoGalleryBundle\Service\Rotate</parameter>
     </parameters>
 
     <services>
+        <service id="image.filter.watermark" class="%image.watermark.class%">
+            <argument type="service" id="kernel"/>
+            <argument type="string">10</argument>
+        </service>
+
+        <service id="image.filter.rotate.cw" class="%image.rotate.class%">
+            <argument type="service" id="kernel"/>
+            <argument type="string">-90</argument>
+        </service>
+
+        <service id="image.filter.rotate.ccw" class="%image.rotate.class%">
+            <argument type="service" id="kernel"/>
+            <argument type="string">90</argument>
+        </service>
+
         <service id="twig.extension.myapp.bundle" class="%twig.extension.class%" public="false">
             <tag name="twig.extension"/>
             <argument type="service" id="twig.loader"/>
             <argument type="service" id="router"/>
         </service>
+
         <service id="app.listener" class="%app.listener.class%">
             <tag name="kernel.event_listener" event="kernel.controller" method="onCoreController" />
         </service>
