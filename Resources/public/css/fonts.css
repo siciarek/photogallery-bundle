@@ -1,0 +1,33 @@
+/*CUSTOM FONTS DEFINITIONS:*/
+
+@font-face {
+    font-family: "mycalib";
+    font-weight: normal;
+    font-style: normal;
+    src: url(/bundles/myappuser/fonts/calibri.eot);
+    src: local("Calibri"), url(/bundles/myappuser/fonts/calibri.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "mycalib";
+    font-weight: normal;
+    font-style: italic;
+    src: url(/bundles/myappuser/fonts/calibrii.eot);
+    src: local("Calibri Italic"), url(/bundles/myappuser/fonts/calibrii.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "mycalib";
+    font-weight: bold;
+    font-style: normal;
+    src: url(/bundles/myappuser/fonts/calibrib.eot);
+    src: local("Calibri Bold"), url(/bundles/myappuser/fonts/calibrib.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "mycalib";
+    font-weight: bold;
+    font-style: italic;
+    src: url(/bundles/myappuser/fonts/fonts/calibriz.eot);
+    src: local("Calibri Bold Italic"), url(/bundles/myappuser/fonts/calibriz.ttf) format("truetype");
+}
