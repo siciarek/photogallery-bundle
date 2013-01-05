@@ -57,7 +57,7 @@ function loadAlbumPhotos(albums) {
 
             var format = "jpg";
             var cover = albums[i].cover !== null
-                ? Routing.generate("_photogallery_api_show_thumbnail", {id: albums[i].cover.id, format: format}, true)
+                ? Routing.generate(route_show_thumbnail, {id: albums[i].cover.id, format: format}, true)
                 : defaultCover;
 
             if (cover === defaultCover) {

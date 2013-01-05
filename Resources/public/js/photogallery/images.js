@@ -48,7 +48,7 @@ function renderImagesView(delay, nocache) {
 
         for (var i = 0; i < images.length; i++) {
             var imgId = "img" + i;
-            var thumbnail = Routing.generate("_photogallery_api_show_thumbnail", {id: images[i].id, format: format});
+            var thumbnail = Routing.generate(route_show_thumbnail, {id: images[i].id, format: format});
             var hidden = images[i].is_visible === false ? " hidden" : "";
 
             images[i].thumbnail["src"] = thumbnail;
@@ -151,7 +151,7 @@ function displayCurrentImage(direction, nocache) {
     }
 
     $(".image-preview-dialog").css({
-        "background-image": "url(" + Routing.generate("_photogallery_api_show_image", parms, true) + ")"
+        "background-image": "url(" + Routing.generate(route_show_image, parms, true) + ")"
     });
 
     $("#image-preview").dialog(config);
@@ -193,7 +193,7 @@ function bufferImage(currentImage, album, format, direction) {
         } while (images[bufferedImage] === null);
     }
 
-    var bufferedImageSrc = Routing.generate("_photogallery_api_show_image", {id: images[bufferedImage].id, format: format}, true);
+    var bufferedImageSrc = Routing.generate(route_show_image, {id: images[bufferedImage].id, format: format}, true);
     $("#image-buffer").attr("src", bufferedImageSrc);
 }
 
@@ -210,7 +210,7 @@ $(document).ready(function () {
     });
 
     $.ajax({
-        url: Routing.generate("_photogallery_api_album", { id: currentAlbumId }),
+        url: Routing.generate(route_album, { id: currentAlbumId }),
         error: errorHandler,
         success: function (response) {
 
@@ -246,7 +246,7 @@ $(document).ready(function () {
             var id = parseInt(temp[0]);
             var cover_id = parseInt(temp[4]);
             var cover = cover_id > 0
-                ? Routing.generate("_photogallery_api_show_thumbnail", {id: cover_id, format: format}, true)
+                ? Routing.generate(route_show_thumbnail, {id: cover_id, format: format}, true)
                 : defaultCover;
 
             for (var i = 0; i < albums.length; i++) {
@@ -430,7 +430,7 @@ $(document).ready(function () {
                                     items: {
                                         "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
                                         "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" },
-                                        "rotate-180": {name: __("180&deg;"), icon: "rotate-180" }
+                                        "rotate-180": {name: __("180&deg;"), icon: "upside-down" }
                                     }
                                 };
                             }

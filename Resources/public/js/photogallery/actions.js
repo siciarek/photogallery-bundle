@@ -8,6 +8,7 @@ function defaultOnSuccessCallback(r) {
 
 function errorHandler(response) {
     $.ui.Mask.hide();
+    clickIsDisabled = false;
     errorBox(__("Unexpected Exception."));
 }
 
@@ -91,9 +92,9 @@ function processAction(action, element, id, message) {
                 url = Routing.generate("_photogallery_api_rotate_image", { image: image, direction: direction });
                 clickIsDisabled = true;
                 callback = function defaultOnSuccessCallback(r) {
+                    clickIsDisabled = false;
                     $.each(images, function (index, element) {
                         if (element != null && element.id === image) {
-                            clickIsDisabled = true;
 
                             if (direction != 180) {
                                 var width = images[index].thumbnail.file.width;
@@ -109,7 +110,7 @@ function processAction(action, element, id, message) {
                                 images[index].file.width = h;
                             }
 
-                            var thbgurl = Routing.generate("_photogallery_api_show_thumbnail", {refresh: Math.random(), id: image, format: "jpg"});
+                            var thbgurl = Routing.generate(route_show_thumbnail, {refresh: Math.random(), id: image, format: "jpg"});
                             images[index].thumbnail.src = thbgurl;
 
                             $("#img" + index).css({

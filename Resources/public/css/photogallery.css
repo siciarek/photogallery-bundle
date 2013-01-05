@@ -538,6 +538,10 @@ html.photogallery div#status-bar .content span {
     background-image: url(/bundles/siciarekphotogallery/images/icons/rotate-ccw.png);
 }
 
+.context-menu-item.icon-upside-down {
+    background-image: url(/bundles/siciarekphotogallery/images/icons/upside-down.png);
+}
+
 /*.context-menu-item:hover {*/
 /*background-color: #0A246A;*/
 /*color: white;*/

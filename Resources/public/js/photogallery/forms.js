@@ -98,7 +98,7 @@ function openElementForm(title, element, data) {
             $("input[id^=photos]").removeAttr("disabled");
 
             if (element === "images" && data.id > 0) {
-                console.log("Do not validate file upload");
+
                 var thumbnail = defaultCover;
                 $("input[id^=photos]").attr("disabled", "disabled");
                 $.each(images, function (index, element) {
@@ -194,7 +194,7 @@ function updateImageInfo() {
 $(document).ready(function () {
 
     $.ajax({
-        url: Routing.generate("_photogallery_api_album_list"),
+        url: Routing.generate(route_album_list),
         async: false,
         error: errorHandler,
 
