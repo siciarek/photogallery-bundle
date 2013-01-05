@@ -12,11 +12,17 @@ class ScriptHandler
 {
     public static function installSubmodules($event)
     {
-        echo "INSTALL SUBMODULES\n";
+        $gitdir = __DIR__ . "/../.git";
+        $gitcmd = "git --git-dir=$gitdir ";
+        $command = $gitcmd . " submodule update --init";
+        echo `$command`;
     }
 
     public static function updateSubmodules($event)
     {
-        echo "UPDATE SUBMODULES\n";
+        $gitdir = __DIR__ . "/../.git";
+        $gitcmd = "git --git-dir=$gitdir ";
+        $command = $gitcmd . " submodule foreach pull";
+        echo `$command`;
     }
 }
