@@ -366,6 +366,7 @@ $(document).ready(function () {
                                 switch (action) {
                                     case "rotate-cw":
                                     case "rotate-ccw":
+                                    case "rotate-180":
                                         var direction = action.replace(/^\w+\-/, "");
                                         processAction("rotate", "image", [images[currentImage].id, direction]);
                                         break;
@@ -428,7 +429,8 @@ $(document).ready(function () {
                                     icon: "rotate",
                                     items: {
                                         "rotate-cw": {name: __("CW"), icon: "rotate-cw" },
-                                        "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" }
+                                        "rotate-ccw": {name: __("CCW"), icon: "rotate-ccw" },
+                                        "rotate-180": {name: __("180&deg;"), icon: "rotate-180" }
                                     }
                                 };
                             }

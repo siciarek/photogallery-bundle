@@ -95,17 +95,19 @@ function processAction(action, element, id, message) {
                         if (element != null && element.id === image) {
                             clickIsDisabled = true;
 
-                            var width = images[index].thumbnail.file.width;
-                            var height = images[index].thumbnail.file.height;
+                            if (direction != 180) {
+                                var width = images[index].thumbnail.file.width;
+                                var height = images[index].thumbnail.file.height;
 
-                            images[index].thumbnail.file.width = height;
-                            images[index].thumbnail.file.height = width;
+                                images[index].thumbnail.file.width = height;
+                                images[index].thumbnail.file.height = width;
 
-                            var h = images[index].file.height;
-                            var w = images[index].file.width;
+                                var h = images[index].file.height;
+                                var w = images[index].file.width;
 
-                            images[index].file.height = w;
-                            images[index].file.width = h;
+                                images[index].file.height = w;
+                                images[index].file.width = h;
+                            }
 
                             var thbgurl = Routing.generate("_photogallery_api_show_thumbnail", {refresh: Math.random(), id: image, format: "jpg"});
                             images[index].thumbnail.src = thbgurl;

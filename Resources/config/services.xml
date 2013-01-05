@@ -27,6 +27,11 @@
             <argument type="string">90</argument>
         </service>
 
+        <service id="image.filter.rotate.180" class="%image.rotate.class%">
+            <argument type="service" id="kernel"/>
+            <argument type="string">180</argument>
+        </service>
+
         <service id="twig.extension.myapp.bundle" class="%twig.extension.class%" public="false">
             <tag name="twig.extension"/>
             <argument type="service" id="twig.loader"/>

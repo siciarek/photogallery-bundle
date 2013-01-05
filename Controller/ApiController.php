@@ -8,6 +8,7 @@ ini_set('gd.jpeg_ignore_warning', 1);
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\Query;
@@ -30,6 +31,7 @@ class ApiController extends Controller
 {
     protected $config, $doctrine, $em;
     protected $frames = array();
+    protected $errorMessages = array();
 
     /* PUBLIC ACTIONS: */
 
@@ -68,9 +70,7 @@ class ApiController extends Controller
             $frame["data"] = $data;
             $frame["totalCount"] = count($data);
         } catch (\Exception $e) {
-            $frame = $this->frames["error"];
-            $frame["msg"] = $e->getMessage();
-            $frame["data"] = $e->getTraceAsString();
+            $frame = $this->handleException($e);
         }
 
         return $this->jsonResponse($frame);
@@ -132,9 +132,7 @@ class ApiController extends Controller
             $frame["data"] = $images;
             $frame["totalCount"] = count($frame["data"]);
         } catch (\Exception $e) {
-            $frame = $this->frames["error"];
-            $frame["msg"] = $e->getMessage();
-            $frame["data"] = $e->getTraceAsString();
+            $frame = $this->handleException($e);
         }
 
         return $this->jsonResponse($frame);
@@ -413,7 +411,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{image}/rotate-{direction}.json", name = "_photogallery_api_rotate_image", requirements = {"image"="^[1-9]\d*$", "direction"="^(cw|ccw)$"})
+     * @Route("/{image}/rotate-{direction}.json", name = "_photogallery_api_rotate_image", requirements = {"image"="^[1-9]\d*$", "direction"="^(cw|ccw|180)$"})
      */
     public function rotateImageAction($image, $direction)
     {
@@ -852,7 +850,27 @@ class ApiController extends Controller
         }
     }
 
+    protected function handleException(\Exception $e, $rollback = false) {
+        $msg = $e->getMessage();
+        $data = $e->getTrace();
 
+        $env = $this->get('kernel')->getEnvironment();
+
+        if($env === "prod") {
+            $msg = "Unexpected Exception.";
+            $data = new \stdClass();
+        }
+
+        if($rollback === true) {
+            $this->em->getConnection()->rollback();
+        }
+
+        $frame = $this->frames["error"];
+        $frame["msg"] = $msg;
+        $frame["data"] = $data;
+
+        return $frame;
+    }
 
     protected function fileResponse($image, $type = null)
     {
@@ -890,9 +908,9 @@ class ApiController extends Controller
         return $response;
     }
 
-    protected function jsonResponse($frame)
+    protected function jsonResponse($data)
     {
-        $json = json_encode($frame);
+        $json = json_encode($data);
 
         $response = new Response();
         $response->headers->set('Content-Type', "application/json");

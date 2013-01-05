@@ -22,29 +22,6 @@ class DefaultController extends Controller
     protected $locale;
     protected $translations = array();
 
-    public function preExecute()
-    {
-        $this->config = $this->container->getParameter("siciarek_photo_gallery.config");
-        $this->request = $this->getRequest();
-        $this->session = $this->request->getSession();
-        $this->cookies = $this->request->cookies->all();
-
-        $this->locale = $this->session->get("locale", $this->request->getLocale());
-        $this->request->setLocale($this->locale);
-
-        $this->output = array(
-            "config"     => $this->config,
-            "settings"   => new \stdClass(),
-        );
-
-        if (array_key_exists("settings", $this->cookies)) {
-            $this->output["settings"] = json_decode($this->cookies["settings"], true);
-        }
-
-        $yaml = new Parser();
-        $transfile = __DIR__ . "/../Resources/translations/messages.pl.yml";
-        $this->output["translations"] = $yaml->parse(file_get_contents($transfile));
-    }
 
     /**
      * @Route("/settings.html", name = "_settings")
@@ -80,5 +57,29 @@ class DefaultController extends Controller
     public function indexAction()
     {
         return $this->output;
+    }
+
+    public function preExecute()
+    {
+        $this->config = $this->container->getParameter("siciarek_photo_gallery.config");
+        $this->request = $this->getRequest();
+        $this->session = $this->request->getSession();
+        $this->cookies = $this->request->cookies->all();
+
+        $this->locale = $this->session->get("locale", $this->request->getLocale());
+        $this->request->setLocale($this->locale);
+
+        $this->output = array(
+            "config"     => $this->config,
+            "settings"   => new \stdClass(),
+        );
+
+        if (array_key_exists("settings", $this->cookies)) {
+            $this->output["settings"] = json_decode($this->cookies["settings"], true);
+        }
+
+        $yaml = new Parser();
+        $transfile = __DIR__ . "/../Resources/translations/messages.pl.yml";
+        $this->output["translations"] = $yaml->parse(file_get_contents($transfile));
     }
 }

@@ -50,9 +50,6 @@ class Rotate implements ImageFilterInterface
         if ($this->angle !== 0 and file_exists($src_path) and is_readable($src_path) and is_writable($src_path)) {
 
             $src_image = $this->imagecreatefrom($src_path, $file->getMimeType());
-
-
-
             $trg_image = imagerotate($src_image, $this->angle, 0);
 
             if ($trg_image !== false) {
@@ -67,11 +64,14 @@ class Rotate implements ImageFilterInterface
             throw new \Exception("Image can not be modified.");
         }
 
-        $width = $file->getWidth();
-        $height = $file->getHeight();
+        if($this->angle !== 180) {
+            $width = $file->getWidth();
+            $height = $file->getHeight();
 
-        $file->setWidth($height);
-        $file->setHeight($width);
+            $file->setWidth($height);
+            $file->setHeight($width);
+        }
+
         $file->setFileSize(filesize($src_path));
     }
 }
