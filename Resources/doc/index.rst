@@ -30,6 +30,7 @@ Configuration notes:
 /app/AppKernel.php (add)
 --------------------------------------------------------------------------------
 
+.. code-block:: php
 
     $bundles[] = new FOS\UserBundle\FOSUserBundle();
     $bundles[] = new FOS\JsRoutingBundle\FOSJsRoutingBundle();
@@ -41,6 +42,9 @@ Configuration notes:
 
 /app/config/config.yml (change)
 --------------------------------------------------------------------------------
+
+.. code-block:: yaml
+
 framework:
     # uncomment:
     translator:      { fallback: "%locale%" }
