@@ -15,7 +15,9 @@ class ScriptHandler
         $gitdir = __DIR__ . "/../.git";
         $gitcmd = "git --git-dir=$gitdir ";
         $command = $gitcmd . " submodule update --init";
+        echo "START INSTALLATION\n";
         echo `$command`;
+        echo "START INSTALLATION\n";
     }
 
     public static function updateSubmodules($event)
@@ -23,6 +25,8 @@ class ScriptHandler
         $gitdir = __DIR__ . "/../.git";
         $gitcmd = "git --git-dir=$gitdir ";
         $command = $gitcmd . " submodule foreach pull";
+        echo "START UPDATE\n";
         echo `$command`;
+        echo "UPDATE COMPLETE\n";
     }
 }
