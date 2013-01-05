@@ -353,10 +353,10 @@ html.photogallery div#content {
 }
 
 html.photogallery div#content h1 {
-    font: 32px/40px Georgia, Times, serif;
-    letter-spacing: 4px;
+    font: 32px/40px mycalib, sans-serif;
+    color: #444;
+    /*letter-spacing: 2px;*/
     margin: 8px 0 16px 0;
-    text-shadow: 1px 1px silver;
 }
 
 html.photogallery div#content h1:before {

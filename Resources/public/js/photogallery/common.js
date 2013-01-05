@@ -15,26 +15,26 @@ var scope = "public";
 
 var routes = {
     private: {
-        show_original:  "_photogallery_api_show_original",
+        show_original: "_photogallery_api_show_original",
         show_thumbnail: "_photogallery_api_show_thumbnail",
-        show_image:     "_photogallery_api_show_image",
-        album:          "_photogallery_api_album",
-        album_list:     "_photogallery_api_album_list"
+        show_image: "_photogallery_api_show_image",
+        album: "_photogallery_api_album",
+        album_list: "_photogallery_api_album_list"
     },
     public: {
-        show_original:  "_photogallery_api_public_show_original",
+        show_original: "_photogallery_api_public_show_original",
         show_thumbnail: "_photogallery_api_public_show_thumbnail",
-        show_image:     "_photogallery_api_public_show_image",
-        album:          "_photogallery_api_public_album",
-        album_list :    "_photogallery_api_public_album_list"
+        show_image: "_photogallery_api_public_show_image",
+        album: "_photogallery_api_public_album",
+        album_list: "_photogallery_api_public_album_list"
     }
 };
 
-var route_album_list     = routes[scope].album_list;
-var route_album          = routes[scope].album;
-var route_show_original  = routes[scope].show_original;
+var route_album_list = routes[scope].album_list;
+var route_album = routes[scope].album;
+var route_show_original = routes[scope].show_original;
 var route_show_thumbnail = routes[scope].show_thumbnail;
-var route_show_image     = routes[scope].show_image;
+var route_show_image = routes[scope].show_image;
 
 $(document).ready(function () {
 
@@ -48,6 +48,32 @@ $(document).ready(function () {
     });
 
 });
+
+function goTo(url, target, self) {
+
+    self = self || false;
+
+    if (self === false) {
+
+        // Create "<a>" element:
+        var link = document.createElement("a");
+        link.href = url;
+        link.target = target || "_self";
+
+        // Append it to document's body
+        document.body.appendChild(link);
+
+        // Click:
+        link.click();
+
+        // Make tidy:
+        document.body.removeChild(link);
+    }
+    else
+    {
+        location.href = url;
+    }
+}
 
 function reorderSequence(elements, collection, cls) {
 
@@ -73,11 +99,10 @@ function reorderSequence(elements, collection, cls) {
         success: function (data, textStatus, jqXHR) {
             var onsuccess = function (data) {
 
-                if(collection === "images") {
+                if (collection === "images") {
                     images = temp;
                 }
-                else
-                {
+                else {
                     albums = temp;
                 }
 

@@ -364,6 +364,18 @@ $(document).ready(function () {
                             }
                             else {
                                 switch (action) {
+                                    case "new-window":
+                                    case "show-original":
+                                    case "new-window-preview":
+                                    case "show-original-preview":
+                                        var url = action.match(/^new\-window/)
+                                                ? Routing.generate(route_show_image, {id: images[currentImage].id, format: "jpg"}, true)
+                                                : Routing.generate(route_show_original, {id: images[currentImage].id, format: "jpg"}, true)
+                                            ;
+
+                                        goTo(url, "_blank", action.match(/preview$/) !== null);
+
+                                        break;
                                     case "rotate-cw":
                                     case "rotate-ccw":
                                     case "rotate-180":
@@ -449,6 +461,20 @@ $(document).ready(function () {
                             }
 
                             items["sep2"] = "---------";
+
+                            var sufix = id === "image-preview" ? "-preview" : "";
+
+                            items["new-window" + sufix] = {
+                                name: __("Display in new window"),
+                                icon: "new-window"
+                            };
+                            items["show-original" + sufix] = {
+                                name: __("Show original"),
+                                icon: "show-original"
+                            };
+
+
+                            items["sep3"] = "---------";
                             items["quit"] = {name: __("Quit"), icon: "quit"};
 
                             return {
