@@ -43,16 +43,16 @@ Configuration notes:
 /app/config/config.yml (change)
 --------------------------------------------------------------------------------
 
-.. code-block:: yml
-
-framework:
-    # uncomment:
-    translator:      { fallback: "%locale%" }
-
-assetic:
-    debug:          "%kernel.debug%"
-    use_controller: false
-    bundles:        [ FOSUserBundle, SiciarekPhotoGalleryBundle ]
+.. code-block:: yaml
+    
+    framework:
+        # uncomment:
+        translator:      { fallback: "%locale%" }
+    
+    assetic:
+        debug:          "%kernel.debug%"
+        use_controller: false
+        bundles:        [ FOSUserBundle, SiciarekPhotoGalleryBundle ]
 
 
 /app/config/config.yml (add)
