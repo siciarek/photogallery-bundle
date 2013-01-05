@@ -1,20 +1,11 @@
-.. code-block:: php
-
-    private $locale;
-
-    public function setTranslatableLocale($locale)
-    {
-        $this->locale = $locale;
-    }
-
-
-
 Configuration notes:
 ====================
 
 
 /composer.json  (add)
 --------------------------------------------------------------------------------
+
+.. code-block:: json
 
     "require": {
         "doctrine/data-fixtures": "dev-master",
