@@ -12,21 +12,37 @@ class ScriptHandler
 {
     public static function installSubmodules($event)
     {
-        $gitdir = __DIR__ . "/../.git";
-        $gitcmd = "git --git-dir=$gitdir ";
-        $command = $gitcmd . " submodule update --init";
-        echo "START INSTALLATION\n";
-        echo `$command`;
-        echo "START INSTALLATION\n";
+    	$repodir = __DIR__ . "/.."; 
+        $gitdir = $repodir . "/.git";
+        
+		$cmd = array();
+        $cmd[] = "git status";
+        $cmd[] = "git submodule update --init";
+
+		echo "START INSTALLATION\n";
+		chdir($repodir);
+		foreach($cmd as $command) {
+			echo " *** " . $command . ":\n";
+			echo `$command`;
+		}
+        echo "INSTALLATION COMPLETE\n";
     }
 
     public static function updateSubmodules($event)
     {
-        $gitdir = __DIR__ . "/../.git";
-        $gitcmd = "git --git-dir=$gitdir ";
-        $command = $gitcmd . " submodule foreach pull";
-        echo "START UPDATE\n";
-        echo `$command`;
-        echo "UPDATE COMPLETE\n";
+		$repodir = __DIR__ . "/.."; 
+        $gitdir = $repodir . "/.git";
+
+		$cmd = array();
+        $cmd[] = "git status";
+        $cmd[] = "git submodule foreach pull";
+			
+		echo "START UPDATING\n";
+		chdir($repodir);
+		foreach($cmd as $command) {
+			echo " *** " . $command . ":\n";
+			echo `$command`;
+		}
+        echo "UPDATING COMPLETE\n";
     }
 }
