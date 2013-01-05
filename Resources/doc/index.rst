@@ -43,7 +43,7 @@ Configuration notes:
 /app/config/config.yml (change)
 --------------------------------------------------------------------------------
 
-.. code-block:: yaml
+.. code-block:: yml
 
 framework:
     # uncomment:
