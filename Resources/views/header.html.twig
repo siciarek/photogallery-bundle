@@ -22,7 +22,7 @@
     {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
 
     <script type="text/javascript">
-        var authenticated = {% if app.user  %}true{% else %}false{% endif %};
+        var authenticated = {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}true{% else %}false{% endif %};
     </script>
 
     {% include "SiciarekPhotoGalleryBundle::translations.html.twig" %}
@@ -58,14 +58,14 @@
             {% for text, route in menu %}
 
                 {% if text == "create new album" %}
-                    {% if app.user %}
+                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                         <li id="create-new-album-menu"><a title="{{ text | trans() }}"
                                                           href="javascript:void(null)"
                                                           onclick="openAlbumForm()">{{ text | trans() }}</a></li>
                     {% endif %}
                 {% else %}
                     {% if text == "add images" %}
-                        {% if app.user %}
+                        {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                             <li id="add-images-menu"><a title="{{ text | trans() }}"
                                                         href="javascript:void(null)"
                                                         onclick="openImagesForm()">{{ text | trans() }}</a></li>
@@ -100,9 +100,8 @@
                                                                             onclick="">{{ "update view" | trans() }}</a>
             </li>
 
-            {% if app.user %}
+            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                 <li>{{ link_to('layout.logout'|trans({}, 'FOSUserBundle') | lower(), "fos_user_security_logout") }}</li>
-                {#<li><a>{{ "user" | trans() ~ ": " ~ app.user.firstname ~ " " ~ app.user.lastname }}</a></li>#}
             {% else %}
                 <li>{{ link_to('layout.login'|trans({}, 'FOSUserBundle') | lower(), "fos_user_security_login") }}</li>
             {% endif %}
@@ -115,5 +114,6 @@
 
     <div id="header">
 
-
     </div>
+
+
