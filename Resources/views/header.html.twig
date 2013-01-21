@@ -19,7 +19,7 @@
     <link rel="stylesheet" type="text/css" media="screen"
           href="/bundles/siciarekphotogallery/js/jquery-ui-1.9.2.custom/css/smoothnessnr/jquery-ui-1.9.2.custom.min.css"/>
 
-    {#<link rel="stylesheet" type="text/css" media="screen" href="{{ page_style }}"/>#}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ config.style }}"/>
 
     <script type="text/javascript">
         var authenticated = {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}true{% else %}false{% endif %};
