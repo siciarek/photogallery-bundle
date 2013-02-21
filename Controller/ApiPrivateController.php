@@ -663,7 +663,6 @@ class ApiPrivateController extends Controller
         }
 
         $user = $this->getUser();
-        $user->setLoggedAt(new \DateTime());
         $this->em->persist($user);
         $this->em->flush();
     }
