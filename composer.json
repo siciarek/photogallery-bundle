@@ -17,16 +17,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.2",
-       
-        "doctrine/data-fixtures": "dev-master",
-        "doctrine/doctrine-fixtures-bundle": "dev-master",
-        "stof/doctrine-extensions-bundle": "dev-master",
-        "gedmo/doctrine-extensions": "dev-master",
-        "stfalcon/tinymce-bundle": "dev-master",
-        "friendsofsymfony/user-bundle": "*",
-        "friendsofsymfony/jsrouting-bundle": "1.0.*",
-        "imagine/Imagine": "v0.3.0"
+        "php": ">=5.3.2"
     },
     "require-dev": {
 
