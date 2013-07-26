@@ -33,7 +33,7 @@ function renderImagesView(delay, nocache) {
 
     $("#images").empty();
 
-    $("#images").append('<div style="background-color:#a47e3c !important" class="image cover" id="album-cover"></div>');
+    $("#images").append('<div class="image cover" id="album-cover"></div>');
 
     if (album.is_visible === false) {
         $("#album-cover").addClass("hidden");
