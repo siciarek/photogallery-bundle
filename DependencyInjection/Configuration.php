@@ -29,8 +29,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode("homepage")
             ->defaultValue($defaults["homepage"])
             ->end()
-            ->scalarNode("style")
-            ->defaultValue($defaults["style"])
+            ->scalarNode("style")->defaultNull()
             ->end()
             ->scalarNode("watermark")
             ->defaultValue($defaults["watermark"])
@@ -70,7 +69,6 @@ class Configuration implements ConfigurationInterface
         return array(
             "title"             => "Photo Gallery",
             "homepage"          => "_photogallery_homepage",
-            "style"             => "/bundles/siciarekphotogallery/css/photogallery.css",
             "watermark"         => "%kernel.root_dir%/../vendor/siciarek/photogallery-bundle/Siciarek/PhotoGalleryBundle/Resources/public/images/watermark.png",
             "image_not_found"   => "%kernel.root_dir%/../vendor/siciarek/photogallery-bundle/Siciarek/PhotoGalleryBundle/Resources/public/images/image-not-found.png",
             "default_cover"     => "/bundles/siciarekphotogallery/images/default-cover.png",
