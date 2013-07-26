@@ -243,7 +243,7 @@ class ApiPublicController extends Controller
         $this->config = $this->container->getParameter("siciarek_photo_gallery.config");
         $this->watermark = $this->get("image.filter.watermark");
         $this->doctrine = $this->getDoctrine();
-        $this->em = $this->doctrine->getEntityManager();
+        $this->em = $this->doctrine->getManager();
 
         $this->frames = array(
             "info"      => array(
